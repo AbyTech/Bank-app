@@ -3,6 +3,7 @@ services:
     name: banking-backend
     runtime: docker
     plan: starter
+    rootDir: backend
     buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
@@ -26,9 +27,16 @@ services:
           name: banking-backend
           property: host
       - key: ALLOWED_HOSTS
-        value: localhost,127.0.0.1,banking-system-1-qeky.onrender.com
+        value: localhost,127.0.0.1,banking-system-1-qeky.onrender.com,banking-frontend.onrender.com
       - key: CORS_ALLOWED_ORIGINS
-        value: http://localhost:3000,http://127.0.0.1:3000
+        value: http://localhost:3000,http://127.0.0.1:3000,https://banking-frontend.onrender.com,https://primewavebank.netlify.app
+
+  - type: static
+    name: banking-frontend
+    plan: starter
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: ./dist
 
 databases:
   - name: banking-db

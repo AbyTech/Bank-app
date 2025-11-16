@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-// ✅ Use your live Render backend URL
-const API_BASE_URL = 'https://primewave.onrender.com/api';
+// ✅ Use your live Render backend URL from environment variable
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
 
 // 🟢 Wake up backend (non-blocking request)
 (async () => {
   try {
     // Hit the root URL (outside `/api/`) to wake Render up
-    await fetch('https://primewave.onrender.com/', { method: 'GET' });
+    await fetch(import.meta.env.VITE_API_URL, { method: 'GET' });
     console.log('🌐 Backend wake-up ping sent');
   } catch (err) {
     console.log('⚠️ Backend wake-up failed (likely asleep):', err.message);
