@@ -43,7 +43,7 @@ function App() {
 
   useEffect(() => {
     // ✅ Try to wake backend before rendering routes
-    waitForBackend('https://primewave.onrender.com/')
+    waitForBackend('https://banking-system-1-qeky.onrender.com/')
       .then(() => setBackendReady(true))
       .catch(() => setBackendReady(true)); // continue even if fails
   }, []);

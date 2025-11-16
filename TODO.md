@@ -1,15 +1,13 @@
-# TODO: Reconfigure for Render Hosting
-
-## Backend Updates
-- [x] Update `banking_system/backend/app/core/settings.py` to use environment variables for ALLOWED_HOSTS, CORS_ALLOWED_ORIGINS, and DATABASES configuration.
+# TODO: Fix CORS and Database Issues for Banking System
 
 ## Frontend Updates
-- [x] Remove `banking_system/frontend/vercel.json` as it's for Vercel, not Render.
+- [x] Update hardcoded backend URL in App.jsx from https://primewave.onrender.com to https://banking-system-1-qeky.onrender.com
+- [ ] Ensure VITE_API_URL environment variable is set to new backend URL in frontend deployment
 
-## Render Configuration
-- [x] Create `banking_system/render.yaml` for Render deployment configuration (web service for backend, static site for frontend).
+## Backend Updates
+- [x] Update settings.py DATABASES configuration to properly use DATABASE_URL from Render
+- [ ] Verify render.yaml has correct ALLOWED_HOSTS and CORS_ALLOWED_ORIGINS
 
 ## Verification
-- [x] Ensure Dockerfile and requirements.txt are suitable for Render.
-- [x] Updated build script in package.json for cross-platform compatibility.
-- [ ] Test build locally if possible (optional).
+- [ ] Redeploy frontend and backend after changes
+- [ ] Test registration and login functionality
