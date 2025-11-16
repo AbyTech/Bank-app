@@ -216,3 +216,6 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+# drf-yasg Login URL
+LOGIN_URL = '/admin/login/'
