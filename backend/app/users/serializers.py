@@ -59,4 +59,4 @@ class CountryCurrencySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CountryCurrency
-        fields = ('code', 'name', 'currency')
+        fields = ('code', 'name', 'currency', 'exchange_rate')

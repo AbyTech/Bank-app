@@ -159,7 +159,7 @@ class CountryCurrency(models.Model):
     country_code = models.CharField(max_length=2, unique=True)
     currency_code = models.CharField(max_length=3)
     currency_symbol = models.CharField(max_length=5)
-    exchange_rate = models.DecimalField(max_digits=10, decimal_places=4, default=1.0)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.country_name} ({self.currency_code})"

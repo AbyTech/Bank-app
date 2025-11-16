@@ -8,7 +8,7 @@ from .serializers import UserRegistrationSerializer, UserLoginSerializer, TwoFAS
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-# from .tasks import send_2fa_email
+from .tasks import send_2fa_email
 import pyotp
 from django.utils import timezone
 from datetime import timedelta
@@ -115,7 +115,7 @@ def get_profile(request):
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def get_countries(request):
-    countries = CountryCurrency.objects.all()
+    countries = CountryCurrency.objects.filter(is_active=True)
     serializer = CountryCurrencySerializer(countries, many=True)
     return Response(serializer.data)
 
