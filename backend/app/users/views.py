@@ -8,7 +8,7 @@ from .serializers import UserRegistrationSerializer, UserLoginSerializer, TwoFAS
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .tasks import send_2fa_email
+from .task import send_2fa_email
 import pyotp
 from django.utils import timezone
 from datetime import timedelta
