@@ -48,7 +48,7 @@ const Cards = () => {
     e.preventDefault()
     try {
       // Submit card order to backend
-      const response = await api.post('/cards/order-card/', {
+      const response = await api.post('/api/cards/order-card/', {
         card_type: paymentForm.cardType,
         amount: paymentForm.amount
       })

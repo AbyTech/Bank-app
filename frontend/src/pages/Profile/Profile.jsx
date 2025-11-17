@@ -37,7 +37,7 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await api.get('/profile/')
+      const response = await api.get('/api/profile/')
       const userData = response.data.data
       setProfile({
         name: `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
@@ -67,7 +67,7 @@ const Profile = () => {
         formData.append('profilePhoto', profile.profile_photo)
       }
 
-      const response = await api.put('/profile/', formData, {
+      const response = await api.put('/api/profile/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

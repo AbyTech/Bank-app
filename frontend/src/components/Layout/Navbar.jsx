@@ -43,7 +43,7 @@ const Navbar = () => {
     if (!user) return
     try {
       setLoading(true)
-      const response = await api.get('/transactions/')
+      const response = await api.get('/api/transactions/')
       const transactions = response.data.data || []
       // Get the 5 most recent transactions as notifications
       const recentTransactions = transactions
