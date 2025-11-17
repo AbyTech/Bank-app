@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// ✅ Use local backend URL for development
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// ✅ Use environment variable for backend URL (supports both local and deployed)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
 // ✅ Axios instance setup
 const api = axios.create({
