@@ -21,7 +21,7 @@ services:
       - key: PORT
         value: 10000
       - key: CORS_ORIGIN
-        value: https://primewavebank.netlify.app
+        value: https://prime-wave-bank.netlify.app
   - type: mongodb
     name: banking-db
     plan: free
