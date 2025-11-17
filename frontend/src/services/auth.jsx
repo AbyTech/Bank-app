@@ -38,7 +38,7 @@ export const authAPI = {
 
   getProfile: async () => {
     try {
-      const response = await api.get('/profile');
+      const response = await api.get('/api/profile');
       return response.data.data;
     } catch (error) {
       console.error('Failed to fetch profile:', error);
@@ -48,7 +48,7 @@ export const authAPI = {
 
   getCountries: async () => {
     try {
-      const response = await api.get('/countries');
+      const response = await api.get('/api/countries');
       return response.data.data; // The new endpoint wraps data in a 'data' property
     } catch (error) {
       console.error('Failed to fetch countries:', error);
@@ -58,7 +58,7 @@ export const authAPI = {
 
   getAccounts: async () => {
     try {
-      const response = await api.get('/accounts');
+      const response = await api.get('/api/accounts');
       return response.data.data; // The new endpoint wraps data in a 'data' property
     } catch (error) {
       console.error('Failed to fetch accounts:', error);
@@ -68,7 +68,7 @@ export const authAPI = {
 
   getCards: async () => {
     try {
-      const response = await api.get('/cards');
+      const response = await api.get('/api/cards');
       return response.data.data; // The new endpoint wraps data in a 'data' property
     } catch (error) {
       console.error('Failed to fetch cards:', error);
@@ -78,7 +78,7 @@ export const authAPI = {
 
   createCard: async (cardData) => {
     try {
-      const response = await api.post('/cards', cardData);
+      const response = await api.post('/api/cards', cardData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to create card:', error);
@@ -88,7 +88,7 @@ export const authAPI = {
 
   getLoans: async () => {
     try {
-      const response = await api.get('/loans');
+      const response = await api.get('/api/loans');
       return response.data.data;
     } catch (error) {
       console.error('Failed to fetch loans:', error);
@@ -98,7 +98,7 @@ export const authAPI = {
 
   applyForLoan: async (loanData) => {
     try {
-      const response = await api.post('/loans', loanData);
+      const response = await api.post('/api/loans', loanData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to apply for loan:', error);
@@ -108,7 +108,7 @@ export const authAPI = {
 
   makeLoanPayment: async (loanId, paymentData) => {
     try {
-      const response = await api.post(`/loans/${loanId}/payment`, paymentData);
+      const response = await api.post(`/api/loans/${loanId}/payment`, paymentData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to make loan payment:', error);
@@ -118,7 +118,7 @@ export const authAPI = {
 
   getTransactions: async (page = 1, limit = 20) => {
     try {
-      const response = await api.get(`/transactions?page=${page}&limit=${limit}`);
+      const response = await api.get(`/api/transactions?page=${page}&limit=${limit}`);
       return response.data.data;
     } catch (error) {
       console.error('Failed to fetch transactions:', error);
@@ -128,7 +128,7 @@ export const authAPI = {
 
   deposit: async (depositData) => {
     try {
-      const response = await api.post('/transactions/deposit', depositData);
+      const response = await api.post('/api/transactions/deposit', depositData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to make deposit:', error);
@@ -138,7 +138,7 @@ export const authAPI = {
 
   withdraw: async (withdrawData) => {
     try {
-      const response = await api.post('/transactions/withdraw', withdrawData);
+      const response = await api.post('/api/transactions/withdraw', withdrawData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to make withdrawal:', error);
@@ -148,7 +148,7 @@ export const authAPI = {
 
   transfer: async (transferData) => {
     try {
-      const response = await api.post('/transactions/transfer', transferData);
+      const response = await api.post('/api/transactions/transfer', transferData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to make transfer:', error);
