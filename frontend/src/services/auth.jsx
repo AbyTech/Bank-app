@@ -4,7 +4,7 @@ import api from './api';
 export const authAPI = {
   register: async (userData) => {
     try {
-      const response = await api.post('/auth/register', userData);
+      const response = await api.post('/api/auth/register', userData);
       // The new backend returns { success: true, token, seedPhrase }
       return response.data;
     } catch (error) {
@@ -17,7 +17,7 @@ export const authAPI = {
 
   login: async (email, seedPhrase) => {
     try {
-      const response = await api.post('/auth/login', { email, seedPhrase });
+      const response = await api.post('/api/auth/login', { email, seedPhrase });
       const { token, user } = response.data;
       localStorage.setItem('access_token', token);
       // Return the user object from login response
