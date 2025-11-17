@@ -19,7 +19,7 @@ const ActivityFeed = () => {
   const fetchActivityFeed = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/transactions/')
+      const response = await api.get('/api/transactions/')
       const activityData = response.data.data ? response.data.data.slice(0, 4) : [] // Get latest 4 transactions
 
       // Map activity types to icons and colors

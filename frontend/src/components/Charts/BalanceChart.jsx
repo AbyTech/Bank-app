@@ -27,7 +27,7 @@ const BalanceChart = () => {
     try {
       setLoading(true)
       // Fetch transactions to build balance history
-      const transactionsResponse = await api.get('/transactions/')
+      const transactionsResponse = await api.get('/api/transactions/')
       const transactions = transactionsResponse.data.data || []
 
       // Sort transactions by date
@@ -40,7 +40,7 @@ const BalanceChart = () => {
       const balanceHistory = []
 
       // Add current balance as starting point
-      const accountResponse = await api.get('/accounts/')
+      const accountResponse = await api.get('/api/accounts/')
       const currentBalance = accountResponse.data.data[0]?.balance || 0
 
       // Create monthly balance points

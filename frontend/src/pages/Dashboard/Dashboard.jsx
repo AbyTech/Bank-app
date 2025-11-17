@@ -38,21 +38,21 @@ const Dashboard = () => {
     try {
       setLoading(true)
       // Fetch account data
-      const accountResponse = await api.get('/accounts/')
+      const accountResponse = await api.get('/api/accounts/')
       const accountData = accountResponse.data.data[0] // Get first account
       setBalance(accountData.balance)
 
       // Fetch transactions
-      const transactionsResponse = await api.get('/transactions/')
+      const transactionsResponse = await api.get('/api/transactions/')
       const transactionsData = transactionsResponse.data.data || []
       setRecentTransactions(transactionsData.slice(0, 3))
 
       // Fetch cards count
-      const cardsResponse = await api.get('/cards/')
+      const cardsResponse = await api.get('/api/cards/')
       const activeCards = cardsResponse.data.data.filter(card => card.purchase_status === 'active').length
 
       // Fetch loans count
-      const loansResponse = await api.get('/loans/')
+      const loansResponse = await api.get('/api/loans/')
       const activeLoans = loansResponse.data.data.filter(loan => loan.status === 'active').length
 
       // Calculate stats
