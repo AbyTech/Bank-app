@@ -41,7 +41,7 @@ const Loans = () => {
   const fetchLoans = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/loans/')
+      const response = await api.get('/api/loans/')
       setLoans(response.data.data || [])
     } catch (error) {
       console.error('Failed to fetch loans:', error)
@@ -86,7 +86,7 @@ const Loans = () => {
       formData.append('identificationDocument', applicationForm.identificationDocument)
 
       // Submit loan application to backend
-      const response = await api.post('/loans/apply', formData)
+      const response = await api.post('/api/loans/apply', formData)
 
       // Close application modal and show success modal
       setShowApplication(false)
@@ -135,7 +135,7 @@ const Loans = () => {
     }
 
     try {
-      await api.post(`/loans/${selectedLoan._id}/payment`, {
+      await api.post(`/api/loans/${selectedLoan._id}/payment`, {
         paymentAmount: parseFloat(paymentAmount)
       })
 
