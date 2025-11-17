@@ -29,7 +29,7 @@ const QuickActions = () => {
 
   const checkActiveCard = async () => {
     try {
-      const response = await api.get('/cards/')
+      const response = await api.get('/api/cards/')
       const activeCards = response.data.data.filter(card => card.purchase_status === 'active')
       setHasActiveCard(activeCards.length > 0)
     } catch (error) {

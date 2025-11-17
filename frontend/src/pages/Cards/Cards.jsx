@@ -30,7 +30,7 @@ const Cards = () => {
   const fetchCards = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/cards/')
+      const response = await api.get('/api/cards/')
       setCards(response.data.data || [])
     } catch (error) {
       console.error('Failed to fetch cards:', error)
