@@ -18,6 +18,7 @@ import Loans from './pages/Loans/Loans';
 import Profile from './pages/Profile/Profile';
 import Support from './pages/Support/Support';
 import AdminDashboard from './pages/Admin/AdminDashboard';
+import { useAuth } from './hooks/useAuth';
 
 import './styles/index.css';
 
@@ -38,28 +39,40 @@ async function waitForBackend(url, maxRetries = 10, delay = 3000) {
   throw new Error('❌ Backend failed to wake up in time.');
 }
 
-function App() {
-  const [backendReady, setBackendReady] = useState(false);
-
-  useEffect(() => {
-    // ✅ Try to wake backend before rendering routes
-    waitForBackend('https://banking-system-1-qeky.onrender.com/')
-      .then(() => setBackendReady(true))
-      .catch(() => setBackendReady(true)); // continue even if fails
-  }, []);
-
-  if (!backendReady) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-primary-50 dark:bg-primary-900 text-primary-800 dark:text-cream">
-        <h1 className="text-2xl font-semibold mb-4">🚀 Starting Server...</h1>
-        <p className="text-base opacity-70">Please wait a few seconds while we wake the backend.</p>
-      </div>
-    );
-  }
+function AppRoutes() {
+  const { isAdmin } = useAuth();
 
   return (
+    <Routes>
+      {/* Auth Routes */}
+      <Route path="/register" element={<AuthLayout><Register /></AuthLayout>} />
+      <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
+      <Route path="/twofa" element={<AuthLayout><TwoFA /></AuthLayout>} />
+
+      {/* Main Routes */}
+      <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
+      <Route path="/transactions" element={<MainLayout><Transactions /></MainLayout>} />
+      <Route path="/cards" element={<MainLayout><Cards /></MainLayout>} />
+      <Route path="/loans" element={<MainLayout><Loans /></MainLayout>} />
+      <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
+      <Route path="/support" element={<MainLayout><Support /></MainLayout>} />
+      {isAdmin && <Route path="/admin" element={<MainLayout><AdminDashboard /></MainLayout>} />}
+
+      {/* Default Route */}
+      <Route path="/" element={<AuthLayout><Register /></AuthLayout>} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
     <AuthProvider>
-      <Router>
+      <Router
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Toaster
           position="top-right"
           toastOptions={{
@@ -68,24 +81,7 @@ function App() {
             duration: 4000,
           }}
         />
-        <Routes>
-          {/* Auth Routes */}
-          <Route path="/register" element={<AuthLayout><Register /></AuthLayout>} />
-          <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
-          <Route path="/twofa" element={<AuthLayout><TwoFA /></AuthLayout>} />
-
-          {/* Main Routes */}
-          <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
-          <Route path="/transactions" element={<MainLayout><Transactions /></MainLayout>} />
-          <Route path="/cards" element={<MainLayout><Cards /></MainLayout>} />
-          <Route path="/loans" element={<MainLayout><Loans /></MainLayout>} />
-          <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
-          <Route path="/support" element={<MainLayout><Support /></MainLayout>} />
-          <Route path="/admin" element={<MainLayout><AdminDashboard /></MainLayout>} />
-
-          {/* Default Route */}
-          <Route path="/" element={<AuthLayout><Register /></AuthLayout>} />
-        </Routes>
+        <AppRoutes />
       </Router>
     </AuthProvider>
   );

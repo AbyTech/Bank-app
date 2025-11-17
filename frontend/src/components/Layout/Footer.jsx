@@ -60,7 +60,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail size={16} />
-                <span>support@primewavebank.com</span>
+                <span>helpxprimewavebank@gmail.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin size={16} />

@@ -1,25 +1,11 @@
 import axios from 'axios';
 
-// ✅ Use your live Render backend URL from environment variable
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
-
-// 🟢 Wake up backend (non-blocking request)
-(async () => {
-  try {
-    // Hit the root URL (outside `/api/`) to wake Render up
-    await fetch(import.meta.env.VITE_API_URL, { method: 'GET' });
-    console.log('🌐 Backend wake-up ping sent');
-  } catch (err) {
-    console.log('⚠️ Backend wake-up failed (likely asleep):', err.message);
-  }
-})();
+// ✅ Use local backend URL for development
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 // ✅ Axios instance setup
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // ✅ Add auth token to every request

@@ -36,7 +36,7 @@ export default {
           DEFAULT: '#f5f3ef'
         },
         silver: {
-          DEFAULT: '#cfcfcf'
+          DEFAULT: '#a0a0a0'
         },
         accent: {
           teal: '#2ab7a9',

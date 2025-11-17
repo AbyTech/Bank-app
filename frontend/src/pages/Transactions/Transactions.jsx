@@ -22,8 +22,8 @@ const Transactions = () => {
   const fetchTransactions = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/bank/transactions/')
-      setTransactions(response.data)
+      const response = await api.get('/transactions/')
+      setTransactions(response.data.data || [])
     } catch (error) {
       console.error('Failed to fetch transactions:', error)
       setTransactions([])
@@ -156,7 +156,7 @@ const Transactions = () => {
                 <div className="space-y-4">
                   {filteredTransactions.map((transaction) => (
                     <motion.div
-                      key={transaction.id}
+                      key={transaction._id}
                       className="flex items-center justify-between p-4 rounded-lg bg-cream dark:bg-primary-700/50 hover:bg-silver/10 transition-colors"
                       whileHover={{ x: 4 }}
                     >
@@ -169,15 +169,15 @@ const Transactions = () => {
                             {transaction.description}
                           </p>
                           <p className="text-sm text-silver">
-                            {transaction.category} • {new Date(transaction.date).toLocaleDateString()}
+                            {transaction.type} • {new Date(transaction.createdAt).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className={`font-semibold ${
-                          transaction.amount > 0 ? 'text-success' : 'text-danger'
+                          transaction.type === 'deposit' ? 'text-success' : 'text-danger'
                         }`}>
-                          {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                          {transaction.type === 'deposit' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
                         </p>
                         <p className="text-xs text-silver capitalize">
                           {transaction.status}

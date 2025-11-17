@@ -12,9 +12,13 @@ const Cards = () => {
   const [cards, setCards] = useState([])
   const [loading, setLoading] = useState(true)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [showContactModal, setShowContactModal] = useState(false)
+  const [selectedCard, setSelectedCard] = useState(null)
   const [paymentForm, setPaymentForm] = useState({
     cardType: 'virtual',
-    amount: 25.00
+    amount: 5500.00
   })
 
   useEffect(() => {
@@ -26,8 +30,8 @@ const Cards = () => {
   const fetchCards = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/cards/cards/')
-      setCards(response.data)
+      const response = await api.get('/cards/')
+      setCards(response.data.data || [])
     } catch (error) {
       console.error('Failed to fetch cards:', error)
       setCards([])
@@ -52,7 +56,8 @@ const Cards = () => {
       // Refresh cards list
       fetchCards()
       setShowPaymentModal(false)
-      setPaymentForm({ cardType: 'virtual', amount: 25.00 })
+      setShowSuccessModal(true)
+      setPaymentForm({ cardType: 'virtual', amount: 5500.00 })
     } catch (error) {
       console.error('Failed to order card:', error)
     }
@@ -143,7 +148,7 @@ const Cards = () => {
                   <div className="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-4 text-white mb-4">
                     <div className="flex justify-between items-center mb-4">
                       <CreditCard size={24} />
-                      <span className="text-sm">{card.type.toUpperCase()}</span>
+                      <span className="text-sm">{(card.type || card.cardType || 'VIRTUAL').toUpperCase()}</span>
                     </div>
                     <p className="text-xl font-mono tracking-wider mb-2">
                       {card.cardNumber}
@@ -170,11 +175,27 @@ const Cards = () => {
                   </div>
 
                   <div className="mt-6 flex space-x-3">
-                    <Button variant="primary" size="sm" className="flex-1">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => {
+                        setSelectedCard(card)
+                        setShowDetailsModal(true)
+                      }}
+                    >
                       Details
                     </Button>
                     {card.purchaseStatus === 'pending_payment' && (
-                      <Button variant="danger" size="sm" className="flex-1">
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedCard(card)
+                          setShowContactModal(true)
+                        }}
+                      >
                         Pay Now
                       </Button>
                     )}
@@ -236,11 +257,15 @@ const Cards = () => {
               </label>
               <select
                 value={paymentForm.cardType}
-                onChange={(e) => setPaymentForm({ ...paymentForm, cardType: e.target.value })}
+                onChange={(e) => setPaymentForm({
+                  ...paymentForm,
+                  cardType: e.target.value,
+                  amount: e.target.value === 'virtual' ? 5500.00 : 8000.00
+                })}
                 className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
               >
-                <option value="virtual">Virtual Card - $25.00</option>
-                <option value="physical">Physical Card - $50.00</option>
+                <option value="virtual">Virtual Card - $5,500.00</option>
+                <option value="physical">Physical Card - $8,000.00</option>
               </select>
             </div>
 
@@ -279,10 +304,183 @@ const Cards = () => {
                 variant="primary"
                 className="flex-1"
               >
-                Pay ${(paymentForm.amount + 2.50).toFixed(2)}
+                Order Now
               </Button>
             </div>
           </form>
+        </Modal>
+
+        {/* Success Modal */}
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          title="Card Ordered Successfully"
+        >
+          <div className="text-center">
+            <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="text-success" size={32} />
+            </div>
+            <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream mb-2">
+              Card Ordered Successfully!
+            </h3>
+            <p className="text-silver mb-6">
+              Your {paymentForm.cardType} card has been ordered and is now pending. You can view the status in your cards list.
+            </p>
+            <Button
+              variant="primary"
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full"
+            >
+              Continue
+            </Button>
+          </div>
+        </Modal>
+
+        {/* Details Modal */}
+        <Modal
+          isOpen={showDetailsModal}
+          onClose={() => {
+            setShowDetailsModal(false)
+            setSelectedCard(null)
+          }}
+          title="Card Details"
+        >
+          {selectedCard && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-6 text-white">
+                <div className="flex justify-between items-center mb-4">
+                  <CreditCard size={32} />
+                  <span className="text-sm font-semibold">{(selectedCard.type || selectedCard.cardType || 'VIRTUAL').toUpperCase()}</span>
+                </div>
+                <p className="text-2xl font-mono tracking-wider mb-2">
+                  {selectedCard.cardNumber}
+                </p>
+                <div className="flex justify-between text-sm">
+                  <span>EXPIRES</span>
+                  <span>{selectedCard.expiryDate}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-primary dark:text-cream mb-2">Card Name</h4>
+                  <p className="text-silver">{selectedCard.cardName}</p>
+                </div>
+                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-primary dark:text-cream mb-2">CVV</h4>
+                  <p className="text-silver">{selectedCard.cvv}</p>
+                </div>
+                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-primary dark:text-cream mb-2">Status</h4>
+                  <p className={`capitalize ${selectedCard.status === 'active' ? 'text-success' : selectedCard.status === 'pending_payment' ? 'text-gold' : 'text-danger'}`}>
+                    {selectedCard.status.replace('_', ' ')}
+                  </p>
+                </div>
+                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
+                  <h4 className="font-semibold text-primary dark:text-cream mb-2">Type</h4>
+                  <p className="text-silver capitalize">{selectedCard.type || selectedCard.cardType}</p>
+                </div>
+              </div>
+
+              {selectedCard.purchaseStatus === 'pending_payment' && (
+                <div className="bg-gold/10 border border-gold/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-gold mb-2">Payment Information</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-silver">Purchase Amount:</span>
+                      <span className="text-primary dark:text-cream">${selectedCard.purchaseAmount?.toFixed(2) || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-silver">Payment Deadline:</span>
+                      <span className="text-gold font-semibold">
+                        {selectedCard.paymentDeadline ? new Date(selectedCard.paymentDeadline).toLocaleDateString() : 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-silver">Time Remaining:</span>
+                      <span className="text-gold font-semibold">
+                        {getTimeUntilDeadline(selectedCard.paymentDeadline)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex space-x-4">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setShowDetailsModal(false)
+                    setSelectedCard(null)
+                  }}
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+                {selectedCard.purchaseStatus === 'pending_payment' && (
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      setShowDetailsModal(false)
+                      setShowContactModal(true)
+                    }}
+                    className="flex-1"
+                  >
+                    Pay Now
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </Modal>
+
+        {/* Contact Modal */}
+        <Modal
+          isOpen={showContactModal}
+          onClose={() => {
+            setShowContactModal(false)
+            setSelectedCard(null)
+          }}
+          title="Contact Support for Payment"
+        >
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="text-gold" size={32} />
+            </div>
+            <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream mb-2">
+              Payment Processing
+            </h3>
+            <p className="text-silver mb-6">
+              To proceed with payment for your card, please contact our support team. They will guide you through the secure payment process.
+            </p>
+            <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4 mb-6">
+              <p className="text-sm text-primary dark:text-cream font-semibold mb-1">Support Email:</p>
+              <p className="text-gold font-mono">helpxprimewavebank@gmail.com</p>
+            </div>
+            <div className="flex space-x-4">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setShowContactModal(false)
+                  setSelectedCard(null)
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  window.location.href = 'mailto:helpxprimewavebank@gmail.com?subject=Card Payment Request&body=Please help me process payment for my card.'
+                  setShowContactModal(false)
+                  setSelectedCard(null)
+                }}
+                className="flex-1"
+              >
+                Contact Support
+              </Button>
+            </div>
+          </div>
         </Modal>
       </div>
     </div>

@@ -1,49 +1,29 @@
 services:
   - type: web
     name: banking-backend
-    runtime: docker
+    runtime: node
     plan: starter
     rootDir: backend
-    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
+    buildCommand: "npm install"
+    startCommand: "npm start"
     envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: app.core.settings
-      - key: SECRET_KEY
-        generateValue: true
-      - key: DEBUG
-        value: false
-      - key: DATABASE_URL
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
         fromDatabase:
           name: banking-db
           property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: banking-redis
-          property: connectionString
-      - key: RENDER_EXTERNAL_URL
-        fromService:
-          type: web
-          name: banking-backend
-          property: host
-      - key: ALLOWED_HOSTS
-        value: localhost,127.0.0.1,banking-system-1-qeky.onrender.com,banking-frontend.onrender.com
-      - key: CORS_ALLOWED_ORIGINS
-        value: http://localhost:3000,http://127.0.0.1:3000,https://banking-frontend.onrender.com,https://primewavebank.netlify.app
-
-  - type: static
-    name: banking-frontend
-    plan: starter
-    rootDir: frontend
-    buildCommand: "npm install && npm run build"
-    staticPublishPath: ./dist
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGIN
+        value: https://primewavebank.netlify.app
 
 databases:
   - name: banking-db
     databaseName: banking_system
     user: banking_user
-    plan: starter
-
-redis:
-  - name: banking-redis
     plan: starter

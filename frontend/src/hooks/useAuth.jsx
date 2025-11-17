@@ -39,6 +39,8 @@ export const AuthProvider = ({ children }) => {
     return response
   }
 
+  const isAdmin = user?.role === 'admin'
+
   const logout = () => {
     setUser(null)
     localStorage.removeItem('access_token')
@@ -46,12 +48,18 @@ export const AuthProvider = ({ children }) => {
     window.location.href = '/login'
   }
 
+  const setUserContext = (newUser) => {
+    setUser(newUser)
+  }
+
   const value = {
     user,
     login,
     logout,
     loading,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    isAdmin,
+    setUserContext
   }
 
   return (

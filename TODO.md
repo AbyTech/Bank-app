@@ -1,13 +1,15 @@
-# TODO: Fix CORS and Database Issues for Banking System
+# Profile Picture Feature TODO
 
-## Frontend Updates
-- [x] Update hardcoded backend URL in App.jsx from https://primewave.onrender.com to https://banking-system-1-qeky.onrender.com
-- [ ] Ensure VITE_API_URL environment variable is set to new backend URL in frontend deployment
+## Tasks
+- [x] Add profilePhoto field to User model
+- [x] Update profile controller to handle profile photo uploads
+- [x] Update profile routes to use multer middleware for photo uploads
+- [x] Update frontend Profile component to allow photo selection and display
+- [x] Ensure uploaded photos are served statically from backend
 
-## Backend Updates
-- [x] Update settings.py DATABASES configuration to properly use DATABASE_URL from Render
-- [ ] Verify render.yaml has correct ALLOWED_HOSTS and CORS_ALLOWED_ORIGINS
-
-## Verification
-- [ ] Redeploy frontend and backend after changes
-- [ ] Test registration and login functionality
+## Files to Edit
+- banking_system/backend/models/User.js
+- banking_system/backend/controllers/profile.js
+- banking_system/backend/routes/profile.js
+- banking_system/frontend/src/pages/Profile/Profile.jsx
+- banking_system/backend/server.js (already configured for static files)

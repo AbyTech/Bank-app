@@ -7,14 +7,15 @@ import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 
 const Profile = () => {
-  const { user, login } = useAuth()
+  const { user, login, setUserContext } = useAuth()
   const [profile, setProfile] = useState({
     name: '',
     email: '',
     country: '',
     currency: '',
     twoFAEnabled: false,
-    profile_photo: null
+    profile_photo: null,
+    phone: ''
   })
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -36,15 +37,16 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await api.get('/users/profile/')
-      const userData = response.data
+      const response = await api.get('/profile/')
+      const userData = response.data.data
       setProfile({
-        name: userData.name || '',
+        name: `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
         email: userData.email || '',
         country: userData.country || '',
-        currency: userData.currency_code || '',
-        twoFAEnabled: userData.two_fa_enabled || false,
-        profile_photo: userData.profile_photo || null
+        currency: userData.currency || 'USD',
+        twoFAEnabled: userData.twoFAEnabled || false,
+        profile_photo: userData.profilePhoto || null,
+        phone: userData.phone || ''
       })
     } catch (error) {
       console.error('Failed to fetch profile:', error)
@@ -57,24 +59,33 @@ const Profile = () => {
     setSaving(true)
     try {
       const formData = new FormData()
-      formData.append('name', profile.name)
+      formData.append('firstName', profile.name.split(' ')[0] || '')
+      formData.append('lastName', profile.name.split(' ').slice(1).join(' ') || '')
       formData.append('country', profile.country)
+      formData.append('phone', profile.phone)
       if (profile.profile_photo && typeof profile.profile_photo !== 'string') {
-        formData.append('profile_photo', profile.profile_photo)
+        formData.append('profilePhoto', profile.profile_photo)
       }
 
-      const response = await api.put('/users/profile/', formData, {
+      const response = await api.put('/profile/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
 
       // Update auth context with new user data
-      if (login) {
-        const updatedUser = { ...user, ...response.data }
-        // Re-login to update context (this might need adjustment based on your auth implementation)
-        login(updatedUser)
-      }
+      const updatedUser = { ...user, ...response.data.data }
+      setUserContext(updatedUser)
+
+      // Update local profile state with the response data
+      setProfile(prevProfile => ({
+        ...prevProfile,
+        name: `${response.data.data.firstName || ''} ${response.data.data.lastName || ''}`.trim(),
+        email: response.data.data.email || prevProfile.email,
+        country: response.data.data.country || prevProfile.country,
+        phone: response.data.data.phone || prevProfile.phone,
+        profile_photo: response.data.data.profilePhoto || prevProfile.profile_photo
+      }))
 
       setIsEditing(false)
     } catch (error) {
@@ -94,7 +105,8 @@ const Profile = () => {
   const getProfilePhotoUrl = () => {
     if (profile.profile_photo) {
       if (typeof profile.profile_photo === 'string') {
-        return profile.profile_photo
+        // Backend returns filename, construct full URL
+        return `${api.defaults.baseURL}/uploads/${profile.profile_photo}`
       } else {
         return URL.createObjectURL(profile.profile_photo)
       }

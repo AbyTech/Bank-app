@@ -1,22 +1,30 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { 
-  Menu, 
-  X, 
-  User, 
-  LogOut, 
-  Sun, 
+import {
+  Menu,
+  X,
+  User,
+  LogOut,
+  Sun,
   Moon,
   Bell,
-  Settings
+  Settings,
+  ArrowUpRight,
+  ArrowDownLeft
 } from 'lucide-react'
+import { useAuth } from '../../hooks/useAuth'
+import api from '../../services/api'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [loading, setLoading] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard' },
@@ -29,6 +37,49 @@ const Navbar = () => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
     document.documentElement.classList.toggle('dark')
+  }
+
+  const fetchNotifications = async () => {
+    if (!user) return
+    try {
+      setLoading(true)
+      const response = await api.get('/transactions/')
+      const transactions = response.data.data || []
+      // Get the 5 most recent transactions as notifications
+      const recentTransactions = transactions
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5)
+        .map(t => ({
+          id: t._id,
+          type: 'transaction',
+          title: t.description,
+          amount: t.amount,
+          transactionType: t.type,
+          date: t.createdAt,
+          read: false
+        }))
+      setNotifications(recentTransactions)
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications)
+    if (!showNotifications) {
+      fetchNotifications()
+    }
+  }
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'deposit':
+        return <ArrowDownLeft className="text-success" size={16} />
+      default:
+        return <ArrowUpRight className="text-danger" size={16} />
+    }
   }
 
   return (
@@ -77,10 +128,85 @@ const Navbar = () => {
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             
-            <button className="p-2 text-primary dark:text-cream hover:text-gold dark:hover:text-gold transition-colors relative">
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={handleNotificationClick}
+                className="p-2 text-primary dark:text-cream hover:text-gold dark:hover:text-gold transition-colors relative"
+              >
+                <Bell size={20} />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+              </button>
+
+              {/* Notifications Dropdown */}
+              {showNotifications && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="absolute right-0 mt-2 w-80 bg-white dark:bg-primary-800 rounded-xl shadow-lux-card border border-silver/30 dark:border-primary-700 z-50"
+                >
+                  <div className="p-4 border-b border-silver/30 dark:border-primary-700">
+                    <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
+                      Recent Transactions
+                    </h3>
+                  </div>
+
+                  <div className="max-h-96 overflow-y-auto">
+                    {loading ? (
+                      <div className="p-4 text-center text-silver">
+                        Loading notifications...
+                      </div>
+                    ) : notifications.length > 0 ? (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className="p-4 border-b border-silver/20 dark:border-primary-700/50 hover:bg-cream/50 dark:hover:bg-primary-700/50 transition-colors"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className={`p-2 rounded-full ${
+                              notification.transactionType === 'deposit'
+                                ? 'bg-success/20 text-success'
+                                : 'bg-danger/20 text-danger'
+                            }`}>
+                              {getNotificationIcon(notification.transactionType)}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-primary dark:text-cream">
+                                {notification.title}
+                              </p>
+                              <p className="text-xs text-silver">
+                                {new Date(notification.date).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className={`text-sm font-semibold ${
+                                notification.transactionType === 'deposit' ? 'text-success' : 'text-danger'
+                              }`}>
+                                {notification.transactionType === 'deposit' ? '+' : '-'}${Math.abs(notification.amount).toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-silver">
+                        No recent transactions
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4 border-t border-silver/30 dark:border-primary-700">
+                    <Link
+                      to="/transactions"
+                      className="block w-full text-center text-gold hover:text-gold-400 transition-colors font-medium"
+                      onClick={() => setShowNotifications(false)}
+                    >
+                      View All Transactions
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+            </div>
 
             <Link
               to="/profile"
@@ -139,14 +265,98 @@ const Navbar = () => {
                 >
                   {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                 </button>
-                // In Navbar.jsx, replace the user section with:
-            <Link
-                to="/profile"
-                className="flex items-center space-x-2 text-primary dark:text-cream hover:text-gold transition-colors"
+
+                <div className="relative">
+                  <button
+                    onClick={handleNotificationClick}
+                    className="p-2 text-primary dark:text-cream hover:text-gold dark:hover:text-gold transition-colors relative"
+                  >
+                    <Bell size={20} />
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-danger rounded-full"></span>
+                  </button>
+
+                  {/* Mobile Notifications Dropdown */}
+                  {showNotifications && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-primary-800 rounded-xl shadow-lux-card border border-silver/30 dark:border-primary-700 z-50"
+                    >
+                      <div className="p-4 border-b border-silver/30 dark:border-primary-700">
+                        <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
+                          Recent Transactions
+                        </h3>
+                      </div>
+
+                      <div className="max-h-96 overflow-y-auto">
+                        {loading ? (
+                          <div className="p-4 text-center text-silver">
+                            Loading notifications...
+                          </div>
+                        ) : notifications.length > 0 ? (
+                          notifications.map((notification) => (
+                            <div
+                              key={notification.id}
+                              className="p-4 border-b border-silver/20 dark:border-primary-700/50 hover:bg-cream/50 dark:hover:bg-primary-700/50 transition-colors"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <div className={`p-2 rounded-full ${
+                                  notification.transactionType === 'deposit'
+                                    ? 'bg-success/20 text-success'
+                                    : 'bg-danger/20 text-danger'
+                                }`}>
+                                  {getNotificationIcon(notification.transactionType)}
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium text-primary dark:text-cream">
+                                    {notification.title}
+                                  </p>
+                                  <p className="text-xs text-silver">
+                                    {new Date(notification.date).toLocaleDateString()}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className={`text-sm font-semibold ${
+                                    notification.transactionType === 'deposit' ? 'text-success' : 'text-danger'
+                                  }`}>
+                                    {notification.transactionType === 'deposit' ? '+' : '-'}${Math.abs(notification.amount).toFixed(2)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-4 text-center text-silver">
+                            No recent transactions
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-4 border-t border-silver/30 dark:border-primary-700">
+                        <Link
+                          to="/transactions"
+                          className="block w-full text-center text-gold hover:text-gold-400 transition-colors font-medium"
+                          onClick={() => {
+                            setShowNotifications(false)
+                            setIsOpen(false)
+                          }}
+                        >
+                          View All Transactions
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+
+                <Link
+                  to="/profile"
+                  className="flex items-center space-x-2 text-primary dark:text-cream hover:text-gold transition-colors"
+                  onClick={() => setIsOpen(false)}
                 >
-                <User size={20} />
-                <span>My Account</span>
-            </Link>
+                  <User size={20} />
+                  <span>My Account</span>
+                </Link>
                 <button
                   onClick={() => {
                     navigate('/login')

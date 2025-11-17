@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import {
   TrendingUp,
   TrendingDown,
@@ -8,7 +9,8 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   Plus,
-  Send
+  Send,
+  Shield
 } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
@@ -19,7 +21,7 @@ import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 
 const Dashboard = () => {
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const [balance, setBalance] = useState(user?.balance || 0)
   const [currency, setCurrency] = useState(user?.currency_code || 'USD')
   const [stats, setStats] = useState([])
@@ -36,36 +38,37 @@ const Dashboard = () => {
     try {
       setLoading(true)
       // Fetch account data
-      const accountResponse = await api.get('/bank/account/')
-      const accountData = accountResponse.data
-      setBalance(accountData.current_balance)
+      const accountResponse = await api.get('/accounts/')
+      const accountData = accountResponse.data.data[0] // Get first account
+      setBalance(accountData.balance)
 
       // Fetch transactions
-      const transactionsResponse = await api.get('/bank/transactions/')
-      setRecentTransactions(transactionsResponse.data.slice(0, 3))
+      const transactionsResponse = await api.get('/transactions/')
+      const transactionsData = transactionsResponse.data.data || []
+      setRecentTransactions(transactionsData.slice(0, 3))
 
       // Fetch cards count
-      const cardsResponse = await api.get('/cards/cards/')
-      const activeCards = cardsResponse.data.filter(card => card.purchase_status === 'active').length
+      const cardsResponse = await api.get('/cards/')
+      const activeCards = cardsResponse.data.data.filter(card => card.purchase_status === 'active').length
 
       // Fetch loans count
-      const loansResponse = await api.get('/loans/loans/')
-      const activeLoans = loansResponse.data.filter(loan => loan.status === 'active').length
+      const loansResponse = await api.get('/loans/')
+      const activeLoans = loansResponse.data.data.filter(loan => loan.status === 'active').length
 
       // Calculate stats
-      const monthlyIncome = transactionsResponse.data
-        .filter(t => t.transaction_type === 'deposit' && new Date(t.timestamp).getMonth() === new Date().getMonth())
+      const monthlyIncome = transactionsData
+        .filter(t => t.type === 'deposit' && new Date(t.createdAt).getMonth() === new Date().getMonth())
         .reduce((sum, t) => sum + parseFloat(t.amount), 0)
 
-      const monthlyExpenses = transactionsResponse.data
-        .filter(t => ['withdrawal', 'transfer', 'payment', 'card_purchase'].includes(t.transaction_type) &&
-                     new Date(t.timestamp).getMonth() === new Date().getMonth())
+      const monthlyExpenses = transactionsData
+        .filter(t => ['withdrawal', 'transfer', 'payment', 'card_purchase'].includes(t.type) &&
+                     new Date(t.createdAt).getMonth() === new Date().getMonth())
         .reduce((sum, t) => sum + parseFloat(t.amount), 0)
 
       setStats([
         {
           title: 'Total Balance',
-          value: `$${accountData.current_balance.toLocaleString()}`,
+          value: `$${accountData.balance.toLocaleString()}`,
           change: '+12.5%',
           trend: 'up',
           icon: DollarSign,
@@ -149,12 +152,25 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream mb-2">
-            Welcome back, {user?.first_name || 'User'}! 👋
-          </h1>
-          <p className="text-silver dark:text-silver">
-            Here's your financial overview for today
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream mb-2">
+                Welcome back, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.firstName || 'User'}! 👋
+              </h1>
+              <p className="text-silver dark:text-silver">
+                Here's your financial overview for today
+              </p>
+            </div>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="flex items-center space-x-2 bg-gradient-to-r from-gold to-gold-400 text-primary px-4 py-2 rounded-xl font-semibold hover:from-gold-400 hover:to-gold-500 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <Shield size={20} />
+                <span>Admin Panel</span>
+              </Link>
+            )}
+          </div>
         </motion.div>
 
         {/* Stats Grid */}
@@ -232,17 +248,17 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {recentTransactions.map((transaction) => (
                   <motion.div
-                    key={transaction.id}
+                    key={transaction._id}
                     className="flex items-center justify-between p-4 rounded-lg bg-cream dark:bg-primary-700/50 hover:bg-silver/10 transition-colors"
                     whileHover={{ x: 4 }}
                   >
                     <div className="flex items-center space-x-4">
                       <div className={`p-2 rounded-full ${
-                        transaction.amount > 0 
-                          ? 'bg-success/20 text-success' 
+                        transaction.type === 'deposit'
+                          ? 'bg-success/20 text-success'
                           : 'bg-danger/20 text-danger'
                       }`}>
-                        {transaction.amount > 0 ? (
+                        {transaction.type === 'deposit' ? (
                           <ArrowDownLeft size={20} />
                         ) : (
                           <ArrowUpRight size={20} />
@@ -253,15 +269,15 @@ const Dashboard = () => {
                           {transaction.description}
                         </p>
                         <p className="text-sm text-silver">
-                          {new Date(transaction.timestamp).toLocaleDateString()}
+                          {new Date(transaction.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className={`font-semibold ${
-                        transaction.amount > 0 ? 'text-success' : 'text-danger'
+                        transaction.type === 'deposit' ? 'text-success' : 'text-danger'
                       }`}>
-                        {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                        {transaction.type === 'deposit' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
                       </p>
                       <p className="text-xs text-silver capitalize">
                         {transaction.status}

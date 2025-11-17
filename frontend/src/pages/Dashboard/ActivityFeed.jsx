@@ -19,8 +19,8 @@ const ActivityFeed = () => {
   const fetchActivityFeed = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/users/activity-feed/')
-      const activityData = response.data.slice(0, 4) // Get latest 4 activities
+      const response = await api.get('/transactions/')
+      const activityData = response.data.data ? response.data.data.slice(0, 4) : [] // Get latest 4 transactions
 
       // Map activity types to icons and colors
       const iconMap = {
@@ -40,12 +40,12 @@ const ActivityFeed = () => {
       }
 
       const formattedActivities = activityData.map(activity => ({
-        id: activity.id,
-        type: activity.action_type,
+        id: activity._id,
+        type: activity.transaction_type,
         description: getActivityDescription(activity),
         timestamp: activity.timestamp,
-        icon: iconMap[activity.action_type] || User,
-        color: colorMap[activity.action_type] || 'text-gray-500'
+        icon: iconMap[activity.transaction_type] || User,
+        color: colorMap[activity.transaction_type] || 'text-gray-500'
       }))
 
       setActivities(formattedActivities)
@@ -64,20 +64,21 @@ const ActivityFeed = () => {
   }
 
   const getActivityDescription = (activity) => {
-    const details = activity.details || {}
-    switch (activity.action_type) {
-      case 'login':
-        return 'You logged in from new device'
-      case 'transaction':
-        return `${details.type || 'Transaction'} of $${details.amount || '0.00'} ${details.status === 'completed' ? 'completed' : 'pending'}`
+    switch (activity.transaction_type) {
+      case 'deposit':
+        return `Deposit of $${activity.amount} completed`
+      case 'withdrawal':
+        return `Withdrawal of $${Math.abs(activity.amount)} completed`
+      case 'transfer':
+        return `Transfer of $${Math.abs(activity.amount)} completed`
+      case 'payment':
+        return `Payment of $${Math.abs(activity.amount)} completed`
       case 'card_purchase':
-        return 'Card purchase completed'
-      case 'loan_application':
-        return 'Loan application submitted'
-      case 'profile_update':
-        return 'Profile information updated'
+        return `Card purchase of $${Math.abs(activity.amount)} completed`
+      case 'loan_deposit':
+        return `Loan deposit of $${activity.amount} completed`
       default:
-        return 'Activity recorded'
+        return `${activity.description || 'Transaction'} completed`
     }
   }
 
