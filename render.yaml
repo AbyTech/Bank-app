@@ -26,4 +26,4 @@ databases:
   - name: banking-db
     databaseName: banking_system
     user: banking_user
-    plan: starter
+    plan: free
