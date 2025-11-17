@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   const toggleUserStatus = async (userId, currentRole) => {
     try {
       const newRole = currentRole === 'admin' ? 'user' : 'admin'
-      await api.put(`/users/${userId}`, { role: newRole })
+      await api.put(`/api/users/${userId}`, { role: newRole })
       fetchUsers() // Refresh the list
     } catch (error) {
       console.error('Failed to update user:', error)
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
     setSelectedUser(user)
     setDetailsLoading(true)
     try {
-      const response = await api.get(`/users/${user._id}/details`)
+      const response = await api.get(`/api/users/${user._id}/details`)
       setUserDetails(response.data.data)
     } catch (error) {
       console.error('Failed to fetch user details:', error)
