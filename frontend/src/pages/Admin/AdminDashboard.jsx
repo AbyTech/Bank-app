@@ -24,7 +24,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get('/users/')
+      const response = await api.get('/api/users/')
       const userData = response.data.data || []
       setUsers(userData)
 
