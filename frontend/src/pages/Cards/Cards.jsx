@@ -152,7 +152,7 @@ const Cards = () => {
                     {/* City Background Image */}
                     <div className="absolute inset-0">
                       <img
-                        src="/src/assets/city-background.jpg"
+                        src="/assets/city-background.jpg"
                         alt="City skyline"
                         className="w-full h-full object-cover rounded-xl"
                       />
