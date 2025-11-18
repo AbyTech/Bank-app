@@ -40,8 +40,20 @@ const CardSchema = new mongoose.Schema({
   },
   purchaseStatus: {
     type: String,
-    enum: ['completed', 'pending_payment'],
+    enum: ['completed', 'pending_payment', 'pending_approval', 'approved', 'declined'],
     default: 'completed',
+  },
+  approvalStatus: {
+    type: String,
+    enum: ['pending', 'approved', 'declined'],
+    default: 'approved',
+  },
+  approvalDate: {
+    type: Date,
+  },
+  approvedBy: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
   },
   purchaseAmount: {
     type: Number,

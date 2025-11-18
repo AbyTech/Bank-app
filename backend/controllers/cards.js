@@ -46,7 +46,8 @@ exports.orderCard = async (req, res, next) => {
       cvv,
       cardName: `${card_type.charAt(0).toUpperCase() + card_type.slice(1)} Card`,
       status: 'pending_payment',
-      purchaseStatus: 'pending_payment',
+      purchaseStatus: 'pending_approval',
+      approvalStatus: 'pending',
       purchaseAmount: amount,
       paymentDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     });
@@ -94,5 +95,63 @@ exports.createCard = async (req, res, next) => {
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Approve or decline a card
+// @route   PUT /api/cards/:id/approve
+// @access  Private (Admin only)
+exports.approveCard = async (req, res, next) => {
+  try {
+    const { action } = req.body; // 'approve' or 'decline'
+
+    const card = await Card.findById(req.params.id);
+    if (!card) {
+      return res.status(404).json({ success: false, error: 'Card not found' });
+    }
+
+    if (action === 'approve') {
+      card.approvalStatus = 'approved';
+      card.purchaseStatus = 'approved';
+      card.status = 'active';
+      card.approvalDate = new Date();
+      card.approvedBy = req.user.id;
+    } else if (action === 'decline') {
+      card.approvalStatus = 'declined';
+      card.purchaseStatus = 'declined';
+      card.status = 'blocked';
+      card.approvalDate = new Date();
+      card.approvedBy = req.user.id;
+    } else {
+      return res.status(400).json({ success: false, error: 'Invalid action' });
+    }
+
+    await card.save();
+
+    res.status(200).json({
+      success: true,
+      data: card,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Get all cards for admin review
+// @route   GET /api/cards/admin/pending
+// @access  Private (Admin only)
+exports.getPendingCards = async (req, res, next) => {
+  try {
+    const cards = await Card.find({
+      approvalStatus: 'pending'
+    }).populate('user', 'firstName lastName email').populate('account', 'accountNumber accountType');
+
+    res.status(200).json({
+      success: true,
+      count: cards.length,
+      data: cards,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server Error' });
   }
 };
