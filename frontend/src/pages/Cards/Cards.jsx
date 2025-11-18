@@ -169,11 +169,10 @@ const Cards = () => {
                       </p>
                     </div>
 
-                    {/* CVV and Card Number */}
+                    {/* CVV only */}
                     <div className="mb-2">
-                      <div className="flex justify-between items-center text-sm">
+                      <div className="flex justify-start items-center text-sm">
                         <span>CVV {card.cvv}</span>
-                        <span>{card.cardNumber?.slice(-4) || '****'}</span>
                       </div>
                     </div>
 
@@ -203,10 +202,6 @@ const Cards = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-silver">CVV</span>
-                      <span className="text-primary dark:text-cream">{card.cvv}</span>
-                    </div>
                     {card.purchaseStatus === 'pending_payment' && (
                       <div className="flex justify-between">
                         <span className="text-silver">Payment Due</span>
