@@ -379,7 +379,19 @@ const AdminDashboard = () => {
                             <div key={account._id} className="p-4 bg-cream dark:bg-primary-700/50 rounded-lg">
                               <div className="flex justify-between items-center mb-2">
                                 <span className="font-medium text-primary dark:text-cream">{account.accountType} Account</span>
-                                <span className="text-sm text-silver">{account.accountNumber}</span>
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-sm text-silver">{account.accountNumber}</span>
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(account.accountNumber)
+                                      // You could add a toast notification here
+                                    }}
+                                    className="text-gold hover:text-gold-400 transition-colors text-sm underline"
+                                    title="Copy account number"
+                                  >
+                                    Copy
+                                  </button>
+                                </div>
                               </div>
                               <p className="text-2xl font-bold text-success">
                                 {formatAmount(account.balance, getCurrencyByCountry(userDetails.user.country))}
