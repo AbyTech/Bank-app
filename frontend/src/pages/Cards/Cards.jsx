@@ -127,12 +127,7 @@ const Cards = () => {
             >
               <Card hover>
                 <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-semibold text-primary dark:text-cream">
-                        {card.cardName}
-                      </h3>
-                    </div>
+                  <div className="flex justify-end items-start mb-4">
                     <div className="flex items-center space-x-1">
                       {getStatusIcon(card.status)}
                       <span className={`text-sm capitalize ${
