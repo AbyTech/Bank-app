@@ -149,10 +149,15 @@ const Cards = () => {
                   </div>
 
                   <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 rounded-xl p-6 text-white mb-4 shadow-lg overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16"></div>
-                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full -ml-12 -mb-12"></div>
+                    {/* City Background Image */}
+                    <div className="absolute inset-0">
+                      <img
+                        src="/src/assets/city-background.jpg"
+                        alt="City skyline"
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                      {/* Dark overlay for text readability */}
+                      <div className="absolute inset-0 bg-black/40 rounded-xl"></div>
                     </div>
 
                     {/* Company Logo */}
