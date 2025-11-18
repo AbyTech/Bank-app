@@ -132,9 +132,6 @@ const Cards = () => {
                       <h3 className="font-semibold text-primary dark:text-cream">
                         {card.cardName}
                       </h3>
-                      <p className="text-silver text-sm capitalize">
-                        {card.type} Card
-                      </p>
                     </div>
                     <div className="flex items-center space-x-1">
                       {getStatusIcon(card.status)}
