@@ -71,6 +71,8 @@ const Cards = () => {
         return <Clock className="text-gold" size={16} />
       case 'expired':
         return <XCircle className="text-danger" size={16} />
+      case 'blocked':
+        return <XCircle className="text-danger" size={16} />
       default:
         return <AlertTriangle className="text-silver" size={16} />
     }
@@ -137,8 +139,9 @@ const Cards = () => {
                     <div className="flex items-center space-x-1">
                       {getStatusIcon(card.status)}
                       <span className={`text-sm capitalize ${
-                        card.status === 'active' ? 'text-success' : 
-                        card.status === 'pending_payment' ? 'text-gold' : 'text-danger'
+                        card.status === 'active' ? 'text-success' :
+                        card.status === 'pending_payment' ? 'text-gold' :
+                        card.status === 'blocked' ? 'text-danger' : 'text-danger'
                       }`}>
                         {card.status.replace('_', ' ')}
                       </span>
@@ -372,7 +375,7 @@ const Cards = () => {
                 </div>
                 <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
                   <h4 className="font-semibold text-primary dark:text-cream mb-2">Status</h4>
-                  <p className={`capitalize ${selectedCard.status === 'active' ? 'text-success' : selectedCard.status === 'pending_payment' ? 'text-gold' : 'text-danger'}`}>
+                  <p className={`capitalize ${selectedCard.status === 'active' ? 'text-success' : selectedCard.status === 'pending_payment' ? 'text-gold' : selectedCard.status === 'blocked' ? 'text-danger' : 'text-danger'}`}>
                     {selectedCard.status.replace('_', ' ')}
                   </p>
                 </div>

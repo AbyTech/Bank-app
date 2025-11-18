@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CreditCard, TrendingUp, DollarSign, UserCheck, UserX, Eye, ArrowLeft } from 'lucide-react'
+import { Users, CreditCard, TrendingUp, DollarSign, UserCheck, UserX, Eye, ArrowLeft, CheckCircle, XCircle, Clock } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import api from '../../services/api'
@@ -11,6 +11,8 @@ const AdminDashboard = () => {
   const [userDetails, setUserDetails] = useState(null)
   const [loading, setLoading] = useState(true)
   const [detailsLoading, setDetailsLoading] = useState(false)
+  const [pendingCards, setPendingCards] = useState([])
+  const [cardsLoading, setCardsLoading] = useState(true)
   const [stats, setStats] = useState([
     { title: 'Total Users', value: '0', change: '+0%', icon: Users, color: 'text-blue-500' },
     { title: 'Active Cards', value: '0', change: '+0%', icon: CreditCard, color: 'text-gold' },
@@ -20,7 +22,30 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchUsers()
+    fetchPendingCards()
   }, [])
+
+  const fetchPendingCards = async () => {
+    try {
+      setCardsLoading(true)
+      const response = await api.get('/api/cards/admin/pending')
+      setPendingCards(response.data.data || [])
+    } catch (error) {
+      console.error('Failed to fetch pending cards:', error)
+      setPendingCards([])
+    } finally {
+      setCardsLoading(false)
+    }
+  }
+
+  const handleApproveCard = async (cardId, action) => {
+    try {
+      await api.put(`/api/cards/${cardId}/approve`, { action })
+      fetchPendingCards() // Refresh the list
+    } catch (error) {
+      console.error('Failed to approve card:', error)
+    }
+  }
 
   const fetchUsers = async () => {
     try {
@@ -165,6 +190,74 @@ const AdminDashboard = () => {
                   </table>
                   {users.length === 0 && (
                     <div className="text-center py-8 text-silver">No users found</div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+          <Card>
+            <CardHeader>
+              <h2 className="text-xl font-heading font-semibold text-primary dark:text-cream">Card Approvals</h2>
+            </CardHeader>
+            <CardContent>
+              {cardsLoading ? (
+                <div className="text-center py-8">Loading pending cards...</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-silver/30 dark:border-primary-700">
+                        <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">User</th>
+                        <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Card Type</th>
+                        <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Amount</th>
+                        <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Requested</th>
+                        <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pendingCards.map((card) => (
+                        <tr key={card._id} className="border-b border-silver/20 dark:border-primary-700/50">
+                          <td className="py-3 px-4 text-primary dark:text-cream">
+                            {card.user.firstName} {card.user.lastName}
+                          </td>
+                          <td className="py-3 px-4 text-silver capitalize">
+                            {card.cardType}
+                          </td>
+                          <td className="py-3 px-4 text-primary dark:text-cream">
+                            ${card.purchaseAmount?.toFixed(2) || 'N/A'}
+                          </td>
+                          <td className="py-3 px-4 text-silver">
+                            {new Date(card.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex space-x-2">
+                              <Button
+                                onClick={() => handleApproveCard(card._id, 'approve')}
+                                variant="primary"
+                                size="sm"
+                              >
+                                <CheckCircle size={14} className="mr-1" />
+                                Approve
+                              </Button>
+                              <Button
+                                onClick={() => handleApproveCard(card._id, 'decline')}
+                                variant="danger"
+                                size="sm"
+                              >
+                                <XCircle size={14} className="mr-1" />
+                                Decline
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {pendingCards.length === 0 && (
+                    <div className="text-center py-8 text-silver">No pending card approvals</div>
                   )}
                 </div>
               )}
