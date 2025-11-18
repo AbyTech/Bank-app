@@ -18,6 +18,13 @@ const Transactions = () => {
   useEffect(() => {
     if (user) {
       fetchTransactions()
+
+      // Check if we should open transfer modal from quick actions
+      const shouldOpenTransfer = sessionStorage.getItem('openTransferModal')
+      if (shouldOpenTransfer === 'true') {
+        sessionStorage.removeItem('openTransferModal')
+        setShowTransferForm(true)
+      }
     }
   }, [user])
 

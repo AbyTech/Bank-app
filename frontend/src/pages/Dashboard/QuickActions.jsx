@@ -56,7 +56,11 @@ const QuickActions = () => {
       label: 'Send Money',
       description: 'Transfer to anyone',
       color: 'from-blue-500 to-cyan-500',
-      onClick: () => window.location.href = '/transactions'
+      onClick: () => {
+        // Store transfer intent in sessionStorage to open modal on transactions page
+        sessionStorage.setItem('openTransferModal', 'true')
+        window.location.href = '/transactions'
+      }
     },
     {
       icon: Plus,

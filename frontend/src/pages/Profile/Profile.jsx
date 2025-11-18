@@ -15,7 +15,8 @@ const Profile = () => {
     currency: '',
     twoFAEnabled: false,
     profile_photo: null,
-    phone: ''
+    phone: '',
+    accountNumber: ''
   })
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -39,6 +40,18 @@ const Profile = () => {
     try {
       const response = await api.get('/api/profile/')
       const userData = response.data.data
+
+      // Fetch account information to get account number
+      let accountNumber = ''
+      try {
+        const accountResponse = await api.get('/api/accounts/')
+        if (accountResponse.data.data && accountResponse.data.data.length > 0) {
+          accountNumber = accountResponse.data.data[0].accountNumber
+        }
+      } catch (accountError) {
+        console.error('Failed to fetch account:', accountError)
+      }
+
       setProfile({
         name: `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
         email: userData.email || '',
@@ -46,7 +59,8 @@ const Profile = () => {
         currency: userData.currency || 'USD',
         twoFAEnabled: userData.twoFAEnabled || false,
         profile_photo: userData.profilePhoto || null,
-        phone: userData.phone || ''
+        phone: userData.phone || '',
+        accountNumber: accountNumber
       })
     } catch (error) {
       console.error('Failed to fetch profile:', error)
@@ -178,6 +192,10 @@ const Profile = () => {
                 <p className="text-silver">{profile.email}</p>
                 
                 <div className="mt-6 space-y-3 text-left">
+                  <div className="flex items-center space-x-3 text-silver">
+                    <User size={16} />
+                    <span>Account: {profile.accountNumber || 'Not available'}</span>
+                  </div>
                   <div className="flex items-center space-x-3 text-silver">
                     <MapPin size={16} />
                     <span>{countries.find(c => c.code === profile.country)?.name}</span>
