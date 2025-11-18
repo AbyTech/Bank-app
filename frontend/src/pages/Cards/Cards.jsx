@@ -170,27 +170,16 @@ const Cards = () => {
                     </div>
 
                     {/* Card Details */}
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <p className="text-xs opacity-75 mb-1">VALID THRU</p>
-                        <p className="text-sm font-medium">{card.expiryDate}</p>
-                      </div>
+                    <div className="flex justify-start items-end">
                       <div className="text-left">
                         <p className="text-xs opacity-75 mb-1">CARD TYPE</p>
                         <p className="text-sm font-medium">{(card.type || card.cardType || 'VIRTUAL').toUpperCase()}</p>
                       </div>
                     </div>
 
-                    {/* VISA Logo */}
+                    {/* VISA Text */}
                     <div className="absolute bottom-4 right-4">
-                      <div className="flex items-center">
-                        <svg width="60" height="20" viewBox="0 0 60 20" className="text-white">
-                          <path d="M15.5 3.5L12 10.5L15.5 17.5H12.5L9.5 11.5L6.5 17.5H3.5L7 10.5L3.5 3.5H6.5L9.5 9.5L12.5 3.5H15.5Z" fill="currentColor"/>
-                          <path d="M25 4H21.5C20.7 4 20 4.7 20 5.5V15.5C20 16.3 20.7 17 21.5 17H25C28.3 17 31 14.3 31 11C31 7.7 28.3 4 25 4ZM25.5 13.5H23V8.5H25.5C26.3 8.5 27 9.2 27 10C27 10.8 26.3 13.5 25.5 13.5Z" fill="currentColor"/>
-                          <path d="M35 4H38.5C39.3 4 40 4.7 40 5.5V15.5C40 16.3 39.3 17 38.5 17H35C31.7 17 29 14.3 29 11C29 7.7 31.7 4 35 4ZM34.5 13.5H37V8.5H34.5C33.7 8.5 33 9.2 33 10C33 10.8 33.7 13.5 34.5 13.5Z" fill="currentColor"/>
-                          <path d="M45 4H41.5C40.7 4 40 4.7 40 5.5V15.5C40 16.3 40.7 17 41.5 17H45C48.3 17 51 14.3 51 11C51 7.7 48.3 4 45 4ZM45.5 13.5H43V8.5H45.5C46.3 8.5 47 9.2 47 10C47 10.8 46.3 13.5 45.5 13.5Z" fill="currentColor"/>
-                        </svg>
-                      </div>
+                      <span className="text-white font-bold text-lg tracking-wider">VISA</span>
                     </div>
 
                     {/* View/Hide Toggle */}
