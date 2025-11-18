@@ -346,16 +346,21 @@ const Profile = () => {
                       <span>Account: {profile.accountNumber || 'Not available'}</span>
                     </div>
                     {profile.accountNumber && (
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(profile.accountNumber)
-                          // You could add a toast notification here
-                        }}
-                        className="text-gold hover:text-gold-400 transition-colors text-sm underline"
-                        title="Copy account number"
-                      >
-                        Copy
-                      </button>
+                                  <button
+                                    onClick={async () => {
+                                      try {
+                                        await navigator.clipboard.writeText(profile.accountNumber)
+                                        alert('Account number copied successfully!')
+                                      } catch (error) {
+                                        console.error('Failed to copy account number:', error)
+                                        alert('Failed to copy account number. Please try again.')
+                                      }
+                                    }}
+                                    className="text-gold hover:text-gold-400 transition-colors text-sm underline"
+                                    title="Copy account number"
+                                  >
+                                    Copy
+                                  </button>
                     )}
                   </div>
                   <div className="flex items-center space-x-3 text-silver">

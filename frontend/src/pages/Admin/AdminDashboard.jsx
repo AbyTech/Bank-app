@@ -382,9 +382,14 @@ const AdminDashboard = () => {
                                 <div className="flex items-center space-x-2">
                                   <span className="text-sm text-silver">{account.accountNumber}</span>
                                   <button
-                                    onClick={() => {
-                                      navigator.clipboard.writeText(account.accountNumber)
-                                      // You could add a toast notification here
+                                    onClick={async () => {
+                                      try {
+                                        await navigator.clipboard.writeText(account.accountNumber)
+                                        alert('Account number copied successfully!')
+                                      } catch (error) {
+                                        console.error('Failed to copy account number:', error)
+                                        alert('Failed to copy account number. Please try again.')
+                                      }
                                     }}
                                     className="text-gold hover:text-gold-400 transition-colors text-sm underline"
                                     title="Copy account number"
