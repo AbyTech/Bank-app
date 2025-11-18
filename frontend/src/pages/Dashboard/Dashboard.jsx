@@ -10,7 +10,9 @@ import {
   ArrowDownLeft,
   Plus,
   Send,
-  Shield
+  Shield,
+  AlertTriangle,
+  X
 } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
@@ -27,10 +29,15 @@ const Dashboard = () => {
   const [stats, setStats] = useState([])
   const [recentTransactions, setRecentTransactions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showProfileNotification, setShowProfileNotification] = useState(false)
 
   useEffect(() => {
     if (user) {
       fetchDashboardData()
+      // Check if profile is completed
+      if (!user.profileCompleted) {
+        setShowProfileNotification(true)
+      }
     }
   }, [user])
 
@@ -210,6 +217,42 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Profile Completion Notification */}
+        {showProfileNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-3">
+                <AlertTriangle className="text-amber-500 mt-0.5" size={20} />
+                <div>
+                  <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                    Complete Your Profile
+                  </h3>
+                  <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                    Please update your profile information to access all features. Add your name, country, and phone number.
+                  </p>
+                  <Link
+                    to="/profile"
+                    className="inline-flex items-center mt-2 text-sm font-medium text-amber-800 dark:text-amber-200 hover:text-amber-900 dark:hover:text-amber-100"
+                  >
+                    Update Profile →
+                  </Link>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowProfileNotification(false)}
+                className="text-amber-500 hover:text-amber-600 dark:hover:text-amber-400"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

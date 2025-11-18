@@ -4,6 +4,7 @@ import { Users, CreditCard, TrendingUp, DollarSign, UserCheck, UserX, Eye, Arrow
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import api from '../../services/api'
+import { getCurrencyByCountry, formatAmount } from '../../services/currency'
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([])
@@ -380,7 +381,9 @@ const AdminDashboard = () => {
                                 <span className="font-medium text-primary dark:text-cream">{account.accountType} Account</span>
                                 <span className="text-sm text-silver">{account.accountNumber}</span>
                               </div>
-                              <p className="text-2xl font-bold text-success">${account.balance.toFixed(2)}</p>
+                              <p className="text-2xl font-bold text-success">
+                                {formatAmount(account.balance, getCurrencyByCountry(userDetails.user.country))}
+                              </p>
                             </div>
                           ))}
                         </div>

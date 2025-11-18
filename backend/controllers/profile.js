@@ -62,6 +62,17 @@ exports.updateProfile = async (req, res, next) => {
       updates.profilePhoto = req.file.filename;
     }
 
+    // Check if profile is completed (has required fields)
+    const currentUser = await User.findById(req.user.id);
+    const hasFirstName = updates.firstName || currentUser.firstName;
+    const hasLastName = updates.lastName || currentUser.lastName;
+    const hasCountry = updates.country || currentUser.country;
+    const hasPhone = updates.phone || currentUser.phone;
+
+    if (hasFirstName && hasLastName && hasCountry && hasPhone) {
+      updates.profileCompleted = true;
+    }
+
     const user = await User.findByIdAndUpdate(req.user.id, updates, {
       new: true,
       runValidators: true,

@@ -7,11 +7,12 @@ export const currencyFormatter = (amount, currency = 'USD') => {
 
 export const currencySymbols = {
   USD: '$',
+  CAD: 'C$',
   GBP: '£',
+  AUD: 'A$',
   EUR: '€',
   NGN: '₦',
-  GHS: 'GH₵',
-  KES: 'KSh',
+  GHS: '₵',
   ZAR: 'R'
 }
 
@@ -25,4 +26,19 @@ export const formatAmount = (amount, currency = 'USD') => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })}`
+}
+
+export const getCurrencyByCountry = (countryCode) => {
+  const currencies = {
+    US: 'USD',
+    CA: 'CAD',
+    GB: 'GBP',
+    AU: 'AUD',
+    DE: 'EUR',
+    FR: 'EUR',
+    NG: 'NGN',
+    GH: 'GHS',
+    ZA: 'ZAR'
+  }
+  return currencies[countryCode] || 'USD'
 }
