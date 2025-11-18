@@ -148,18 +148,56 @@ const Cards = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-4 text-white mb-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <CreditCard size={24} />
-                      <span className="text-sm">{(card.type || card.cardType || 'VIRTUAL').toUpperCase()}</span>
+                  <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 rounded-xl p-6 text-white mb-4 shadow-lg overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16"></div>
+                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full -ml-12 -mb-12"></div>
                     </div>
-                    <p className="text-xl font-mono tracking-wider mb-2">
-                      {card.cardNumber}
-                    </p>
-                    <div className="flex justify-between text-sm">
-                      <span>EXPIRES</span>
-                      <span>{card.expiryDate}</span>
+
+                    {/* Company Logo */}
+                    <div className="absolute top-4 right-4">
+                      <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <span className="text-blue-600 font-bold text-sm">PW</span>
+                      </div>
                     </div>
+
+                    {/* Card Number */}
+                    <div className="mt-8 mb-6">
+                      <p className="text-lg font-mono tracking-widest">
+                        {card.showFullNumber ? card.cardNumber : `**** **** **** ${card.cardNumber?.slice(-4) || '****'}`}
+                      </p>
+                    </div>
+
+                    {/* Card Details */}
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <p className="text-xs opacity-75 mb-1">VALID THRU</p>
+                        <p className="text-sm font-medium">{card.expiryDate}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs opacity-75 mb-1">CARD TYPE</p>
+                        <p className="text-sm font-medium">{(card.type || card.cardType || 'VIRTUAL').toUpperCase()}</p>
+                      </div>
+                    </div>
+
+                    {/* VISA Logo */}
+                    <div className="absolute bottom-4 right-4">
+                      <span className="text-white font-bold text-lg tracking-wider">VISA</span>
+                    </div>
+
+                    {/* View/Hide Toggle */}
+                    <button
+                      onClick={() => {
+                        const updatedCards = cards.map(c =>
+                          c.id === card.id ? { ...c, showFullNumber: !c.showFullNumber } : c
+                        )
+                        setCards(updatedCards)
+                      }}
+                      className="absolute bottom-4 left-4 text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-white hover:bg-white/30 transition-colors"
+                    >
+                      {card.showFullNumber ? 'Hide' : 'View'}
+                    </button>
                   </div>
 
                   <div className="space-y-3">

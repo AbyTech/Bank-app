@@ -24,6 +24,13 @@ const ActivityFeed = () => {
 
       // Map activity types to icons and colors
       const iconMap = {
+        deposit: TrendingUp,
+        withdrawal: TrendingUp,
+        transfer: TrendingUp,
+        payment: CreditCard,
+        card_purchase: CreditCard,
+        loan_deposit: Shield,
+        fee: TrendingUp,
         login: User,
         transaction: TrendingUp,
         card_purchase: CreditCard,
@@ -32,20 +39,26 @@ const ActivityFeed = () => {
       }
 
       const colorMap = {
+        deposit: 'text-success',
+        withdrawal: 'text-danger',
+        transfer: 'text-blue-500',
+        payment: 'text-gold',
+        card_purchase: 'text-gold',
+        loan_deposit: 'text-purple-500',
+        fee: 'text-danger',
         login: 'text-blue-500',
         transaction: 'text-success',
-        card_purchase: 'text-gold',
         loan_application: 'text-purple-500',
         profile_update: 'text-green-500',
       }
 
       const formattedActivities = activityData.map(activity => ({
         id: activity._id,
-        type: activity.transaction_type,
+        type: activity.type,
         description: getActivityDescription(activity),
-        timestamp: activity.timestamp,
-        icon: iconMap[activity.transaction_type] || User,
-        color: colorMap[activity.transaction_type] || 'text-gray-500'
+        timestamp: activity.createdAt,
+        icon: iconMap[activity.type] || User,
+        color: colorMap[activity.type] || 'text-gray-500'
       }))
 
       setActivities(formattedActivities)
@@ -53,10 +66,10 @@ const ActivityFeed = () => {
       console.error('Failed to fetch activity feed:', error)
       // Fallback to default activities if API fails
       setActivities([
-        { id: 1, type: 'login', description: 'You logged in from new device', timestamp: '2024-01-15 14:30', icon: User, color: 'text-blue-500' },
-        { id: 2, type: 'transaction', description: 'Transfer of $250.00 completed', timestamp: '2024-01-15 10:15', icon: TrendingUp, color: 'text-success' },
-        { id: 3, type: 'card_purchase', description: 'Card purchase at Amazon', timestamp: '2024-01-14 16:45', icon: CreditCard, color: 'text-gold' },
-        { id: 4, type: 'security', description: 'Two-factor authentication enabled', timestamp: '2024-01-14 09:20', icon: Shield, color: 'text-purple-500' }
+        { id: 1, type: 'login', description: 'You logged in from new device', timestamp: new Date().toISOString(), icon: User, color: 'text-blue-500' },
+        { id: 2, type: 'transaction', description: 'Transfer of $250.00 completed', timestamp: new Date().toISOString(), icon: TrendingUp, color: 'text-success' },
+        { id: 3, type: 'card_purchase', description: 'Card purchase at Amazon', timestamp: new Date().toISOString(), icon: CreditCard, color: 'text-gold' },
+        { id: 4, type: 'security', description: 'Two-factor authentication enabled', timestamp: new Date().toISOString(), icon: Shield, color: 'text-purple-500' }
       ])
     } finally {
       setLoading(false)
@@ -66,18 +79,26 @@ const ActivityFeed = () => {
   const getActivityDescription = (activity) => {
     switch (activity.type) {
       case 'deposit':
-        return `Deposit of $${activity.amount} completed`
+        return `Deposit of $${activity.amount.toFixed(2)} completed`
       case 'withdrawal':
-        return `Withdrawal of $${Math.abs(activity.amount)} completed`
+        return `Withdrawal of $${Math.abs(activity.amount).toFixed(2)} completed`
       case 'transfer':
         // For transfers, check if this is the receiving transaction
-        return activity.toAccount ? `Transfer sent of $${Math.abs(activity.amount)}` : `Transfer received of $${activity.amount}`
+        if (activity.toAccount) {
+          // This is a sent transfer (has toAccount field)
+          return `Transfer sent of $${Math.abs(activity.amount).toFixed(2)}`
+        } else {
+          // This is a received transfer (no toAccount field)
+          return `Transfer received of $${activity.amount.toFixed(2)}`
+        }
       case 'payment':
-        return `Payment of $${Math.abs(activity.amount)} completed`
+        return `Payment of $${Math.abs(activity.amount).toFixed(2)} completed`
       case 'card_purchase':
-        return `Card purchase of $${Math.abs(activity.amount)} completed`
+        return `Card purchase of $${Math.abs(activity.amount).toFixed(2)} completed`
       case 'loan_deposit':
-        return `Loan deposit of $${activity.amount} completed`
+        return `Loan deposit of $${activity.amount.toFixed(2)} completed`
+      case 'fee':
+        return `Fee charged of $${Math.abs(activity.amount).toFixed(2)}`
       default:
         return `${activity.description || 'Transaction'} completed`
     }
