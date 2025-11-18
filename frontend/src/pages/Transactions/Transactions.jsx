@@ -47,12 +47,14 @@ const Transactions = () => {
     return matchesSearch && matchesFilter
   })
 
-  const getTransactionIcon = (type) => {
-    switch (type) {
+  const getTransactionIcon = (transaction) => {
+    switch (transaction.type) {
       case 'deposit':
         return <ArrowDownLeft className="text-success" size={20} />
-      case 'withdrawal':
       case 'transfer':
+        // For transfers, check if this is the receiving transaction (no toAccount means it's a received transfer)
+        return transaction.toAccount ? <ArrowUpRight className="text-danger" size={20} /> : <ArrowDownLeft className="text-success" size={20} />
+      case 'withdrawal':
       case 'payment':
       case 'card_purchase':
         return <ArrowUpRight className="text-danger" size={20} />
@@ -174,8 +176,14 @@ const Transactions = () => {
                       whileHover={{ x: 4 }}
                     >
                       <div className="flex items-center space-x-4">
-                        <div className="p-2 rounded-full bg-primary-100 dark:bg-primary-600">
-                          {getTransactionIcon(transaction.type)}
+                        <div className={`p-2 rounded-full ${
+                          transaction.type === 'deposit'
+                            ? 'bg-success/20 text-success'
+                            : transaction.type === 'transfer' && !transaction.toAccount
+                            ? 'bg-success/20 text-success'
+                            : 'bg-danger/20 text-danger'
+                        }`}>
+                          {getTransactionIcon(transaction)}
                         </div>
                         <div>
                           <p className="font-medium text-primary dark:text-cream">
@@ -188,9 +196,17 @@ const Transactions = () => {
                       </div>
                       <div className="text-right">
                         <p className={`font-semibold ${
-                          transaction.type === 'deposit' ? 'text-success' : 'text-danger'
+                          transaction.type === 'deposit'
+                            ? 'text-success'
+                            : transaction.type === 'transfer' && !transaction.toAccount
+                            ? 'text-success'
+                            : 'text-danger'
                         }`}>
-                          {transaction.type === 'deposit' ? '+' : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                          {transaction.type === 'deposit'
+                            ? '+'
+                            : transaction.type === 'transfer' && !transaction.toAccount
+                            ? '+'
+                            : '-'}${Math.abs(transaction.amount).toFixed(2)}
                         </p>
                         <p className="text-xs text-silver capitalize">
                           {transaction.status}

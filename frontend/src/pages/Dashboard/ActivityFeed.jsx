@@ -64,13 +64,14 @@ const ActivityFeed = () => {
   }
 
   const getActivityDescription = (activity) => {
-    switch (activity.transaction_type) {
+    switch (activity.type) {
       case 'deposit':
         return `Deposit of $${activity.amount} completed`
       case 'withdrawal':
         return `Withdrawal of $${Math.abs(activity.amount)} completed`
       case 'transfer':
-        return `Transfer of $${Math.abs(activity.amount)} completed`
+        // For transfers, check if this is the receiving transaction
+        return activity.toAccount ? `Transfer sent of $${Math.abs(activity.amount)}` : `Transfer received of $${activity.amount}`
       case 'payment':
         return `Payment of $${Math.abs(activity.amount)} completed`
       case 'card_purchase':
