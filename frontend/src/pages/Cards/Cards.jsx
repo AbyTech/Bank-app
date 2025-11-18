@@ -169,12 +169,9 @@ const Cards = () => {
                       </p>
                     </div>
 
-                    {/* Card Details */}
+                    {/* Card Details - Empty for cleaner look */}
                     <div className="flex justify-start items-end">
-                      <div className="text-left">
-                        <p className="text-xs opacity-75 mb-1">CARD TYPE</p>
-                        <p className="text-sm font-medium">{(card.type || card.cardType || 'VIRTUAL').toUpperCase()}</p>
-                      </div>
+                      {/* Removed card type text for cleaner appearance */}
                     </div>
 
                     {/* VISA Text */}
