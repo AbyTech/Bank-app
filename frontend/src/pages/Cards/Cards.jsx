@@ -175,8 +175,9 @@ const Cards = () => {
                     </div>
 
                     {/* VISA Text */}
-                    <div className="absolute bottom-4 right-4">
-                      <span className="text-white font-bold text-lg tracking-wider">VISA</span>
+                    <div className="absolute bottom-4 right-4 text-right">
+                      <div className="text-xs text-white opacity-75 mb-1">DEBIT</div>
+                      <div className="text-white font-bold text-xl tracking-wider">VISA</div>
                     </div>
 
                     {/* View/Hide Toggle */}
