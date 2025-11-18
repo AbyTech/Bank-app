@@ -340,9 +340,23 @@ const Profile = () => {
                 <p className="text-silver">{profile.email}</p>
                 
                 <div className="mt-6 space-y-3 text-left">
-                  <div className="flex items-center space-x-3 text-silver">
-                    <User size={16} />
-                    <span>Account: {profile.accountNumber || 'Not available'}</span>
+                  <div className="flex items-center justify-between text-silver">
+                    <div className="flex items-center space-x-3">
+                      <User size={16} />
+                      <span>Account: {profile.accountNumber || 'Not available'}</span>
+                    </div>
+                    {profile.accountNumber && (
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(profile.accountNumber)
+                          // You could add a toast notification here
+                        }}
+                        className="text-gold hover:text-gold-400 transition-colors text-sm underline"
+                        title="Copy account number"
+                      >
+                        Copy
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center space-x-3 text-silver">
                     <MapPin size={16} />
