@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Search, Filter, Download, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
+import TransferForm from '../../components/TransferForm'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 
@@ -12,6 +13,7 @@ const Transactions = () => {
   const [filter, setFilter] = useState('all')
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showTransferForm, setShowTransferForm] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -146,8 +148,12 @@ const Transactions = () => {
                       <Download size={16} />
                       <span>Export</span>
                     </Button>
-                    <Button variant="primary" size="sm">
-                      New Transaction
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setShowTransferForm(true)}
+                    >
+                      Transfer Money
                     </Button>
                   </div>
                 </div>
@@ -204,6 +210,16 @@ const Transactions = () => {
             </Card>
           </div>
         </div>
+
+        {/* Transfer Form Modal */}
+        <TransferForm
+          isOpen={showTransferForm}
+          onClose={() => setShowTransferForm(false)}
+          onSuccess={() => {
+            fetchTransactions()
+            setShowTransferForm(false)
+          }}
+        />
       </div>
     </div>
   )

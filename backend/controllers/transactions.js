@@ -116,19 +116,28 @@ exports.withdraw = async (req, res, next) => {
   }
 };
 
-// @desc    Transfer between accounts
+// @desc    Transfer between accounts (internal or external)
 // @route   POST /api/transactions/transfer
 // @access  Private
 exports.transfer = async (req, res, next) => {
   try {
-    const { fromAccountId, toAccountId, amount, description } = req.body;
+    const { fromAccountId, toAccountNumber, amount, description } = req.body;
 
-    // Verify both accounts belong to the user
+    // Verify sender's account belongs to the user
     const fromAccount = await Account.findOne({ _id: fromAccountId, user: req.user.id });
-    const toAccount = await Account.findOne({ _id: toAccountId, user: req.user.id });
+    if (!fromAccount) {
+      return res.status(404).json({ success: false, error: 'Sender account not found' });
+    }
 
-    if (!fromAccount || !toAccount) {
-      return res.status(404).json({ success: false, error: 'Account not found' });
+    // Find recipient account by account number
+    const toAccount = await Account.findOne({ accountNumber: toAccountNumber });
+    if (!toAccount) {
+      return res.status(404).json({ success: false, error: 'Recipient account not found' });
+    }
+
+    // Prevent self-transfer
+    if (fromAccount._id.toString() === toAccount._id.toString()) {
+      return res.status(400).json({ success: false, error: 'Cannot transfer to the same account' });
     }
 
     // Check sufficient balance
@@ -142,23 +151,24 @@ exports.transfer = async (req, res, next) => {
     await fromAccount.save();
     await toAccount.save();
 
-    // Create transaction records
+    // Create transaction records for sender
     const fromTransaction = await Transaction.create({
       user: req.user.id,
       account: fromAccountId,
-      toAccount: toAccountId,
+      toAccount: toAccount._id,
       type: 'transfer',
       amount,
-      description: description || 'Transfer',
+      description: description || `Transfer to ${toAccount.accountNumber}`,
       balance: fromAccount.balance,
     });
 
+    // Create transaction record for recipient
     const toTransaction = await Transaction.create({
-      user: req.user.id,
-      account: toAccountId,
+      user: toAccount.user,
+      account: toAccount._id,
       type: 'transfer',
       amount,
-      description: description || 'Transfer received',
+      description: description || `Transfer from ${fromAccount.accountNumber}`,
       balance: toAccount.balance,
     });
 

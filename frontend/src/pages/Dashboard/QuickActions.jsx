@@ -56,7 +56,7 @@ const QuickActions = () => {
       label: 'Send Money',
       description: 'Transfer to anyone',
       color: 'from-blue-500 to-cyan-500',
-      href: '/transactions'
+      onClick: () => window.location.href = '/transactions'
     },
     {
       icon: Plus,
