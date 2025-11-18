@@ -163,15 +163,23 @@ const Cards = () => {
                     </div>
 
                     {/* Card Number */}
-                    <div className="mt-8 mb-6">
+                    <div className="mt-8 mb-4">
                       <p className="text-lg font-mono tracking-widest">
                         {card.showFullNumber ? card.cardNumber : `**** **** **** ${card.cardNumber?.slice(-4) || '****'}`}
                       </p>
                     </div>
 
-                    {/* Card Details - Empty for cleaner look */}
-                    <div className="flex justify-start items-end">
-                      {/* Removed card type text for cleaner appearance */}
+                    {/* CVV and Card Number */}
+                    <div className="mb-2">
+                      <div className="flex justify-between items-center text-sm">
+                        <span>CVV {card.cvv}</span>
+                        <span>{card.cardNumber?.slice(-4) || '****'}</span>
+                      </div>
+                    </div>
+
+                    {/* Bank Name */}
+                    <div className="mb-4">
+                      <p className="text-sm font-semibold tracking-wide">PRIMEWAVE BANK</p>
                     </div>
 
                     {/* VISA Text */}
