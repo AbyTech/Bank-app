@@ -321,7 +321,7 @@ const Loans = () => {
                   className="w-full pl-10 pr-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                   placeholder="Enter loan amount"
                   min="100"
-                  max="50000"
+                  max="500000000000"
                 />
               </div>
             </div>
