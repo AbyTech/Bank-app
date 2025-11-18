@@ -307,6 +307,66 @@ const AdminDashboard = () => {
                   <div className="text-center py-8">Loading user details...</div>
                 ) : userDetails ? (
                   <div className="space-y-6">
+                    {/* Profile Information */}
+                    <Card>
+                      <CardHeader>
+                        <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">Profile Information</h3>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-start space-x-6">
+                          <div className="flex-shrink-0">
+                            {userDetails.user.profilePhoto ? (
+                              <img
+                                src={userDetails.user.profilePhoto}
+                                alt="Profile"
+                                className="w-24 h-24 rounded-full object-cover border-4 border-gold"
+                              />
+                            ) : (
+                              <div className="w-24 h-24 rounded-full bg-gold/20 flex items-center justify-center">
+                                <span className="text-2xl font-bold text-gold">
+                                  {userDetails.user.firstName?.[0]}{userDetails.user.lastName?.[0]}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-silver mb-1">Full Name</label>
+                              <p className="text-primary dark:text-cream font-medium">
+                                {userDetails.user.firstName} {userDetails.user.lastName}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-silver mb-1">Email</label>
+                              <p className="text-primary dark:text-cream font-medium">{userDetails.user.email}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-silver mb-1">Phone Number</label>
+                              <p className="text-primary dark:text-cream font-medium">
+                                {userDetails.user.phone || 'Not provided'}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-silver mb-1">Country</label>
+                              <p className="text-primary dark:text-cream font-medium">
+                                {userDetails.user.country || 'Not provided'}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-silver mb-1">Username</label>
+                              <p className="text-primary dark:text-cream font-medium">{userDetails.user.username}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-silver mb-1">Member Since</label>
+                              <p className="text-primary dark:text-cream font-medium">
+                                {new Date(userDetails.user.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
                     {/* Account Information */}
                     <Card>
                       <CardHeader>
