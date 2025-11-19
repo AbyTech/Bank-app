@@ -4,11 +4,13 @@ import { TrendingUp, CreditCard, User, Shield } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
+import { formatAmount, getCurrencyByCountry } from '../../services/currency'
 
 const ActivityFeed = () => {
   const { user } = useAuth()
   const [activities, setActivities] = useState([])
   const [loading, setLoading] = useState(true)
+  const [currency, setCurrency] = useState('USD')
 
   useEffect(() => {
     if (user) {
@@ -78,26 +80,26 @@ const ActivityFeed = () => {
   const getActivityDescription = (activity) => {
     switch (activity.type) {
       case 'deposit':
-        return `Deposit of $${activity.amount.toFixed(2)} completed`
+        return `Deposit of ${formatAmount(activity.amount, currency)} completed`
       case 'withdrawal':
-        return `Withdrawal of $${Math.abs(activity.amount).toFixed(2)} completed`
+        return `Withdrawal of ${formatAmount(Math.abs(activity.amount), currency)} completed`
       case 'transfer':
         // For transfers, check if this is the receiving transaction
         if (activity.toAccount) {
           // This is a sent transfer (has toAccount field)
-          return `Transfer sent of $${Math.abs(activity.amount).toFixed(2)}`
+          return `Transfer sent of ${formatAmount(Math.abs(activity.amount), currency)}`
         } else {
           // This is a received transfer (no toAccount field)
-          return `Transfer received of $${activity.amount.toFixed(2)}`
+          return `Transfer received of ${formatAmount(activity.amount, currency)}`
         }
       case 'payment':
-        return `Payment of $${Math.abs(activity.amount).toFixed(2)} completed`
+        return `Payment of ${formatAmount(Math.abs(activity.amount), currency)} completed`
       case 'card_purchase':
-        return `Card purchase of $${Math.abs(activity.amount).toFixed(2)} completed`
+        return `Card purchase of ${formatAmount(Math.abs(activity.amount), currency)} completed`
       case 'loan_deposit':
-        return `Loan deposit of $${activity.amount.toFixed(2)} completed`
+        return `Loan deposit of ${formatAmount(activity.amount, currency)} completed`
       case 'fee':
-        return `Fee charged of $${Math.abs(activity.amount).toFixed(2)}`
+        return `Fee charged of ${formatAmount(Math.abs(activity.amount), currency)}`
       default:
         return `${activity.description || 'Transaction'} completed`
     }

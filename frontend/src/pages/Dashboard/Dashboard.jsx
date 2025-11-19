@@ -383,7 +383,7 @@ const Dashboard = () => {
                     </div>
                     <div className="text-right">
                       <p className={`font-semibold ${getTransactionAmountColor(transaction)}`}>
-                        {getTransactionAmountPrefix(transaction)}${Math.abs(transaction.amount).toFixed(2)}
+                        {getTransactionAmountPrefix(transaction)}{formatAmount(Math.abs(transaction.amount), currency)}
                       </p>
                       <p className="text-xs text-silver capitalize">
                         {transaction.status}

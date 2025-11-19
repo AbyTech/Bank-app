@@ -6,6 +6,7 @@ import Button from '../../components/UI/Button'
 import TransferForm from '../../components/TransferForm'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
+import { formatAmount, getCurrencyByCountry } from '../../services/currency'
 
 const Transactions = () => {
   const { user } = useAuth()
@@ -14,10 +15,17 @@ const Transactions = () => {
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showTransferForm, setShowTransferForm] = useState(false)
+  const [currency, setCurrency] = useState('USD')
 
   useEffect(() => {
     if (user) {
       fetchTransactions()
+
+      // Set currency based on user's country
+      if (user?.country) {
+        const userCurrency = getCurrencyByCountry(user.country)
+        setCurrency(userCurrency)
+      }
 
       // Check if we should open transfer modal from quick actions
       const shouldOpenTransfer = sessionStorage.getItem('openTransferModal')
@@ -206,7 +214,7 @@ const Transactions = () => {
                             ? '+'
                             : transaction.type === 'transfer' && !transaction.toAccount
                             ? '+'
-                            : '-'}${Math.abs(transaction.amount).toFixed(2)}
+                            : '-'}{formatAmount(Math.abs(transaction.amount), currency)}
                         </p>
                         <p className="text-xs text-silver capitalize">
                           {transaction.status}

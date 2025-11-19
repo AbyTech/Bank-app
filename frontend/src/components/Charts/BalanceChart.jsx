@@ -11,15 +11,22 @@ import {
 } from 'recharts'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
+import { formatAmount, getCurrencyByCountry, getCurrencySymbol } from '../../services/currency'
 
 const BalanceChart = () => {
   const { user } = useAuth()
   const [chartData, setChartData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [currency, setCurrency] = useState('USD')
 
   useEffect(() => {
     if (user) {
       fetchBalanceHistory()
+      // Set currency based on user's country
+      if (user?.country) {
+        const userCurrency = getCurrencyByCountry(user.country)
+        setCurrency(userCurrency)
+      }
     }
   }, [user])
 
@@ -104,7 +111,7 @@ const BalanceChart = () => {
         <div className="bg-white dark:bg-primary-800 p-3 rounded-lg shadow-lux-card border border-silver/20">
           <p className="text-primary dark:text-cream font-semibold">{`${label}`}</p>
           <p className="text-gold">
-            {`Balance: $${payload[0].value.toLocaleString()}`}
+            {`Balance: ${formatAmount(payload[0].value, currency)}`}
           </p>
         </div>
       )
@@ -122,10 +129,10 @@ const BalanceChart = () => {
             stroke="#6B7280"
             fontSize={12}
           />
-          <YAxis 
+          <YAxis
             stroke="#6B7280"
             fontSize={12}
-            tickFormatter={(value) => `$${value / 1000}k`}
+            tickFormatter={(value) => `${getCurrencySymbol(currency)}${value / 1000}k`}
           />
           <Tooltip content={<CustomTooltip />} />
           <Line 
