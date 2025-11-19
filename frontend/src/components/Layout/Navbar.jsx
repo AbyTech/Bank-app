@@ -14,6 +14,7 @@ import {
   ArrowDownLeft
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
+import { useWebSocket } from '../../hooks/useWebSocket'
 import api from '../../services/api'
 import logo from '../../assets/logo.png'
 
