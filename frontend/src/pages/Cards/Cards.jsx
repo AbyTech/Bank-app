@@ -150,7 +150,7 @@ const Cards = () => {
 
                     {/* Company Logo */}
                     <div className="absolute top-4 right-4">
-                      <img src={logo} alt="Logo" className="w-8 h-8 rounded-full bg-white" />
+                      <img src={logo} alt="Logo" className="w-8 h-8 rounded-full" />
                     </div>
 
                     {/* Card Number */}
