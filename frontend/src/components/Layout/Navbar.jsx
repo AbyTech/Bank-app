@@ -27,6 +27,23 @@ const Navbar = () => {
   const navigate = useNavigate()
   const { user } = useAuth()
 
+  // WebSocket for real-time notifications
+  useWebSocket({
+    newTransaction: (data) => {
+      // Add new transaction to notifications
+      const newNotification = {
+        id: data.transaction._id,
+        type: 'transaction',
+        title: data.transaction.description,
+        amount: data.transaction.amount,
+        transactionType: data.transaction.type,
+        date: data.transaction.createdAt,
+        read: false
+      }
+      setNotifications(prev => [newNotification, ...prev.slice(0, 4)]) // Keep only 5 most recent
+    }
+  })
+
   const navigation = [
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Transactions', href: '/transactions' },
