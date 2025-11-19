@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
+import logo from '../../assets/logo.png'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -87,13 +88,11 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <motion.div 
+          <motion.div
             className="flex items-center space-x-3"
             whileHover={{ scale: 1.05 }}
           >
-            <div className="w-10 h-10 bg-gradient-to-r from-gold to-gold-400 rounded-xl flex items-center justify-center">
-              <span className="text-lg font-heading font-bold text-primary">P</span>
-            </div>
+            <img src={logo} alt="Logo" className="w-10 h-10 rounded-xl" />
             <div>
               <h1 className="text-xl font-heading font-bold text-primary dark:text-cream">
                 Primewave

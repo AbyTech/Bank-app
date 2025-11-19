@@ -5,6 +5,7 @@ import { Eye, EyeOff, Copy, Check } from 'lucide-react'
 import { generateMnemonic } from 'bip39'
 import toast from 'react-hot-toast'
 import authAPI from '../../services/auth.jsx'
+import logo from '../../assets/logo.png'
 
 const Register = () => {
   const [step, setStep] = useState(1)
@@ -72,9 +73,7 @@ const Register = () => {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="bg-white dark:bg-primary-800 rounded-2xl shadow-lux-card p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-gold to-gold-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-heading font-bold text-primary">P</span>
-            </div>
+            <img src={logo} alt="Logo" className="w-16 h-16 rounded-2xl mx-auto mb-4" />
             <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream">Primewave Bank</h1>
             <p className="text-silver dark:text-silver mt-2">Create your secure banking account</p>
           </div>

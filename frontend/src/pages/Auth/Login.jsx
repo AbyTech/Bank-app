@@ -5,6 +5,7 @@ import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import Button from '../../components/UI/Button'
 import toast from 'react-hot-toast'
 import { authAPI } from '../../services/auth'
+import logo from '../../assets/logo.png'
 
 const Login = () => {
   const [formData, setFormData] = useState({
