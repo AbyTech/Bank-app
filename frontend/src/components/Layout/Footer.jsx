@@ -37,11 +37,11 @@ const Footer = () => {
                 </a>
               </div>
               <div className="flex items-center space-x-2">
-                <MailIcon className="h-5 w-5 text-gray-400" />
+                <Mail className="h-5 w-5 text-gray-400" />
                 <span className="text-gray-400">support@primewavebank.com</span>
               </div>
               <div className="flex items-center space-x-2">
-                <MapPinIcon className="h-5 w-5 text-gray-400" />
+                <MapPin className="h-5 w-5 text-gray-400" />
                 <span className="text-gray-400">123 Bank Street, City, State 12345</span>
               </div>
             </div>
