@@ -92,7 +92,7 @@ const Navbar = () => {
             className="flex items-center space-x-3"
             whileHover={{ scale: 1.05 }}
           >
-            <img src={logo} alt="Logo" className="w-10 h-10 rounded-xl" />
+            <img src={logo} alt="Logo" className="w-14 h-14 rounded-xl bg-blue-900" />
             <div>
               <h1 className="text-xl font-heading font-bold text-primary dark:text-cream">
                 Primewave
