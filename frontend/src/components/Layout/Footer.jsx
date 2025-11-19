@@ -1,5 +1,5 @@
 import React from 'react';
-import { MailIcon, MapPinIcon } from '@heroicons/react/outline';
+import { Mail, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
