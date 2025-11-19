@@ -119,7 +119,7 @@ const Dashboard = () => {
       setStats([
         {
           title: 'Total Balance',
-          value: `$${balance.toLocaleString()}`,
+          value: formatAmount(balance, currency),
           change: '+12.5%',
           trend: 'up',
           icon: DollarSign,
@@ -127,7 +127,7 @@ const Dashboard = () => {
         },
         {
           title: 'Monthly Income',
-          value: '$0.00',
+          value: formatAmount(0, currency),
           change: '+5.2%',
           trend: 'up',
           icon: TrendingUp,
@@ -135,7 +135,7 @@ const Dashboard = () => {
         },
         {
           title: 'Monthly Expenses',
-          value: '$0.00',
+          value: formatAmount(0, currency),
           change: '-2.1%',
           trend: 'down',
           icon: TrendingDown,
