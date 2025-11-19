@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import { useWebSocket } from '../../hooks/useWebSocket'
+import { useLocalStorage } from '../../hooks/useLocalStorage'
 import api from '../../services/api'
 import logo from '../../assets/logo.png'
 
