@@ -6,6 +6,7 @@ import Button from '../../components/UI/Button'
 import Modal from '../../components/UI/Modal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
+import logo from '../../assets/logo.png'
 
 const Cards = () => {
   const { user } = useAuth()
@@ -149,9 +150,7 @@ const Cards = () => {
 
                     {/* Company Logo */}
                     <div className="absolute top-4 right-4">
-                      <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-bold text-sm">PW</span>
-                      </div>
+                      <img src={logo} alt="Logo" className="w-8 h-8 rounded-full bg-white" />
                     </div>
 
                     {/* Card Number */}
