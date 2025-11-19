@@ -40,9 +40,7 @@ const Login = () => {
       >
         <div className="bg-white dark:bg-primary-800 rounded-2xl shadow-lux-card p-8">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-r from-gold to-gold-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl font-heading font-bold text-primary">P</span>
-            </div>
+            <img src={logo} alt="Logo" className="w-14 h-14 rounded-xl bg-blue-900 mx-auto mb-4" />
             <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream">
               Primewave Bank
             </h1>
