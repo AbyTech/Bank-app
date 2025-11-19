@@ -45,16 +45,18 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
+
+      // Set currency based on user's country first
+      let userCurrency = 'USD'
+      if (user?.country) {
+        userCurrency = getCurrencyByCountry(user.country)
+        setCurrency(userCurrency)
+      }
+
       // Fetch account data
       const accountResponse = await api.get('/api/accounts/')
       const accountData = accountResponse.data.data[0] // Get first account
       setBalance(accountData.balance)
-
-      // Set currency based on user's country
-      if (user?.country) {
-        const userCurrency = getCurrencyByCountry(user.country)
-        setCurrency(userCurrency)
-      }
 
       // Fetch transactions
       const transactionsResponse = await api.get('/api/transactions/')
@@ -82,7 +84,7 @@ const Dashboard = () => {
       setStats([
         {
           title: 'Total Balance',
-          value: formatAmount(accountData.balance, currency),
+          value: formatAmount(accountData.balance, userCurrency),
           change: '+12.5%',
           trend: 'up',
           icon: DollarSign,
@@ -90,7 +92,7 @@ const Dashboard = () => {
         },
         {
           title: 'Monthly Income',
-          value: formatAmount(monthlyIncome, currency),
+          value: formatAmount(monthlyIncome, userCurrency),
           change: '+5.2%',
           trend: 'up',
           icon: TrendingUp,
@@ -98,7 +100,7 @@ const Dashboard = () => {
         },
         {
           title: 'Monthly Expenses',
-          value: formatAmount(monthlyExpenses, currency),
+          value: formatAmount(monthlyExpenses, userCurrency),
           change: '-2.1%',
           trend: 'down',
           icon: TrendingDown,
