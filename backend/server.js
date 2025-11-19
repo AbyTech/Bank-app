@@ -10,7 +10,7 @@ const app = express();
 
 // Middleware
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:3000', 'https://app.primewavepay.com', 'https://prime-wave-bank.netlify.app'],
   credentials: true,
   optionsSuccessStatus: 200
 };
