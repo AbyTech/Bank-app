@@ -42,7 +42,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="h-5 w-5 text-gray-400" />
-                <span className="text-gray-400">123 Bank Street, City, State 12345</span>
+                <span className="text-gray-400">Global Headquarter</span>
               </div>
             </div>
           </div>
@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-          <p className="text-gray-400">&copy; 2023 PrimeWave Bank. All rights reserved.</p>
+          <p className="text-gray-400">&copy; 2025 PrimeWave Bank. All rights reserved.</p>
         </div>
       </div>
     </footer>
