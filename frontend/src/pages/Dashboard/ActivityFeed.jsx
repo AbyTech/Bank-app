@@ -33,7 +33,6 @@ const ActivityFeed = () => {
         fee: TrendingUp,
         login: User,
         transaction: TrendingUp,
-        card_purchase: CreditCard,
         loan_application: Shield,
         profile_update: User,
       }
