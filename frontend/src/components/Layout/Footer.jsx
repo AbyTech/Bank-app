@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Shield, Phone, Mail, MapPin } from 'lucide-react'
+import { Shield, Telegram, Mail, MapPin } from 'lucide-react'
 
 const Footer = () => {
   return (
@@ -55,8 +55,8 @@ const Footer = () => {
             <h3 className="font-heading font-semibold text-gold mb-4">Contact</h3>
             <div className="space-y-3 text-sm text-silver">
               <div className="flex items-center space-x-2">
-                <Phone size={16} />
-                <span>+1 (555) 123-PRIME</span>
+                <Telegram size={16} />
+                <li><Link to="t.me/helpxprimewavebank" className="hover:text-gold transition-colors">helpxprimewavebank</Link></li>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail size={16} />

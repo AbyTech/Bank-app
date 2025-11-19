@@ -4,10 +4,11 @@ import Footer from './Footer';
 
 const MainLayout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 transition-colors">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 transition-colors relative">
       <Navbar />
       <main className="min-h-screen">{children}</main>
       <Footer />
+      <FloatingTelegramButton />
     </div>
   );
 };
