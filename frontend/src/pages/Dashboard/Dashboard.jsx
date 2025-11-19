@@ -21,6 +21,7 @@ import ActivityFeed from './ActivityFeed'
 import BalanceChart from '../../components/Charts/BalanceChart'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
+import { formatAmount, getCurrencyByCountry } from '../../services/currency'
 
 const Dashboard = () => {
   const { user, isAdmin } = useAuth()
@@ -49,6 +50,12 @@ const Dashboard = () => {
       const accountData = accountResponse.data.data[0] // Get first account
       setBalance(accountData.balance)
 
+      // Set currency based on user's country
+      if (user?.country) {
+        const userCurrency = getCurrencyByCountry(user.country)
+        setCurrency(userCurrency)
+      }
+
       // Fetch transactions
       const transactionsResponse = await api.get('/api/transactions/')
       const transactionsData = transactionsResponse.data.data || []
@@ -75,7 +82,7 @@ const Dashboard = () => {
       setStats([
         {
           title: 'Total Balance',
-          value: `$${accountData.balance.toLocaleString()}`,
+          value: formatAmount(accountData.balance, currency),
           change: '+12.5%',
           trend: 'up',
           icon: DollarSign,
@@ -83,7 +90,7 @@ const Dashboard = () => {
         },
         {
           title: 'Monthly Income',
-          value: `$${monthlyIncome.toFixed(2)}`,
+          value: formatAmount(monthlyIncome, currency),
           change: '+5.2%',
           trend: 'up',
           icon: TrendingUp,
@@ -91,7 +98,7 @@ const Dashboard = () => {
         },
         {
           title: 'Monthly Expenses',
-          value: `$${monthlyExpenses.toFixed(2)}`,
+          value: formatAmount(monthlyExpenses, currency),
           change: '-2.1%',
           trend: 'down',
           icon: TrendingDown,
