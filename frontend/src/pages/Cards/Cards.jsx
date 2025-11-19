@@ -215,19 +215,17 @@ const Cards = () => {
                     >
                       Details
                     </Button>
-                    {card.purchaseStatus === 'pending_payment' && (
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => {
-                          setSelectedCard(card)
-                          setShowContactModal(true)
-                        }}
-                      >
-                        Pay Now
-                      </Button>
-                    )}
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => {
+                        setSelectedCard(card)
+                        setShowContactModal(true)
+                      }}
+                    >
+                      Pay Now
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
