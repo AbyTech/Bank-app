@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import FloatingTelegramButton from '../UI/FloatingTelegramButton';
 
 const MainLayout = ({ children }) => {
   return (
