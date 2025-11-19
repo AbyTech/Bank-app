@@ -20,13 +20,22 @@ import logo from '../../assets/logo.png'
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useLocalStorage('darkMode', false)
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
   const { user } = useAuth()
+
+  // Apply dark mode on initial load
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [darkMode])
 
   // WebSocket for real-time notifications
   useWebSocket({
@@ -55,7 +64,6 @@ const Navbar = () => {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
-    document.documentElement.classList.toggle('dark')
   }
 
   const fetchNotifications = async () => {
