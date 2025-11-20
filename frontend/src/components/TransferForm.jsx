@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Send, X, AlertCircle } from 'lucide-react'
+import { Send, X, AlertCircle, RefreshCw } from 'lucide-react'
 import Button from './UI/Button'
 import Modal from './UI/Modal'
 import { useAuth } from '../hooks/useAuth'
@@ -18,6 +18,8 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [accountsLoading, setAccountsLoading] = useState(false)
+  const [conversionInfo, setConversionInfo] = useState(null)
+  const [calculatingConversion, setCalculatingConversion] = useState(false)
 
   React.useEffect(() => {
     if (isOpen && user) {
@@ -45,6 +47,77 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
       [name]: value
     }))
     if (error) setError('')
+
+    // Trigger conversion calculation when relevant fields change
+    if (name === 'fromAccountId' || name === 'toAccountNumber' || name === 'amount') {
+      calculateConversionPreview()
+    }
+  }
+
+  const calculateConversionPreview = async () => {
+    const { fromAccountId, toAccountNumber, amount } = formData
+
+    if (!fromAccountId || !toAccountNumber || !amount || parseFloat(amount) <= 0) {
+      setConversionInfo(null)
+      return
+    }
+
+    try {
+      setCalculatingConversion(true)
+
+      // Find accounts
+      const fromAccount = accounts.find(acc => acc._id === fromAccountId)
+      let toAccount = accounts.find(acc => acc.accountNumber === toAccountNumber)
+
+      // If recipient account not in user's accounts, we can't preview conversion
+      // In a real app, you'd call an API to get recipient account details
+      if (!toAccount) {
+        setConversionInfo(null)
+        return
+      }
+
+      if (fromAccount.currency === toAccount.currency) {
+        setConversionInfo(null)
+        return
+      }
+
+      // Use mock rates for preview (same as backend fallback)
+      const mockRates = {
+        'USD_NGN': 1600,
+        'USD_GHS': 12,
+        'USD_ZAR': 18,
+        'USD_EUR': 0.85,
+        'USD_GBP': 0.75,
+        'USD_CAD': 1.25,
+        'USD_AUD': 1.35,
+        'USD_BRL': 5.2,
+        'EUR_USD': 1.18,
+        'GBP_USD': 1.33,
+        'CAD_USD': 0.8,
+        'AUD_USD': 0.74,
+        'BRL_USD': 0.19,
+        'NGN_USD': 0.000625,
+        'GHS_USD': 0.083,
+        'ZAR_USD': 0.056
+      }
+
+      const rateKey = `${fromAccount.currency}_${toAccount.currency}`
+      const rate = mockRates[rateKey] || 1
+      const convertedAmount = parseFloat(amount) * rate
+
+      setConversionInfo({
+        originalAmount: parseFloat(amount),
+        originalCurrency: fromAccount.currency,
+        convertedAmount: convertedAmount.toFixed(2),
+        convertedCurrency: toAccount.currency,
+        exchangeRate: rate.toFixed(4)
+      })
+    } catch (error) {
+      console.error('Error calculating conversion:', error)
+      setConversionInfo(null)
+    } finally {
+      setCalculatingConversion(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -91,6 +164,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
       description: ''
     })
     setError('')
+    setConversionInfo(null)
     onClose()
   }
 
@@ -174,6 +248,29 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </div>
 
+          {/* Conversion Preview */}
+          {conversionInfo && (
+            <div className="bg-gold/10 border border-gold/20 rounded-lg p-3">
+              <div className="flex items-center space-x-2 mb-2">
+                <RefreshCw size={16} className="text-gold" />
+                <span className="text-sm font-medium text-primary dark:text-cream">
+                  Currency Conversion Preview
+                </span>
+              </div>
+              <div className="text-sm text-primary dark:text-cream space-y-1">
+                <div>
+                  Sending: {conversionInfo.originalAmount.toFixed(2)} {conversionInfo.originalCurrency}
+                </div>
+                <div>
+                  Recipient receives: {conversionInfo.convertedAmount} {conversionInfo.convertedCurrency}
+                </div>
+                <div className="text-xs text-silver">
+                  Exchange rate: 1 {conversionInfo.originalCurrency} = {conversionInfo.exchangeRate} {conversionInfo.convertedCurrency}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
@@ -210,7 +307,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             <Button
               type="submit"
               variant="primary"
-              disabled={loading || accountsLoading}
+              disabled={loading || accountsLoading || calculatingConversion}
               className="flex-1 flex items-center justify-center space-x-2"
             >
               {loading ? (

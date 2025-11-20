@@ -147,9 +147,20 @@ exports.transfer = async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Insufficient balance' });
     }
 
+    // Handle currency conversion
+    let convertedAmount = amount;
+    let exchangeRate = 1;
+    const fromCurrency = fromAccount.currency;
+    const toCurrency = toAccount.currency;
+
+    if (fromCurrency !== toCurrency) {
+      exchangeRate = await exchangeRateService.getExchangeRate(fromCurrency, toCurrency);
+      convertedAmount = await exchangeRateService.convertAmount(amount, fromCurrency, toCurrency);
+    }
+
     // Update account balances
     fromAccount.balance -= amount;
-    toAccount.balance += amount;
+    toAccount.balance += convertedAmount;
     await fromAccount.save();
     await toAccount.save();
 
@@ -160,6 +171,10 @@ exports.transfer = async (req, res, next) => {
       toAccount: toAccount._id,
       type: 'transfer',
       amount,
+      convertedAmount: convertedAmount,
+      originalCurrency: fromCurrency,
+      convertedCurrency: toCurrency,
+      exchangeRate: exchangeRate,
       description: description || `Transfer to ${toAccount.accountNumber}`,
       balance: fromAccount.balance,
     });
@@ -169,7 +184,11 @@ exports.transfer = async (req, res, next) => {
       user: toAccount.user,
       account: toAccount._id,
       type: 'transfer',
-      amount,
+      amount: convertedAmount,
+      convertedAmount: convertedAmount,
+      originalCurrency: fromCurrency,
+      convertedCurrency: toCurrency,
+      exchangeRate: exchangeRate,
       description: description || `Transfer from ${fromAccount.accountNumber}`,
       balance: toAccount.balance,
     });

@@ -16,6 +16,11 @@ const AccountSchema = new mongoose.Schema({
     enum: ['checking', 'savings'],
     default: 'checking',
   },
+  currency: {
+    type: String,
+    enum: ['USD', 'NGN', 'GHS', 'ZAR', 'EUR', 'GBP', 'CAD', 'AUD', 'BRL'],
+    default: 'USD',
+  },
   balance: {
     type: Number,
     default: 0,
