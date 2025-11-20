@@ -2,6 +2,8 @@ const Transaction = require('../models/Transaction');
 const Account = require('../models/Account');
 const Card = require('../models/Card');
 const Loan = require('../models/Loan');
+const exchangeRateService = require('../services/exchangeRate');
+const currencies = require('../data/currencies');
 
 // @desc    Get all transactions for a user
 // @route   GET /api/transactions
