@@ -74,6 +74,15 @@ exports.deleteUser = async (req, res, next) => {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
 
+    const userId = user._id;
+
+    // Delete all associated data
+    await Account.deleteMany({ user: userId });
+    await Transaction.deleteMany({ user: userId });
+    await Card.deleteMany({ user: userId });
+    await Loan.deleteMany({ user: userId });
+
+    // Now delete the user
     await user.deleteOne();
 
     res.status(200).json({

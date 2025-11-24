@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, CreditCard, TrendingUp, DollarSign, UserCheck, UserX, Eye, ArrowLeft, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { Users, CreditCard, TrendingUp, DollarSign, UserCheck, UserX, Eye, ArrowLeft, CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import api from '../../services/api'
@@ -77,6 +77,17 @@ const AdminDashboard = () => {
       console.error('Failed to update user:', error)
     }
   }
+
+  const handleDelete = async (userId) => {
+    if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      try {
+        await api.delete(`/api/users/${userId}`);
+        fetchUsers(); // Refresh the list
+      } catch (error) {
+        console.error('Failed to delete user:', error);
+      }
+    }
+  };
 
   const viewUserDetails = async (user) => {
     setSelectedUser(user)
@@ -182,6 +193,14 @@ const AdminDashboard = () => {
                                     Make Admin
                                   </>
                                 )}
+                              </Button>
+                              <Button
+                                onClick={() => handleDelete(user._id)}
+                                variant="danger"
+                                size="sm"
+                              >
+                                <Trash2 size={14} className="mr-1" />
+                                Delete
                               </Button>
                             </div>
                           </td>
