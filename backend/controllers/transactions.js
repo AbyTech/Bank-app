@@ -2,6 +2,7 @@ const Transaction = require('../models/Transaction');
 const Account = require('../models/Account');
 const Card = require('../models/Card');
 const Loan = require('../models/Loan');
+const User = require('../models/User'); // Assuming a User model exists and has a 'name' field
 const exchangeRateService = require('../services/exchangeRate');
 const currencies = require('../data/currencies');
 
@@ -74,6 +75,35 @@ exports.deposit = async (req, res, next) => {
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Get recipient account details by account number for frontend lookup
+// @route   GET /api/transactions/recipient-details/:accountNumber
+// @access  Private
+// Note: This endpoint could ideally be in a separate 'accounts' controller for better organization.
+exports.getRecipientDetails = async (req, res, next) => {
+  try {
+    const { accountNumber } = req.params;
+
+    const account = await Account.findOne({ accountNumber });
+    if (!account) {
+      return res.status(404).json({ success: false, error: 'Recipient account not found' });
+    }
+
+    // Fetch recipient user details to return the name
+    const recipientUser = await User.findById(account.user);
+    const recipientName = recipientUser ? recipientUser.name : 'Unknown Recipient'; // Assuming 'name' field in User model
+
+    res.status(200).json({
+      success: true,
+      data: {
+        recipientName: recipientName,
+        accountNumber: account.accountNumber,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Server Error' });
   }
 };
 
