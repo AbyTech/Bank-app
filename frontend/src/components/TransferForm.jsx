@@ -15,6 +15,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
     description: ''
   })
   const [accounts, setAccounts] = useState([])
+  const [recipientName, setRecipientName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [accountsLoading, setAccountsLoading] = useState(false)
@@ -26,6 +27,26 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
       fetchUserAccounts()
     }
   }, [isOpen, user])
+
+  useEffect(() => {
+    if (formData.toAccountNumber.length > 9) { // Assuming account numbers are at least 10 digits
+      const fetchRecipientName = async () => {
+        try {
+          const response = await api.get(`/api/accounts/recipient/${formData.toAccountNumber}`)
+          if (response.data.success) {
+            setRecipientName(response.data.data.name)
+          } else {
+            setRecipientName('')
+          }
+        } catch (error) {
+          setRecipientName('')
+        }
+      }
+      fetchRecipientName()
+    } else {
+      setRecipientName('')
+    }
+  }, [formData.toAccountNumber])
 
   const fetchUserAccounts = async () => {
     try {
@@ -226,6 +247,11 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
               placeholder="Enter account number"
             />
+            {recipientName && (
+              <div className="text-sm text-primary dark:text-cream mt-1">
+                Account Holder: <strong>{recipientName}</strong>
+              </div>
+            )}
           </div>
 
           {/* Amount */}
