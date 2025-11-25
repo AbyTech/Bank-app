@@ -247,11 +247,20 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
               placeholder="Enter account number"
             />
-            {recipientName && (
-              <div className="text-sm text-primary dark:text-cream mt-1">
-                Account Holder: <strong>{recipientName}</strong>
-              </div>
-            )}
+          </div>
+
+          {/* Recipient Name */}
+          <div>
+            <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
+              Recipient Name
+            </label>
+            <input
+              type="text"
+              value={recipientName}
+              disabled
+              className="w-full px-3 py-2 bg-silver/20 dark:bg-primary-600/20 border border-silver dark:border-primary-600 rounded-lg text-primary dark:text-cream cursor-not-allowed"
+              placeholder="Name will appear here when account number is entered"
+            />
           </div>
 
           {/* Amount */}
