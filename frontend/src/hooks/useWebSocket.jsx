@@ -9,10 +9,11 @@ export const useWebSocket = (events = {}) => {
   }, [events])
 
   useEffect(() => {
-    // Connect to WebSocket
-    websocketService.connect()
+    // Temporarily disable WebSocket connection to prevent console errors
+    // TODO: Implement WebSocket server in backend
+    // websocketService.connect()
 
-    // Set up event listeners
+    // Set up event listeners (but no actual connection)
     Object.entries(eventHandlers.current).forEach(([event, handler]) => {
       if (typeof handler === 'function') {
         websocketService.on(event, handler)
