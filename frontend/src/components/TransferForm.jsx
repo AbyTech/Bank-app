@@ -259,7 +259,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             <input
               type="text"
               value={recipientName}
-              disabled
+              readOnly
               className="w-full px-3 py-2 bg-silver/20 dark:bg-primary-600/20 border border-silver dark:border-primary-600 rounded-lg text-primary dark:text-cream cursor-not-allowed"
               placeholder="Name will appear here when account number is entered"
             />
