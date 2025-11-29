@@ -231,9 +231,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
                 if (formData.toAccountNumber.length >= 10) {
                   const fetchRecipientName = async () => {
                     try {
-                      console.log('Fetching recipient for account:', formData.toAccountNumber)
                       const response = await api.get(`/api/accounts/recipient/${formData.toAccountNumber}`)
-                      console.log('API Response:', response.data)
                       if (response.data.success) {
                         setRecipientName(response.data.data.name)
                       } else {

@@ -6,7 +6,7 @@ const User = require('../models/User');
 // @access  Private
 exports.getRecipient = async (req, res, next) => {
   try {
-    const account = await Account.findOne({ accountNumber: req.params.accountNumber }).populate('user', 'name');
+    const account = await Account.findOne({ accountNumber: req.params.accountNumber }).populate('user', 'firstName lastName');
 
     if (!account) {
       return res.status(404).json({ success: false, error: 'Account not found' });
@@ -15,7 +15,7 @@ exports.getRecipient = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: {
-        name: account.user.name,
+        name: `${account.user.firstName} ${account.user.lastName}`,
       },
     });
   } catch (error) {
