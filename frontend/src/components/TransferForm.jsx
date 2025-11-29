@@ -223,7 +223,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               Recipient Account Number *
             </label>
             <input
-              type="text"
+              type="number"
               name="toAccountNumber"
               value={formData.toAccountNumber}
               onChange={handleInputChange}
