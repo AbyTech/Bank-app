@@ -75,7 +75,7 @@ exports.createAccount = async (req, res, next) => {
     // Create account
     const account = await Account.create({
       user: req.user.id,
-      accountNumber: Math.floor(Math.random() * 10000000000).toString(),
+      accountNumber: Math.floor(1000000000 + Math.random() * 9000000000).toString(),
       accountType,
       currency,
     });

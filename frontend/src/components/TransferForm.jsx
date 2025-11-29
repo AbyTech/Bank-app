@@ -28,25 +28,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
     }
   }, [isOpen, user])
 
-  useEffect(() => {
-    if (formData.toAccountNumber.length > 9) { // Assuming account numbers are at least 10 digits
-      const fetchRecipientName = async () => {
-        try {
-          const response = await api.get(`/api/accounts/recipient/${formData.toAccountNumber}`)
-          if (response.data.success) {
-            setRecipientName(response.data.data.name)
-          } else {
-            setRecipientName('')
-          }
-        } catch (error) {
-          setRecipientName('')
-        }
-      }
-      fetchRecipientName()
-    } else {
-      setRecipientName('')
-    }
-  }, [formData.toAccountNumber])
+
 
   const fetchUserAccounts = async () => {
     try {
@@ -184,6 +166,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
       amount: '',
       description: ''
     })
+    setRecipientName('')
     setError('')
     setConversionInfo(null)
     onClose()
@@ -244,6 +227,25 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               name="toAccountNumber"
               value={formData.toAccountNumber}
               onChange={handleInputChange}
+              onBlur={() => {
+                if (formData.toAccountNumber.length >= 10) {
+                  const fetchRecipientName = async () => {
+                    try {
+                      const response = await api.get(`/api/accounts/recipient/${formData.toAccountNumber}`)
+                      if (response.data.success) {
+                        setRecipientName(response.data.data.name)
+                      } else {
+                        setRecipientName('')
+                      }
+                    } catch (error) {
+                      setRecipientName('')
+                    }
+                  }
+                  fetchRecipientName()
+                } else {
+                  setRecipientName('')
+                }
+              }}
               className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
               placeholder="Enter account number"
             />
