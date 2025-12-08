@@ -3,9 +3,6 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// Import database connection function
-const connectDB = require('./config/database');
-
 // Load environment variables
 dotenv.config();
 
@@ -23,7 +20,13 @@ app.use(express.json());
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
 
-// Database connection handled in serverless function
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('MongoDB Connected'))
+.catch(err => console.log(err));
 
 // Mount routers
 app.use('/api/auth', require('./routes/auth'));
@@ -42,21 +45,9 @@ app.get('/', (req, res) => {
 
 // Define Port and Start Server
 const PORT = process.env.PORT || 8000;
-// Start server only for local development, not in production (Vercel)
-if (process.env.NODE_ENV !== 'production') {
+if (require.main === module) {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-// Vercel serverless function handler
-module.exports = async (req, res) => {
-  try {
-    // Connect to database if not already connected
-    await connectDB();
-
-    // Handle the request with Express app
-    return app(req, res);
-  } catch (error) {
-    console.error('Serverless function error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+// Export the app for Vercel
+module.exports = app;

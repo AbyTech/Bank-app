@@ -10,10 +10,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: MONGO_URI
-        fromService:
-          type: mongodb
-          name: banking-db
-          property: connectionString
+        value: $MONGO_URI
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
@@ -22,6 +19,3 @@ services:
         value: 10000
       - key: CORS_ORIGIN
         value: https://prime-wave-bank.netlify.app
-  - type: mongodb
-    name: banking-db
-    plan: free

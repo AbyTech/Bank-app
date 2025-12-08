@@ -7,7 +7,7 @@ This guide will help you deploy the banking system backend on Render and fronten
 1. **GitHub Account**: Create a repository for your project
 2. **Render Account**: Sign up at https://render.com
 3. **Netlify Account**: Sign up at https://netlify.com
-4. **MongoDB Atlas Account**: For production database (optional, Render provides managed MongoDB)
+4. **MongoDB Atlas Account**: For production database (required, as Render does not provide managed MongoDB)
 
 ## Step 1: Prepare Your Code
 
@@ -36,24 +36,35 @@ cp frontend/.env.example frontend/.env
 
 ## Step 2: Deploy Backend on Render
 
-### 2.1 Connect GitHub Repository
+### 2.1 Create Web Service
 
 1. Go to https://dashboard.render.com
-2. Click "New" → "Blueprint"
+2. Click "New" → "Web Service"
 3. Connect your GitHub account and select the banking-system repository
-4. Render will automatically detect the `render.yaml` file
+4. Configure the service:
+   - **Name**: banking-backend (or your preferred name)
+   - **Runtime**: Node
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Root Directory**: backend
 
-### 2.2 Configure Deployment
+### 2.2 Set Environment Variables
 
-The `render.yaml` file is already configured for:
-- Node.js runtime
-- MongoDB database
-- Environment variables
-- Build and start commands
+Set the required environment variables in Render:
+
+1. In the Render dashboard, go to your service settings
+2. Navigate to Environment
+3. Add the following environment variables:
+   - `NODE_ENV`: production
+   - `MONGO_URI`: Your MongoDB Atlas connection string (e.g., `mongodb+srv://username:password@cluster.mongodb.net/database`)
+   - `JWT_SECRET`: (Generate a secure random string)
+   - `JWT_REFRESH_SECRET`: (Generate another secure random string)
+   - `PORT`: 10000
+   - `CORS_ORIGIN`: https://prime-wave-bank.netlify.app (update after Netlify deployment)
 
 ### 2.3 Deploy
 
-1. Click "Create Blueprint"
+1. Click "Create Web Service"
 2. Wait for the build to complete
 3. Note the backend URL (e.g., `https://your-app.onrender.com`)
 
