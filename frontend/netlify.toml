@@ -1,7 +1,8 @@
 [build]
+  [build]
   base = "frontend"
-  command = "npm install && chmod +x node_modules/.bin/vite && npm run build"
-  publish = "dist"
+  publish = "frontend/dist"
+  command = "npm install && npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
