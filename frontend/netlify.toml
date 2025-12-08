@@ -1,7 +1,7 @@
 [build]
-  base = "frontend"            # points to the Vite project folder
-  publish = "dist"             # Vite outputs to dist inside the base folder
-  command = "npm install && npx vite build"
+  base = "frontend"
+  publish = "dist"
+  command = "npm install --unsafe-perm && npx vite build"
 
 [build.environment]
   NODE_VERSION = "20"
