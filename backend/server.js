@@ -9,9 +9,15 @@ dotenv.config();
 const app = express();
 
 // Middleware
+const defaultOrigins = ['http://localhost:3000', 'https://app.primewavepay.com', 'https://prime-wave-bank.netlify.app'];
+const envOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])]; // Remove duplicates
+
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:3000', 'https://app.primewavepay.com', 'https://prime-wave-bank.netlify.app'],
+  origin: allowedOrigins,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
