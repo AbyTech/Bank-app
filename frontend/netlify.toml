@@ -1,7 +1,7 @@
 [build]
   base = "frontend"
   publish = "dist"
-  command = "npm install --unsafe-perm && npx vite build"
+  command = "npm install && npm install -g vite && vite build"
 
 [build.environment]
   NODE_VERSION = "20"
