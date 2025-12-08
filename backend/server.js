@@ -20,13 +20,7 @@ app.use(express.json());
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.log(err));
+// Database connection handled in serverless function
 
 // Mount routers
 app.use('/api/auth', require('./routes/auth'));
@@ -49,5 +43,19 @@ if (require.main === module) {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-// Export the app for Vercel
-module.exports = app;
+// Vercel serverless function handler
+module.exports = async (req, res) => {
+  try {
+    // Connect to database if not already connected
+    await connectDB();
+
+    // Handle the request with Express app
+    return app(req, res);
+  } catch (error) {
+    console.error('Serverless function error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// For local development
+module.exports.app = app;
