@@ -9,11 +9,10 @@ Fixed the "unknown type 'mongodb'" error in render.yaml by removing the unsuppor
 - [x] Updated README_DEPLOYMENT.md to use Web Service deployment instead of Blueprint
 - [x] Added detailed environment variable setup instructions in README
 - [x] Removed render.yaml file since Blueprint deployment is not used
-- [x] Updated build command instructions to leave empty for Node.js backend
+- [x] Added build script to package.json to prevent deployment errors
 
 ## Next Steps
 - Create a new Web Service in Render (not Blueprint)
 - Set all required environment variables in Render dashboard, including MONGO_URI with MongoDB Atlas connection string
-- Ensure build command is left empty (no npm run build)
 - Deploy and test the backend
 - Proceed with Netlify frontend deployment
