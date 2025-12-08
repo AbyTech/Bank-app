@@ -4,7 +4,7 @@
   publish = "frontend/dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "20.19.0"
   VITE_API_BASE_URL = "https://banking-back-pqlr.onrender.com"
 
 [[redirects]]
