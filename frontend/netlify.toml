@@ -1,7 +1,7 @@
 [build]
   base = "frontend"
   publish = "frontend/dist"
-  command = "npm ci && npm run build"  # npm ci is cleaner than npm install
+  command = "npm install && npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
