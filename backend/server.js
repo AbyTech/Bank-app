@@ -42,7 +42,8 @@ app.get('/', (req, res) => {
 
 // Define Port and Start Server
 const PORT = process.env.PORT || 8000;
-if (require.main === module) {
+// Start server only for local development, not in production (Vercel)
+if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
@@ -59,6 +60,3 @@ module.exports = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-// For local development
-module.exports.app = app;
