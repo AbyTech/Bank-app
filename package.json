@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Banking system with backend and frontend",
   "scripts": {
-    "build": "echo 'Build completed - no action required for root'"
+    "build": "cd backend && npm install"
   },
   "author": "",
   "license": "ISC"
