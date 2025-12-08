@@ -1,10 +1,10 @@
 [build]
   base = "frontend"
   command = "npm install && npm run build"
-  publish = "frontend/dist"
+  publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20.19.0"
+  NODE_VERSION = "20"
   VITE_API_BASE_URL = "https://banking-back-pqlr.onrender.com"
 
 [[redirects]]
