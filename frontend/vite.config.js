@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite' 
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
@@ -21,9 +21,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-  },
-  optimizeDeps: {
-    exclude: ['lucide-react'],
+    rollupOptions: {
+      external: [] // ensures lucide-react and other dependencies are bundled
+    },
   },
   define: {
     global: 'globalThis',
