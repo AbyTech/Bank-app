@@ -1,25 +1,27 @@
-@import "tailwindcss";
-
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Body styles */
 body {
+  @apply bg-cream text-primary;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: theme('colors.cream.DEFAULT');
-  color: theme('colors.primary.DEFAULT');
 }
 
 .dark body {
-  background-color: theme('colors.primary.900');
-  color: theme('colors.cream.DEFAULT');
+  @apply bg-primary-900 text-cream;
 }
 
+/* Glass effect */
 .glass-effect {
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
@@ -32,18 +34,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: theme('colors.cream.DEFAULT');
+  @apply bg-cream;
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: theme('colors.primary.800');
+  @apply bg-primary-900;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.gold.DEFAULT');
-  border-radius: 3px;
+  @apply bg-gold rounded;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: theme('colors.gold.600');
+  @apply bg-gold-600;
 }
