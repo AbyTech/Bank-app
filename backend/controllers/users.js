@@ -135,3 +135,43 @@ exports.getUserDetails = async (req, res, next) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+
+// @desc    Update user balance
+// @route   PUT /api/users/:id/balance
+// @access  Private/Admin
+exports.updateUserBalance = async (req, res, next) => {
+  try {
+    const { balance, description } = req.body;
+    const userId = req.params.id;
+
+    // Find the user's account
+    const account = await Account.findOne({ user: userId });
+
+    if (!account) {
+      return res.status(404).json({ success: false, error: 'Account not found for this user' });
+    }
+
+    const oldBalance = account.balance;
+    account.balance = balance;
+
+    await account.save();
+
+    // Create a transaction to log the admin update
+    await Transaction.create({
+      user: userId,
+      type: 'admin',
+      amount: balance - oldBalance,
+      description: description || 'Administrative balance update',
+      status: 'completed',
+      sender: req.user.id, // Admin user ID
+    });
+
+    res.status(200).json({
+      success: true,
+      data: account
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+

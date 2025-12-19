@@ -15,7 +15,7 @@ export default {
         },
         silver: "#A0A0A0",
         gold: {
-          DEFAULT: "#FFD700",
+          DEFAULT: "#ffde25ff",
           600: "#E6BE00"
         },
         success: "#28A745"

@@ -353,7 +353,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               ) : (
                 <>
                   <Send size={16} />
-                  <span>Transfer</span>
+                  <span>Send</span>
                 </>
               )}
             </Button>

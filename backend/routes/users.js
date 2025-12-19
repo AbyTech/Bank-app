@@ -4,7 +4,8 @@ const {
   getUser,
   updateUser,
   deleteUser,
-  getUserDetails
+  getUserDetails,
+  updateUserBalance
 } = require('../controllers/users');
 
 const router = express.Router();
@@ -34,5 +35,8 @@ router.route('/:id')
 
 router.route('/:id/details')
   .get(getUserDetails);
+
+router.route('/:id/balance')
+  .put(updateUserBalance);
 
 module.exports = router;

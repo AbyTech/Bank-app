@@ -10,6 +10,8 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(null)
   const [userDetails, setUserDetails] = useState(null)
+  const [newBalance, setNewBalance] = useState('')
+  const [balanceUpdateDescription, setBalanceUpdateDescription] = useState('')
   const [loading, setLoading] = useState(true)
   const [detailsLoading, setDetailsLoading] = useState(false)
   const [pendingCards, setPendingCards] = useState([])
@@ -85,6 +87,36 @@ const AdminDashboard = () => {
         fetchUsers(); // Refresh the list
       } catch (error) {
         console.error('Failed to delete user:', error);
+      }
+    }
+  };
+
+  const handleUpdateBalance = async (userId) => {
+    const balanceValue = parseFloat(newBalance);
+    if (isNaN(balanceValue) || balanceValue < 0) {
+      alert('Please enter a valid positive number for the balance.');
+      return;
+    }
+
+    if (!balanceUpdateDescription) {
+      alert('Please provide a description for the balance update.');
+      return;
+    }
+
+    if (window.confirm('Are you sure you want to update this user\'s balance?')) {
+      try {
+        await api.put(`/api/users/${userId}/balance`, {
+          balance: balanceValue,
+          description: balanceUpdateDescription,
+        });
+        alert('Balance updated successfully!');
+        // Refresh user details to show new balance
+        viewUserDetails(selectedUser);
+        setNewBalance('');
+        setBalanceUpdateDescription('');
+      } catch (error) {
+        console.error('Failed to update balance:', error);
+        alert('Failed to update balance. Please try again.');
       }
     }
   };
@@ -423,6 +455,34 @@ const AdminDashboard = () => {
                             </div>
                           ))}
                         </div>
+
+                        {/* Update Balance Form */}
+                        <div className="mt-6 pt-4 border-t border-silver/20 dark:border-primary-700">
+                          <h4 className="text-md font-heading font-semibold text-primary dark:text-cream mb-2">Update Balance</h4>
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="number"
+                              placeholder="New Balance"
+                              value={newBalance}
+                              onChange={(e) => setNewBalance(e.target.value)}
+                              className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Update Description"
+                              value={balanceUpdateDescription}
+                              onChange={(e) => setBalanceUpdateDescription(e.target.value)}
+                              className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold"
+                            />
+                            <Button
+                              onClick={() => handleUpdateBalance(selectedUser._id)}
+                              variant="primary"
+                            >
+                              Update
+                            </Button>
+                          </div>
+                        </div>
+
                       </CardContent>
                     </Card>
 
