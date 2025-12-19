@@ -103,7 +103,7 @@ exports.createCard = async (req, res, next) => {
 // @access  Private (Admin only)
 exports.approveCard = async (req, res, next) => {
   try {
-    const { action } = req.body; // 'approve' or 'decline'
+    const { action, rejectionReason } = req.body; // 'approve' or 'decline'
 
     const card = await Card.findById(req.params.id);
     if (!card) {
@@ -116,12 +116,20 @@ exports.approveCard = async (req, res, next) => {
       card.status = 'active';
       card.approvalDate = new Date();
       card.approvedBy = req.user.id;
+      // Clear any previous rejection data
+      card.rejectionReason = undefined;
+      card.rejectionDate = undefined;
+      card.rejectedBy = undefined;
     } else if (action === 'decline') {
       card.approvalStatus = 'declined';
       card.purchaseStatus = 'declined';
-      card.status = 'blocked';
+      card.status = 'rejected';
       card.approvalDate = new Date();
       card.approvedBy = req.user.id;
+      // Store rejection details
+      card.rejectionReason = rejectionReason || 'No reason provided';
+      card.rejectionDate = new Date();
+      card.rejectedBy = req.user.id;
     } else {
       return res.status(400).json({ success: false, error: 'Invalid action' });
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { CreditCard, Plus, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
+import { CreditCard, Plus, Clock, CheckCircle, XCircle, AlertTriangle, AlertCircle } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import Modal from '../../components/UI/Modal'
@@ -74,6 +74,8 @@ const Cards = () => {
         return <XCircle className="text-danger" size={16} />
       case 'blocked':
         return <XCircle className="text-danger" size={16} />
+      case 'rejected':
+        return <AlertCircle className="text-danger" size={16} />
       default:
         return <AlertTriangle className="text-silver" size={16} />
     }
@@ -131,9 +133,10 @@ const Cards = () => {
                   <div className="flex justify-end items-start mb-4">
                     <div className="flex items-center space-x-1">
                       {getStatusIcon(card.status)}
-                      <span className={`text-sm capitalize ${
+                      <span className={`text-sm capitalize font-semibold ${
                         card.status === 'active' ? 'text-success' :
                         card.status === 'pending_payment' ? 'text-gold' :
+                        card.status === 'rejected' ? 'text-danger' :
                         card.status === 'blocked' ? 'text-danger' : 'text-danger'
                       }`}>
                         {card.status.replace('_', ' ')}
@@ -141,7 +144,11 @@ const Cards = () => {
                     </div>
                   </div>
 
-                  <div className="relative bg-gradient-to-br from-gray-600 to-gray-800 rounded-xl p-6 text-white mb-4 shadow-lg overflow-hidden">
+                  <div className={`relative rounded-xl p-6 text-white mb-4 shadow-lg overflow-hidden ${
+                    card.status === 'rejected' 
+                      ? 'bg-gradient-to-br from-red-600 to-red-800 opacity-75' 
+                      : 'bg-gradient-to-br from-gray-600 to-gray-800'
+                  }`}>
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-10">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16"></div>
@@ -193,7 +200,23 @@ const Cards = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {card.purchaseStatus === 'pending_payment' && (
+                    {card.status === 'rejected' && card.rejectionReason && (
+                      <div className="bg-danger/10 border border-danger/30 rounded-lg p-3">
+                        <div className="flex items-start space-x-2">
+                          <AlertCircle className="text-danger flex-shrink-0 mt-0.5" size={18} />
+                          <div>
+                            <p className="text-sm font-semibold text-danger mb-1">Card Rejected</p>
+                            <p className="text-sm text-silver">{card.rejectionReason}</p>
+                            {card.rejectionDate && (
+                              <p className="text-xs text-silver mt-1">
+                                Rejected on: {new Date(card.rejectionDate).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {card.purchaseStatus === 'pending_payment' && card.status !== 'rejected' && (
                       <div className="flex justify-between">
                         <span className="text-silver">Payment Due</span>
                         <span className="text-gold font-semibold">
@@ -215,17 +238,31 @@ const Cards = () => {
                     >
                       Details
                     </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => {
-                        setSelectedCard(card)
-                        setShowContactModal(true)
-                      }}
-                    >
-                      Pay Now
-                    </Button>
+                    {card.status === 'rejected' ? (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedCard(card)
+                          setShowContactModal(true)
+                        }}
+                      >
+                        Contact Support
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => {
+                          setSelectedCard(card)
+                          setShowContactModal(true)
+                        }}
+                      >
+                        Pay Now
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -242,7 +279,7 @@ const Cards = () => {
               </h3>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-xl">
                   <div className="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <CreditCard className="text-gold" size={24} />
@@ -265,6 +302,14 @@ const Cards = () => {
                   </div>
                   <h4 className="font-semibold text-primary dark:text-cream">Pending Payments</h4>
                   <p className="text-2xl font-bold text-gold">{cards.filter(card => card.purchaseStatus === 'pending_payment').length}</p>
+                </div>
+
+                <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-xl">
+                  <div className="w-12 h-12 bg-danger/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <XCircle className="text-danger" size={24} />
+                  </div>
+                  <h4 className="font-semibold text-primary dark:text-cream">Rejected Cards</h4>
+                  <p className="text-2xl font-bold text-danger">{cards.filter(card => card.status === 'rejected').length}</p>
                 </div>
               </div>
             </CardContent>
@@ -399,7 +444,12 @@ const Cards = () => {
                 </div>
                 <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
                   <h4 className="font-semibold text-primary dark:text-cream mb-2">Status</h4>
-                  <p className={`capitalize ${selectedCard.status === 'active' ? 'text-success' : selectedCard.status === 'pending_payment' ? 'text-gold' : selectedCard.status === 'blocked' ? 'text-danger' : 'text-danger'}`}>
+                  <p className={`capitalize font-semibold ${
+                    selectedCard.status === 'active' ? 'text-success' : 
+                    selectedCard.status === 'pending_payment' ? 'text-gold' : 
+                    selectedCard.status === 'rejected' ? 'text-danger' :
+                    selectedCard.status === 'blocked' ? 'text-danger' : 'text-danger'
+                  }`}>
                     {selectedCard.status.replace('_', ' ')}
                   </p>
                 </div>
@@ -409,7 +459,29 @@ const Cards = () => {
                 </div>
               </div>
 
-              {selectedCard.purchaseStatus === 'pending_payment' && (
+              {selectedCard.status === 'rejected' && selectedCard.rejectionReason && (
+                <div className="bg-danger/10 border-2 border-danger/30 rounded-lg p-4">
+                  <div className="flex items-start space-x-3 mb-3">
+                    <AlertCircle className="text-danger flex-shrink-0 mt-1" size={24} />
+                    <div>
+                      <h4 className="font-semibold text-danger text-lg mb-2">Card Application Rejected</h4>
+                      <p className="text-primary dark:text-cream mb-2">{selectedCard.rejectionReason}</p>
+                      {selectedCard.rejectionDate && (
+                        <p className="text-sm text-silver">
+                          Rejected on: {new Date(selectedCard.rejectionDate).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-cream dark:bg-primary-700 rounded-lg p-3 mt-3">
+                    <p className="text-sm text-primary dark:text-cream">
+                      <strong>What to do next:</strong> Please contact our support team to understand the rejection reason and reapply if eligible.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {selectedCard.purchaseStatus === 'pending_payment' && selectedCard.status !== 'rejected' && (
                 <div className="bg-gold/10 border border-gold/20 rounded-lg p-4">
                   <h4 className="font-semibold text-gold mb-2">Payment Information</h4>
                   <div className="space-y-2 text-sm">
@@ -444,7 +516,18 @@ const Cards = () => {
                 >
                   Close
                 </Button>
-                {selectedCard.purchaseStatus === 'pending_payment' && (
+                {selectedCard.status === 'rejected' ? (
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      setShowDetailsModal(false)
+                      setShowContactModal(true)
+                    }}
+                    className="flex-1"
+                  >
+                    Contact Support
+                  </Button>
+                ) : selectedCard.purchaseStatus === 'pending_payment' ? (
                   <Button
                     variant="danger"
                     onClick={() => {
@@ -455,7 +538,7 @@ const Cards = () => {
                   >
                     Pay Now
                   </Button>
-                )}
+                ) : null}
               </div>
             </div>
           )}
@@ -468,18 +551,33 @@ const Cards = () => {
             setShowContactModal(false)
             setSelectedCard(null)
           }}
-          title="Contact Support for Payment"
+          title={selectedCard?.status === 'rejected' ? 'Contact Support - Card Rejected' : 'Contact Support for Payment'}
         >
           <div className="text-center">
-            <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertTriangle className="text-gold" size={32} />
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              selectedCard?.status === 'rejected' ? 'bg-danger/20' : 'bg-gold/20'
+            }`}>
+              {selectedCard?.status === 'rejected' ? (
+                <AlertCircle className="text-danger" size={32} />
+              ) : (
+                <AlertTriangle className="text-gold" size={32} />
+              )}
             </div>
             <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream mb-2">
-              Payment Processing
+              {selectedCard?.status === 'rejected' ? 'Card Application Rejected' : 'Payment Processing'}
             </h3>
             <p className="text-silver mb-6">
-              To proceed with payment for your card, please contact our support team. They will guide you through the secure payment process.
+              {selectedCard?.status === 'rejected' 
+                ? 'Your card application has been rejected. Please contact our support team to understand the reason and discuss reapplication options.'
+                : 'To proceed with payment for your card, please contact our support team. They will guide you through the secure payment process.'
+              }
             </p>
+            {selectedCard?.status === 'rejected' && selectedCard?.rejectionReason && (
+              <div className="bg-danger/10 border border-danger/30 rounded-lg p-4 mb-6 text-left">
+                <p className="text-sm font-semibold text-danger mb-1">Rejection Reason:</p>
+                <p className="text-sm text-primary dark:text-cream">{selectedCard.rejectionReason}</p>
+              </div>
+            )}
             <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4 mb-6">
               <p className="text-sm text-primary dark:text-cream font-semibold mb-1">Support Email:</p>
               <p className="text-gold font-mono">helpxprimewavebank@gmail.com</p>
@@ -498,7 +596,13 @@ const Cards = () => {
               <Button
                 variant="primary"
                 onClick={() => {
-                  window.location.href = 'mailto:helpxprimewavebank@gmail.com?subject=Card Payment Request&body=Please help me process payment for my card.'
+                  const subject = selectedCard?.status === 'rejected' 
+                    ? 'Card Rejection Inquiry' 
+                    : 'Card Payment Request'
+                  const body = selectedCard?.status === 'rejected'
+                    ? `I would like to inquire about my rejected card application.\n\nCard Type: ${selectedCard?.cardType}\nRejection Reason: ${selectedCard?.rejectionReason || 'Not specified'}\n\nPlease provide more information and guidance on next steps.`
+                    : 'Please help me process payment for my card.'
+                  window.location.href = `mailto:helpxprimewavebank@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
                   setShowContactModal(false)
                   setSelectedCard(null)
                 }}

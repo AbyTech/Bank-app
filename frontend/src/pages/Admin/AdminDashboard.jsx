@@ -16,6 +16,9 @@ const AdminDashboard = () => {
   const [detailsLoading, setDetailsLoading] = useState(false)
   const [pendingCards, setPendingCards] = useState([])
   const [cardsLoading, setCardsLoading] = useState(true)
+  const [showRejectModal, setShowRejectModal] = useState(false)
+  const [selectedCardForRejection, setSelectedCardForRejection] = useState(null)
+  const [rejectionReason, setRejectionReason] = useState('')
   const [stats, setStats] = useState([
     { title: 'Total Users', value: '0', change: '+0%', icon: Users, color: 'text-blue-500' },
     { title: 'Active Cards', value: '0', change: '+0%', icon: CreditCard, color: 'text-gold' },
@@ -43,10 +46,38 @@ const AdminDashboard = () => {
 
   const handleApproveCard = async (cardId, action) => {
     try {
-      await api.put(`/api/cards/${cardId}/approve`, { action })
-      fetchPendingCards() // Refresh the list
+      if (action === 'approve') {
+        await api.put(`/api/cards/${cardId}/approve`, { action })
+        fetchPendingCards() // Refresh the list
+      } else if (action === 'decline') {
+        // Open rejection modal instead of directly declining
+        const card = pendingCards.find(c => c._id === cardId)
+        setSelectedCardForRejection(card)
+        setShowRejectModal(true)
+      }
     } catch (error) {
       console.error('Failed to approve card:', error)
+    }
+  }
+
+  const handleRejectCard = async () => {
+    if (!rejectionReason.trim()) {
+      alert('Please provide a reason for rejection')
+      return
+    }
+
+    try {
+      await api.put(`/api/cards/${selectedCardForRejection._id}/approve`, {
+        action: 'decline',
+        rejectionReason: rejectionReason.trim()
+      })
+      setShowRejectModal(false)
+      setSelectedCardForRejection(null)
+      setRejectionReason('')
+      fetchPendingCards() // Refresh the list
+    } catch (error) {
+      console.error('Failed to reject card:', error)
+      alert('Failed to reject card. Please try again.')
     }
   }
 
@@ -316,6 +347,97 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Rejection Reason Modal */}
+        {showRejectModal && selectedCardForRejection && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            onClick={() => {
+              setShowRejectModal(false)
+              setSelectedCardForRejection(null)
+              setRejectionReason('')
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-primary-800 rounded-xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-heading font-bold text-primary dark:text-cream">
+                  Reject Card Application
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowRejectModal(false)
+                    setSelectedCardForRejection(null)
+                    setRejectionReason('')
+                  }}
+                  className="text-silver hover:text-primary dark:hover:text-cream"
+                >
+                  <XCircle size={24} />
+                </button>
+              </div>
+
+              <div className="mb-4">
+                <p className="text-silver mb-2">
+                  You are about to reject the card application for:
+                </p>
+                <div className="bg-cream dark:bg-primary-700 rounded-lg p-3">
+                  <p className="font-semibold text-primary dark:text-cream">
+                    {selectedCardForRejection.user.firstName} {selectedCardForRejection.user.lastName}
+                  </p>
+                  <p className="text-sm text-silver">
+                    {selectedCardForRejection.cardType} Card - ${selectedCardForRejection.purchaseAmount?.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
+                  Rejection Reason <span className="text-danger">*</span>
+                </label>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Please provide a clear reason for rejecting this card application..."
+                  className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-danger resize-none"
+                  rows="4"
+                />
+                <p className="text-xs text-silver mt-1">
+                  This reason will be visible to the user.
+                </p>
+              </div>
+
+              <div className="flex space-x-3">
+                <Button
+                  onClick={() => {
+                    setShowRejectModal(false)
+                    setSelectedCardForRejection(null)
+                    setRejectionReason('')
+                  }}
+                  variant="ghost"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleRejectCard}
+                  variant="danger"
+                  className="flex-1"
+                >
+                  <XCircle size={16} className="mr-1" />
+                  Reject Card
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
 
         {/* User Details Modal */}
         {selectedUser && (

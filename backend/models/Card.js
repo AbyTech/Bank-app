@@ -35,7 +35,7 @@ const CardSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'blocked', 'expired', 'pending_payment'],
+    enum: ['active', 'blocked', 'expired', 'pending_payment', 'rejected'],
     default: 'active',
   },
   purchaseStatus: {
@@ -52,6 +52,16 @@ const CardSchema = new mongoose.Schema({
     type: Date,
   },
   approvedBy: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+  },
+  rejectionReason: {
+    type: String,
+  },
+  rejectionDate: {
+    type: Date,
+  },
+  rejectedBy: {
     type: mongoose.Schema.ObjectId,
     ref: 'User',
   },
