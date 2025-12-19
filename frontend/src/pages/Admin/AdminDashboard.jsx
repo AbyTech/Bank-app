@@ -261,6 +261,7 @@ const AdminDashboard = () => {
                                 onClick={() => handleDelete(user._id)}
                                 variant="danger"
                                 size="sm"
+                                className="bg-red-600 text-white hover:bg-red-700"
                               >
                                 <Trash2 size={14} className="mr-1" />
                                 Delete
@@ -329,9 +330,10 @@ const AdminDashboard = () => {
                                 onClick={() => handleApproveCard(card._id, 'decline')}
                                 variant="danger"
                                 size="sm"
+                                className="bg-red-600 text-white hover:bg-red-700"
                               >
                                 <XCircle size={14} className="mr-1" />
-                                Decline
+                                Reject
                               </Button>
                             </div>
                           </td>
@@ -429,7 +431,7 @@ const AdminDashboard = () => {
                 <Button
                   onClick={handleRejectCard}
                   variant="danger"
-                  className="flex-1"
+                  className="flex-1 bg-red-600 text-white hover:bg-red-700"
                 >
                   <XCircle size={16} className="mr-1" />
                   Reject Card
