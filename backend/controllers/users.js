@@ -159,11 +159,12 @@ exports.updateUserBalance = async (req, res, next) => {
     // Create a transaction to log the admin update
     await Transaction.create({
       user: userId,
+      account: account._id,
       type: 'admin',
       amount: balance - oldBalance,
       description: description || 'Administrative balance update',
-      status: 'completed',
-      sender: req.user.id, // Admin user ID
+      balance: balance,
+      status: 'completed'
     });
 
     res.status(200).json({
