@@ -9,7 +9,7 @@ import logo from '../../assets/logo.png'
 
 const Register = () => {
   const [step, setStep] = useState(1)
-  const [formData, setFormData] = useState({ name: '', email: '', country: '' })
+  const [formData, setFormData] = useState({ name: '', email: '', country: '', password: '' })
   const [seedPhrase, setSeedPhrase] = useState('')
   const [confirmedPhrase, setConfirmedPhrase] = useState('')
   const [showSeedPhrase, setShowSeedPhrase] = useState(false)
@@ -86,6 +86,9 @@ const Register = () => {
                 </div>
                 <div><label className="block text-sm font-medium text-primary dark:text-cream mb-2">Email Address</label>
                   <input type="email" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" placeholder="Enter your email" />
+                </div>
+                <div><label className="block text-sm font-medium text-primary dark:text-cream mb-2">Password</label>
+                  <input type="password" required value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent" placeholder="Enter your password" />
                 </div>
                 <div><label className="block text-sm font-medium text-primary dark:text-cream mb-2">Country</label>
                   <select required value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })} className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent">

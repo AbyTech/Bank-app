@@ -15,9 +15,9 @@ export const authAPI = {
     }
   },
 
-  login: async (email, seedPhrase) => {
+  login: async (email, seedPhrase, password) => {
     try {
-      const response = await api.post('/api/auth/login', { email, seedPhrase });
+      const response = await api.post('/api/auth/login', { email, seedPhrase, password });
       const { token, user } = response.data;
       localStorage.setItem('access_token', token);
       // Return the user object from login response
