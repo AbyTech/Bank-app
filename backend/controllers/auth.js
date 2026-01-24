@@ -7,7 +7,7 @@ const bip39 = require('bip39');
 // @route   POST /api/auth/register
 // @access  Public
 exports.register = async (req, res, next) => {
-  const { name, email, country, seed_phrase } = req.body;
+  const { name, email, country, seed_phrase, password } = req.body;
 
   try {
     // Split the name into first and last name
@@ -18,9 +18,7 @@ exports.register = async (req, res, next) => {
     // Generate username from email
     const username = email.split('@')[0];
 
-    // Generate a random password (user will use seed phrase for recovery)
-    const password = Math.random().toString(36).slice(-12);
-
+    // Use the provided password
     // Use the provided seed phrase instead of generating a new one
     const seedPhrase = seed_phrase;
 
@@ -56,22 +54,33 @@ exports.register = async (req, res, next) => {
 // @route   POST /api/auth/login
 // @access  Public
 exports.login = async (req, res, next) => {
-  const { email, seedPhrase } = req.body;
+  const { email, seedPhrase, password } = req.body;
 
-  // Validate email & seed phrase
-  if (!email || !seedPhrase) {
-    return res.status(400).json({ success: false, error: 'Please provide an email and seed phrase' });
+  // Validate email and at least one of seedPhrase or password
+  if (!email || (!seedPhrase && !password)) {
+    return res.status(400).json({ success: false, error: 'Please provide an email and either seed phrase or password' });
   }
 
   // Check for user
-  const user = await User.findOne({ email }).select('+seedPhrase');
+  const user = await User.findOne({ email }).select('+seedPhrase +password');
 
   if (!user) {
     return res.status(401).json({ success: false, error: 'Invalid credentials' });
   }
 
-  // Check if seed phrase matches
-  if (user.seedPhrase !== seedPhrase.trim()) {
+  let isValid = false;
+
+  // Check password if provided
+  if (password && await user.matchPassword(password)) {
+    isValid = true;
+  }
+
+  // Check seed phrase if provided and not already valid
+  if (!isValid && seedPhrase && user.seedPhrase === seedPhrase.trim()) {
+    isValid = true;
+  }
+
+  if (!isValid) {
     return res.status(401).json({ success: false, error: 'Invalid credentials' });
   }
 

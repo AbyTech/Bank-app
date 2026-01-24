@@ -20,6 +20,13 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    // Validate that at least one of password or seedPhrase is provided
+    if (!formData.password && !formData.seedPhrase) {
+      toast.error('Please provide either a password or seed phrase.')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -103,7 +110,6 @@ const Login = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver" size={20} />
                 <input
                   type={showSeedPhrase ? "text" : "password"}
-                  required={!formData.password}
                   value={formData.seedPhrase}
                   onChange={(e) => setFormData({ ...formData, seedPhrase: e.target.value })}
                   className="w-full pl-12 pr-12 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent transition-all"
