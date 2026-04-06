@@ -326,9 +326,9 @@ const Dashboard = () => {
           {/* Mobile Balance Card */}
           {primaryAccount && (
             <div className="mb-8">
-              <Card className="bg-gradient-to-br from-gold/20 to-gold/10 dark:from-gold/10 dark:to-gold/20 dark:bg-gradient-to-br backdrop-blur-sm dark:backdrop-blur-sm border-gold/30 dark:border-gold/20 shadow-2xl">
+              <Card className="bg-[#373737] lg:bg-gradient-to-br from-gold/20 to-gold/10 dark:from-gold/10 dark:to-gold/20 dark:bg-gradient-to-br backdrop-blur-sm dark:backdrop-blur-sm border-gold/30 dark:border-gold/20 shadow-2xl">
                 <CardHeader>
-                  <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
+                  <h3 className="text-lg font-heading font-semibold text-gold dark:text-cream">
                     Account Overview
                   </h3>
                 </CardHeader>
@@ -384,7 +384,7 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-silver dark:text-silver">Account Type</span>
                       <span className="px-3 py-1 bg-success/20 text-success text-sm font-semibold rounded-lg">
-                        Savings Account
+                        Savings
                       </span>
                     </div>
                   </div>
@@ -455,3 +455,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+

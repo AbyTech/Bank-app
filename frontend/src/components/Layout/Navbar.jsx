@@ -6,8 +6,6 @@ import {
   X,
   User,
   LogOut,
-  Sun,
-  Moon,
   Bell,
   Settings,
   ArrowUpRight,
@@ -145,12 +143,12 @@ const Navbar = () => {
 
           {/* Right Section */}
           <div className="hidden md:flex items-center space-x-4">
-            <button
+            {/* <button
               onClick={toggleDarkMode}
               className="p-2 text-primary dark:text-cream hover:text-gold dark:hover:text-gold transition-colors"
             >
               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            </button> */}
             
             <div className="relative">
               <button
@@ -283,12 +281,12 @@ const Navbar = () => {
               ))}
               
               <div className="flex items-center space-x-4 pt-4 border-t border-silver/30 dark:border-primary-700">
-                <button
+                {/* <button
                   onClick={toggleDarkMode}
                   className="p-2 text-primary dark:text-cream hover:text-gold transition-colors"
                 >
                   {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-                </button>
+                </button> */}
 
                 <div className="relative">
                   <button

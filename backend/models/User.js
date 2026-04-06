@@ -35,7 +35,6 @@ const UserSchema = new mongoose.Schema({
   },
   seedPhrase: {
     type: String,
-    required: true,
     select: false,
   },
   profilePhoto: {

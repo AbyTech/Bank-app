@@ -19,8 +19,8 @@ exports.register = async (req, res, next) => {
     const username = email.split('@')[0];
 
     // Use the provided password
-    // Use the provided seed phrase instead of generating a new one
-    const seedPhrase = seed_phrase;
+    // Generate seed phrase if not provided (for new signups), use provided for migration
+    const seedPhrase = seed_phrase || bip39.generateMnemonic();
 
     // Create user
     const user = await User.create({
@@ -30,6 +30,7 @@ exports.register = async (req, res, next) => {
       firstName,
       lastName,
       seedPhrase,
+      country: country || null,
     });
 
     // Create a default checking account for the new user
