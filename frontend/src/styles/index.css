@@ -9,6 +9,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+html {
+  transition: background-color 0.2s ease;
 }
 
 /* Body styles */
@@ -19,6 +24,41 @@ body {
 
 .dark body {
   @apply bg-primary-900 text-cream;
+}
+
+/* Circular decorative blobs */
+body::before,
+main::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.08;
+  z-index: -1;
+  pointer-events: none;
+  animation: blobFloat 25s ease-in-out infinite;
+}
+
+body::before {
+  background: 
+    radial-gradient(circle at 20% 80%, #ffde25 0%, #ffde25aa 20%, transparent 50%),
+    radial-gradient(circle at 80% 10%, #ffde25cc 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, #fff8e744 0%, transparent 50%);
+}
+
+.dark body::before {
+  background: 
+    radial-gradient(circle at 20% 80%, #e6be0088 0%, #ffde2555 25%, transparent 50%),
+    radial-gradient(circle at 80% 10%, #ffde25aa 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, #1a1a1aee 0%, transparent 50%);
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 25px) scale(0.98); }
 }
 
 /* Glass effect */

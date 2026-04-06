@@ -12,8 +12,12 @@ import {
   Send,
   Shield,
   AlertTriangle,
-  X
+  X,
+  Copy,
+  Eye,
+  EyeOff
 } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import QuickActions from './QuickActions'
@@ -31,11 +35,12 @@ const Dashboard = () => {
   const [recentTransactions, setRecentTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showProfileNotification, setShowProfileNotification] = useState(false)
+  const [hideBalance, setHideBalance] = useState(false)
+  const [primaryAccount, setPrimaryAccount] = useState(null)
 
   useEffect(() => {
     if (user) {
       fetchDashboardData()
-      // Check if profile is completed
       if (!user.profileCompleted) {
         setShowProfileNotification(true)
       }
@@ -46,32 +51,27 @@ const Dashboard = () => {
     try {
       setLoading(true)
 
-      // Set currency based on user's country first
       let userCurrency = 'USD'
       if (user?.country) {
         userCurrency = getCurrencyByCountry(user.country)
         setCurrency(userCurrency)
       }
 
-      // Fetch account data
       const accountResponse = await api.get('/api/accounts/')
-      const accountData = accountResponse.data.data[0] // Get first account
+      const accountData = accountResponse.data.data[0]
       setBalance(accountData.balance)
+      setPrimaryAccount(accountData)
 
-      // Fetch transactions
       const transactionsResponse = await api.get('/api/transactions/')
       const transactionsData = transactionsResponse.data.data || []
       setRecentTransactions(transactionsData.slice(0, 3))
 
-      // Fetch cards count
       const cardsResponse = await api.get('/api/cards/')
       const activeCards = cardsResponse.data.data.filter(card => card.purchase_status === 'active').length
 
-      // Fetch loans count
       const loansResponse = await api.get('/api/loans/')
       const activeLoans = loansResponse.data.data.filter(loan => loan.status === 'active').length
 
-      // Calculate stats
       const monthlyIncome = transactionsData
         .filter(t => t.type === 'deposit' && new Date(t.createdAt).getMonth() === new Date().getMonth())
         .reduce((sum, t) => sum + parseFloat(t.amount), 0)
@@ -117,7 +117,6 @@ const Dashboard = () => {
       ])
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
-      // Fallback to default stats if API fails
       setStats([
         {
           title: 'Total Balance',
@@ -157,14 +156,11 @@ const Dashboard = () => {
     }
   }
 
-
-
   const getTransactionIcon = (transaction) => {
     switch (transaction.type) {
       case 'deposit':
         return <ArrowDownLeft className="text-success" size={20} />
       case 'transfer':
-        // For transfers, check if this is the receiving transaction (no toAccount means it's a received transfer)
         return transaction.toAccount ? <ArrowUpRight className="text-danger" size={20} /> : <ArrowDownLeft className="text-success" size={20} />
       case 'withdrawal':
       case 'payment':
@@ -180,7 +176,6 @@ const Dashboard = () => {
       case 'deposit':
         return 'bg-success/20 text-success'
       case 'transfer':
-        // For transfers, check if this is the receiving transaction
         return transaction.toAccount ? 'bg-danger/20 text-danger' : 'bg-success/20 text-success'
       case 'withdrawal':
       case 'payment':
@@ -196,7 +191,6 @@ const Dashboard = () => {
       case 'deposit':
         return 'text-success'
       case 'transfer':
-        // For transfers, check if this is the receiving transaction
         return transaction.toAccount ? 'text-danger' : 'text-success'
       case 'withdrawal':
       case 'payment':
@@ -212,7 +206,6 @@ const Dashboard = () => {
       case 'deposit':
         return '+'
       case 'transfer':
-        // For transfers, check if this is the receiving transaction
         return transaction.toAccount ? '-' : '+'
       case 'withdrawal':
       case 'payment':
@@ -289,8 +282,8 @@ const Dashboard = () => {
           </div>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Desktop Stats Grid */}
+        <div className="hidden lg:grid grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.title}
@@ -328,25 +321,81 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Balance Chart */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
-                  Balance Overview
-                </h3>
-              </CardHeader>
-              <CardContent>
-                <BalanceChart />
-              </CardContent>
-            </Card>
-          </div>
+        {/* Mobile: Account + Quick full width */}
+        <div className="lg:hidden space-y-6">
+          {/* Mobile Balance Card */}
+          {primaryAccount && (
+            <div className="mb-8">
+              <Card className="bg-gradient-to-br from-gold/20 to-gold/10 dark:from-gold/10 dark:to-gold/20 dark:bg-gradient-to-br backdrop-blur-sm dark:backdrop-blur-sm border-gold/30 dark:border-gold/20 shadow-2xl">
+                <CardHeader>
+                  <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
+                    Account Overview
+                  </h3>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-2">
+                {/* Balance First */}
+                <div className="space-y-6 pt-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-silver dark:text-silver">Total Balance</span>
+                    <div className="flex items-center space-x-2">
+                      <motion.span 
+                        key={hideBalance ? 'hidden' : 'shown'}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-2xl font-bold bg-gradient-to-r from-gold via-gold-300 to-gold bg-clip-text text-transparent drop-shadow-lg"
+                      >
+                        {hideBalance 
+                          ? '******' 
+                          : formatAmount(primaryAccount.balance, currency)
+                        }
+                      </motion.span>
+                      <button
+                        onClick={() => setHideBalance(!hideBalance)}
+                        className="p-2 text-silver hover:text-gold hover:bg-gold/20 rounded-lg transition-all duration-200"
+                        title={hideBalance ? 'Show balance' : 'Hide balance'}
+                      >
+                        {hideBalance ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
 
-          {/* Quick Actions */}
-          <div>
-            <QuickActions />
-          </div>
+                  <div className="pt-4 border-t border-silver/20 space-y-4">
+                    {/* Account Number */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-silver dark:text-silver">Account Number</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-mono text-sm font-semibold text-primary dark:text-cream bg-cream/50 dark:bg-primary-800 px-3 py-1 rounded-lg">
+                          {primaryAccount.accountNumber}
+                        </span>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(primaryAccount.accountNumber)
+                            toast.success('Account number copied!')
+                          }}
+                          className="p-2 text-silver hover:text-gold hover:bg-gold/20 rounded-lg transition-all duration-200"
+                          title="Copy account number"
+                        >
+                          <Copy size={16} />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Account Type */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-silver dark:text-silver">Account Type</span>
+                      <span className="px-3 py-1 bg-success/20 text-success text-sm font-semibold rounded-lg">
+                        Savings Account
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+          
+          {/* Mobile Quick Actions */}
+          <QuickActions />
         </div>
 
         {/* Recent Transactions */}
@@ -369,9 +418,7 @@ const Dashboard = () => {
                     whileHover={{ x: 4 }}
                   >
                     <div className="flex items-center space-x-4">
-                      <div className={`p-2 rounded-full ${
-                        getTransactionColor(transaction)
-                      }`}>
+                      <div className={`p-2 rounded-full ${getTransactionColor(transaction)}`}>
                         {getTransactionIcon(transaction)}
                       </div>
                       <div>

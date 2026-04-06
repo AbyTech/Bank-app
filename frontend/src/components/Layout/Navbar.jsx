@@ -41,7 +41,6 @@ const Navbar = () => {
   // WebSocket for real-time notifications
   useWebSocket({
     newTransaction: (data) => {
-      // Add new transaction to notifications
       const newNotification = {
         id: data.transaction._id,
         type: 'transaction',
@@ -51,7 +50,7 @@ const Navbar = () => {
         date: data.transaction.createdAt,
         read: false
       }
-      setNotifications(prev => [newNotification, ...prev.slice(0, 4)]) // Keep only 5 most recent
+      setNotifications(prev => [newNotification, ...prev.slice(0, 4)])
     }
   })
 
@@ -73,7 +72,6 @@ const Navbar = () => {
       setLoading(true)
       const response = await api.get('/api/transactions/')
       const transactions = response.data.data || []
-      // Get the 5 most recent transactions as notifications
       const recentTransactions = transactions
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 5)

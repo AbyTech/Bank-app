@@ -3,13 +3,13 @@ import { Mail, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white py-8">
+    <footer className="bg-gradient-to-r from-cream/80 to-cream/50 dark:from-primary-800/80 dark:to-primary-700/80 text-primary dark:text-cream py-8 border-t border-silver/30 dark:border-primary-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
             <h3 className="text-lg font-semibold mb-4">PrimeWave Bank</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-silver/80 dark:text-silver/70 mb-4">
               Your trusted banking partner for all your financial needs.
             </p>
           </div>
@@ -21,7 +21,7 @@ const Footer = () => {
               <div className="flex items-center space-x-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-400"
+                  className="h-5 w-5 text-silver/70 dark:text-silver/60"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -31,19 +31,15 @@ const Footer = () => {
                   href="https://t.me/helpxprimewavebank"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-blue-500 transition-colors"
+                  className="text-silver/80 dark:text-silver/70 hover:text-gold dark:hover:text-gold transition-colors"
                 >
                   @helpxprimewavebank
                 </a>
               </div>
               <div className="flex items-center space-x-2">
-                <Mail className="h-5 w-5 text-gray-400" />
-                <span className="text-gray-400">helpxprimewavebank.com</span>
+                <Mail className="h-5 w-5 text-silver/70 dark:text-silver/60" />
+                <span className="text-silver/80 dark:text-silver/70">helpxprimewavebank.com</span>
               </div>
-              {/* <div className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-gray-400" />
-                <span className="text-gray-400">Global Headquarter</span>
-              </div> */}
             </div>
           </div>
 
@@ -51,16 +47,16 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Services</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">About Us</a></li>
+              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">Services</a></li>
+              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">Terms of Service</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-          <p className="text-gray-400"> 2025 PrimeWave Bank. All rights reserved.</p>
+        <div className="border-t border-silver/30 dark:border-primary-700 mt-8 pt-8 text-center">
+          <p className="text-silver/80 dark:text-silver/70">© 2026 PrimeWave Bank. All rights reserved.</p>
         </div>
       </div>
     </footer>

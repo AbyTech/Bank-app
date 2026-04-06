@@ -57,7 +57,6 @@ const QuickActions = () => {
       description: 'Transfer to anyone',
       color: 'from-blue-500 to-cyan-500',
       onClick: () => {
-        // Store transfer intent in sessionStorage to open modal on transactions page
         sessionStorage.setItem('openTransferModal', 'true')
         window.location.href = '/transactions'
       }
@@ -106,27 +105,27 @@ const QuickActions = () => {
           Quick Actions
         </h3>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4">
+      <CardContent className="p-2 sm:p-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
           {actions.map((action, index) => (
             <motion.div
               key={action.label}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Button
                 variant="ghost"
-                className="w-full h-20 flex flex-col items-center justify-center space-y-2 bg-cream dark:bg-primary-700 hover:bg-silver/20 transition-all"
+                className="w-full h-14 sm:h-16 md:h-20 flex flex-col items-center justify-center space-y-1 sm:space-y-1.5 md:space-y-2 bg-cream dark:bg-primary-700 hover:bg-silver/20 transition-all p-1 sm:p-2"
                 onClick={action.onClick || (() => window.location.href = action.href)}
               >
-                <div className={`p-2 rounded-xl bg-gradient-to-r ${action.color} text-white`}>
-                  <action.icon size={20} />
+                <div className={`p-1.5 sm:p-2 md:p-2 rounded-lg sm:rounded-xl bg-gradient-to-r ${action.color} text-white`}>
+                  <action.icon size={16} className="sm:size-18 md:size-20" />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-medium text-primary dark:text-cream">
+                  <p className="text-xs sm:text-sm font-medium text-primary dark:text-cream leading-tight">
                     {action.label}
                   </p>
-                  <p className="text-xs text-silver">
+                  <p className="text-[10px] sm:text-xs text-silver leading-tight">
                     {action.description}
                   </p>
                 </div>

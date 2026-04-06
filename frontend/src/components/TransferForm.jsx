@@ -28,8 +28,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
     }
   }, [isOpen, user])
 
-
-
   const fetchUserAccounts = async () => {
     try {
       setAccountsLoading(true)
@@ -51,7 +49,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
     }))
     if (error) setError('')
 
-    // Trigger conversion calculation when relevant fields change
     if (name === 'fromAccountId' || name === 'toAccountNumber' || name === 'amount') {
       calculateConversionPreview()
     }
@@ -68,12 +65,9 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
     try {
       setCalculatingConversion(true)
 
-      // Find accounts
       const fromAccount = accounts.find(acc => acc._id === fromAccountId)
       let toAccount = accounts.find(acc => acc.accountNumber === toAccountNumber)
 
-      // If recipient account not in user's accounts, we can't preview conversion
-      // In a real app, you'd call an API to get recipient account details
       if (!toAccount) {
         setConversionInfo(null)
         return
@@ -84,7 +78,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
         return
       }
 
-      // Use mock rates for preview (same as backend fallback)
       const mockRates = {
         'USD_NGN': 1600,
         'USD_GHS': 12,
@@ -194,7 +187,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* From Account */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
               From Account *
@@ -217,7 +209,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             </select>
           </div>
 
-          {/* To Account Number */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
               Recipient Account Number *
@@ -252,7 +243,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             />
           </div>
 
-          {/* Recipient Name */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
               Recipient Name
@@ -266,7 +256,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             />
           </div>
 
-          {/* Amount */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
               Amount *
@@ -286,7 +275,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* Conversion Preview */}
           {conversionInfo && (
             <div className="bg-gold/10 border border-gold/20 rounded-lg p-3">
               <div className="flex items-center space-x-2 mb-2">
@@ -309,7 +297,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
-          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
               Description (Optional)
@@ -324,7 +311,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             />
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="flex items-center space-x-2 text-danger bg-danger/10 p-3 rounded-lg">
               <AlertCircle size={16} />
@@ -332,7 +318,6 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex space-x-3 pt-4">
             <Button
               type="button"

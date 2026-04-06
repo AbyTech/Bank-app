@@ -20,14 +20,10 @@ const Transactions = () => {
   useEffect(() => {
     if (user) {
       fetchTransactions()
-
-      // Set currency based on user's country
       if (user?.country) {
         const userCurrency = getCurrencyByCountry(user.country)
         setCurrency(userCurrency)
       }
-
-      // Check if we should open transfer modal from quick actions
       const shouldOpenTransfer = sessionStorage.getItem('openTransferModal')
       if (shouldOpenTransfer === 'true') {
         sessionStorage.removeItem('openTransferModal')
@@ -60,7 +56,6 @@ const Transactions = () => {
       case 'deposit':
         return <ArrowDownLeft className="text-success" size={20} />
       case 'transfer':
-        // For transfers, check if this is the receiving transaction (no toAccount means it's a received transfer)
         return transaction.toAccount ? <ArrowUpRight className="text-danger" size={20} /> : <ArrowDownLeft className="text-success" size={20} />
       case 'withdrawal':
       case 'payment':
@@ -242,7 +237,6 @@ const Transactions = () => {
           </div>
         </div>
 
-        {/* Transfer Form Modal */}
         <TransferForm
           isOpen={showTransferForm}
           onClose={() => setShowTransferForm(false)}

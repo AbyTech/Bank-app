@@ -48,9 +48,8 @@ const AdminDashboard = () => {
     try {
       if (action === 'approve') {
         await api.put(`/api/cards/${cardId}/approve`, { action })
-        fetchPendingCards() // Refresh the list
+        fetchPendingCards()
       } else if (action === 'decline') {
-        // Open rejection modal instead of directly declining
         const card = pendingCards.find(c => c._id === cardId)
         setSelectedCardForRejection(card)
         setShowRejectModal(true)
@@ -74,7 +73,7 @@ const AdminDashboard = () => {
       setShowRejectModal(false)
       setSelectedCardForRejection(null)
       setRejectionReason('')
-      fetchPendingCards() // Refresh the list
+      fetchPendingCards()
     } catch (error) {
       console.error('Failed to reject card:', error)
       alert('Failed to reject card. Please try again.')
@@ -86,8 +85,6 @@ const AdminDashboard = () => {
       const response = await api.get('/api/users/')
       const userData = response.data.data || []
       setUsers(userData)
-
-      // Update stats with real data
       setStats([
         { title: 'Total Users', value: userData.length.toString(), change: '+0%', icon: Users, color: 'text-blue-500' },
         { title: 'Active Cards', value: '0', change: '+0%', icon: CreditCard, color: 'text-gold' },
@@ -105,7 +102,7 @@ const AdminDashboard = () => {
     try {
       const newRole = currentRole === 'admin' ? 'user' : 'admin'
       await api.put(`/api/users/${userId}`, { role: newRole })
-      fetchUsers() // Refresh the list
+      fetchUsers()
     } catch (error) {
       console.error('Failed to update user:', error)
     }
@@ -115,7 +112,7 @@ const AdminDashboard = () => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
         await api.delete(`/api/users/${userId}`);
-        fetchUsers(); // Refresh the list
+        fetchUsers();
       } catch (error) {
         console.error('Failed to delete user:', error);
       }
@@ -141,7 +138,6 @@ const AdminDashboard = () => {
           description: balanceUpdateDescription,
         });
         alert('Balance updated successfully!');
-        // Refresh user details to show new balance
         viewUserDetails(selectedUser);
         setNewBalance('');
         setBalanceUpdateDescription('');

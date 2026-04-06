@@ -22,9 +22,8 @@ const ActivityFeed = () => {
     try {
       setLoading(true)
       const response = await api.get('/api/transactions/')
-      const activityData = response.data.data ? response.data.data.slice(0, 4) : [] // Get latest 4 transactions
+      const activityData = response.data.data ? response.data.data.slice(0, 4) : []
 
-      // Map activity types to icons and colors
       const iconMap = {
         deposit: TrendingUp,
         withdrawal: TrendingUp,
@@ -65,7 +64,6 @@ const ActivityFeed = () => {
       setActivities(formattedActivities)
     } catch (error) {
       console.error('Failed to fetch activity feed:', error)
-      // Fallback to default activities if API fails
       setActivities([
         { id: 1, type: 'login', description: 'You logged in from new device', timestamp: new Date().toISOString(), icon: User, color: 'text-blue-500' },
         { id: 2, type: 'transaction', description: 'Transfer of $250.00 completed', timestamp: new Date().toISOString(), icon: TrendingUp, color: 'text-success' },
@@ -84,12 +82,9 @@ const ActivityFeed = () => {
       case 'withdrawal':
         return `Withdrawal of ${formatAmount(Math.abs(activity.amount), currency)} completed`
       case 'transfer':
-        // For transfers, check if this is the receiving transaction
         if (activity.toAccount) {
-          // This is a sent transfer (has toAccount field)
           return `Transfer sent of ${formatAmount(Math.abs(activity.amount), currency)}`
         } else {
-          // This is a received transfer (no toAccount field)
           return `Transfer received of ${formatAmount(activity.amount, currency)}`
         }
       case 'payment':

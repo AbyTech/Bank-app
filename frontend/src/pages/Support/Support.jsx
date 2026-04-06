@@ -98,7 +98,7 @@ const Support = () => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-gold/10 rounded-lg">
+                  {/* <div className="p-4 bg-gold/10 rounded-lg">
                     <h4 className="font-semibold text-gold mb-2">Need Immediate Help?</h4>
                     <p className="text-sm text-silver mb-3">
                       Call our support line for urgent assistance
@@ -106,7 +106,7 @@ const Support = () => {
                     <p className="text-lg font-semibold text-primary dark:text-cream">
                       +1 (555) 123-HELP
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               </CardContent>
             </Card>
