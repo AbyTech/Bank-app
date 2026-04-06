@@ -78,7 +78,7 @@ const Login = () => {
 
             <div>
               <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Password (optional)
+                Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver" size={20} />
@@ -104,7 +104,7 @@ const Login = () => {
 
             <div>
               <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Seed Phrase
+                Seed Phrase (Old Users Only)
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver" size={20} />
