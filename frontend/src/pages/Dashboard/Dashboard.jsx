@@ -319,11 +319,11 @@ const Dashboard = () => {
               </Card>
             </motion.div>
           ))}
+          
         </div>
 
-        {/* Mobile: Account + Quick full width */}
+        {/* Mobile View */}
         <div className="lg:hidden space-y-6">
-          {/* Mobile Balance Card */}
           {primaryAccount && (
             <div className="mb-8">
               <Card className="!bg-[#223032] dark:!bg-[#223032] backdrop-blur-sm border-gold/30 shadow-2xl">
@@ -333,7 +333,6 @@ const Dashboard = () => {
                   </h3>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-2">
-                {/* Balance First */}
                 <div className="space-y-6 pt-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-silver dark:text-silver">Total Balance</span>
@@ -352,7 +351,6 @@ const Dashboard = () => {
                       <button
                         onClick={() => setHideBalance(!hideBalance)}
                         className="p-2 text-silver hover:text-gold hover:bg-gold/20 rounded-lg transition-all duration-200"
-                        title={hideBalance ? 'Show balance' : 'Hide balance'}
                       >
                         {hideBalance ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
@@ -360,7 +358,6 @@ const Dashboard = () => {
                   </div>
 
                   <div className="pt-4 border-t border-silver/20 space-y-4">
-                    {/* Account Number */}
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-silver dark:text-silver">Account Number</span>
                       <div className="flex items-center space-x-2">
@@ -373,14 +370,12 @@ const Dashboard = () => {
                             toast.success('Account number copied!')
                           }}
                           className="p-2 text-silver hover:text-gold hover:bg-gold/20 rounded-lg transition-all duration-200"
-                          title="Copy account number"
                         >
                           <Copy size={16} />
                         </button>
                       </div>
                     </div>
                     
-                    {/* Account Type */}
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-silver dark:text-silver">Account Type</span>
                       <span className="px-3 py-1 bg-success/20 text-success text-sm font-semibold rounded-lg">
@@ -393,56 +388,71 @@ const Dashboard = () => {
               </Card>
             </div>
           )}
-          
-          {/* Mobile Quick Actions */}
           <QuickActions />
         </div>
 
-        {/* Recent Transactions */}
-        <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
-                Recent Transactions
-              </h3>
-              <Button variant="ghost" size="sm">
-                View All
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentTransactions.map((transaction) => (
-                  <motion.div
-                    key={transaction._id}
-                    className="flex items-center justify-between p-4 rounded-lg bg-cream dark:bg-primary-700/50 hover:bg-silver/10 transition-colors"
-                    whileHover={{ x: 4 }}
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className={`p-2 rounded-full ${getTransactionColor(transaction)}`}>
-                        {getTransactionIcon(transaction)}
-                      </div>
-                      <div>
-                        <p className="font-medium text-primary dark:text-cream">
-                          {transaction.description}
-                        </p>
-                        <p className="text-sm text-silver">
-                          {new Date(transaction.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
+        {/* Desktop Layout: Split Grid */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left side: Transactions */}
+            <div className="lg:col-span-2">
+                <Card>
+                    <CardHeader>
+                    <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
+                        Recent Transactions
+                    </h3>
+                    <Button variant="ghost" size="sm">
+                        View All
+                    </Button>
+                    </CardHeader>
+                    <CardContent>
+                    <div className="space-y-4">
+                        {recentTransactions.map((transaction) => (
+                        <motion.div
+                            key={transaction._id}
+                            className="flex items-center justify-between p-4 rounded-lg bg-cream dark:bg-primary-700/50 hover:bg-silver/10 transition-colors"
+                            whileHover={{ x: 4 }}
+                        >
+                            <div className="flex items-center space-x-4">
+                            <div className={`p-2 rounded-full ${getTransactionColor(transaction)}`}>
+                                {getTransactionIcon(transaction)}
+                            </div>
+                            <div>
+                                <p className="font-medium text-primary dark:text-cream">
+                                {transaction.description}
+                                </p>
+                                <p className="text-sm text-silver">
+                                {new Date(transaction.createdAt).toLocaleDateString()}
+                                </p>
+                            </div>
+                            </div>
+                            <div className="text-right">
+                            <p className={`font-semibold ${getTransactionAmountColor(transaction)}`}>
+                                {getTransactionAmountPrefix(transaction)}{formatAmount(Math.abs(transaction.amount), currency)}
+                            </p>
+                            <p className="text-xs text-silver capitalize">
+                                {transaction.status}
+                            </p>
+                            </div>
+                        </motion.div>
+                        ))}
                     </div>
-                    <div className="text-right">
-                      <p className={`font-semibold ${getTransactionAmountColor(transaction)}`}>
-                        {getTransactionAmountPrefix(transaction)}{formatAmount(Math.abs(transaction.amount), currency)}
-                      </p>
-                      <p className="text-xs text-silver capitalize">
-                        {transaction.status}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Right side: Desktop Quick Actions Sidebar */}
+            <div className="hidden lg:block">
+                <Card className="h-full">
+                    <CardHeader>
+                        <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
+                            Quick Actions
+                        </h3>
+                    </CardHeader>
+                    <CardContent className="[&_svg]:w-5 [&_svg]:h-5">
+                        <QuickActions />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
 
         {/* Activity Feed */}
@@ -455,4 +465,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-
