@@ -3,60 +3,60 @@ import { Mail, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-cream/80 to-cream/90 dark:from-primary-900/100 dark:to-primary-800/100 text-primary dark:text-cream py-8 border-t border-silver/30 dark:border-primary-700">
+    <footer className="bg-[#223032] dark:from-primary-900/100 dark:to-primary-800/100 text-primary dark:text-cream py-8 border-t border-silver/30 dark:border-primary-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">PrimeWave Bank</h3>
-            <p className="text-silver/80 dark:text-silver/70 mb-4">
+            <h3 className="text-lg font-semibold mb-4 text-gold">PrimeWave Bank</h3>
+            <p className="text-white mb-4">
               Your trusted banking partner for all your financial needs.
             </p>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gold">Contact Us</h3>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-silver/70 dark:text-silver/60"
+                  className="h-5 w-5 text-white dark:text-silver/60"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
                   <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                 </svg>
                 <a
-                  href="https://t.me/helpxprimewavebank"
+                  href="https://t.me/helpxprimewavebank "
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-silver/80 dark:text-silver/70 hover:text-gold dark:hover:text-gold transition-colors"
+                  className="text-white hover:text-gold transition-colors"
                 >
                   @helpxprimewavebank
                 </a>
               </div>
               <div className="flex items-center space-x-2">
-                <Mail className="h-5 w-5 text-silver/70 dark:text-silver/60" />
-                <span className="text-silver/80 dark:text-silver/70">helpxprimewavebank.com</span>
+                <Mail className="h-5 w-5 text-white dark:text-silver/60" />
+                <span className="text-white dark:text-silver/70">helpxprimewavebank.com</span>
               </div>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">About Us</a></li>
-              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">Services</a></li>
-              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-silver/80 dark:text-silver/70 hover:text-primary dark:hover:text-cream transition-colors">Terms of Service</a></li>
+            <h3 className="text-lg font-semibold mb-4 text-gold">Quick Links</h3>
+            <ul className="space-y-2 text-white">
+              <li><a href="#" className="text-white hover:text-gold dark:hover:text-gold transition-colors">About Us</a></li>
+              <li><a href="#" className="text-white hover:text-gold dark:hover:text-gold transition-colors">Services</a></li>
+              <li><a href="#" className="text-white hover:text-gold dark:hover:text-gold transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="text-white hover:text-gold dark:hover:text-gold transition-colors">Terms of Service</a></li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-silver/30 dark:border-primary-700 mt-8 pt-8 text-center">
-          <p className="text-silver/80 dark:text-silver/70">© 2026 PrimeWave Bank. All rights reserved.</p>
+        <div className="border-t border-gold dark:border-primary-700 mt-8 pt-8 text-center">
+          <p className="text-gold text-sm">© 2026 PrimeWave Bank. All rights reserved.</p>
         </div>
       </div>
     </footer>
