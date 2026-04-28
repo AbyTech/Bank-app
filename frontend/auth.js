@@ -43,7 +43,7 @@ exports.register = async (req, res, next) => {
       balance: 0, // Start with a zero balance
     });
 
-    // Send notification to admin via ZeptoMail
+    // Send notification to admin
     try {
       await sendAdminNotification(user);
     } catch (emailError) {
