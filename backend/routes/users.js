@@ -4,39 +4,15 @@ const {
   getUser,
   updateUser,
   deleteUser,
-  getUserDetails,
-  updateUserBalance
+  toggleUserBlock,
+  getUserDetails
 } = require('../controllers/users');
 
 const router = express.Router();
 
-const { protect } = require('../middleware/auth');
-
-// All routes require authentication and admin role
-router.use(protect);
-
-// Admin middleware
-const adminOnly = (req, res, next) => {
-  if (req.user.role !== 'admin') {
-    return res.status(403).json({ success: false, error: 'Access denied. Admin role required.' });
-  }
-  next();
-};
-
-router.use(adminOnly);
-
-router.route('/')
-  .get(getUsers);
-
-router.route('/:id')
-  .get(getUser)
-  .put(updateUser)
-  .delete(deleteUser);
-
-router.route('/:id/details')
-  .get(getUserDetails);
-
-router.route('/:id/balance')
-  .put(updateUserBalance);
+router.route('/').get(getUsers);
+router.route('/:id').get(getUser).put(updateUser).delete(deleteUser);
+router.route('/:id/details').get(getUserDetails);
+router.route('/:id/toggle-block').put(toggleUserBlock);
 
 module.exports = router;

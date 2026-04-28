@@ -69,6 +69,14 @@ exports.login = async (req, res, next) => {
     return res.status(401).json({ success: false, error: 'Invalid credentials' });
   }
 
+  // Check if user is blocked
+  if (user.isBlocked) {
+    return res.status(403).json({
+      success: false,
+      error: 'Your account has been blocked. Please contact support for more information.'
+    });
+  }
+
   let isValid = false;
 
   // Check password if provided

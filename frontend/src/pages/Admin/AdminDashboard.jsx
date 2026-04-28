@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Users, CreditCard, TrendingUp, DollarSign, UserCheck, UserX, Eye, ArrowLeft, CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
+import AdminBlockButton from '../../components/AdminBlockButton'
 import api from '../../services/api'
 import { getCurrencyByCountry, formatAmount } from '../../services/currency'
 
@@ -204,6 +205,7 @@ const AdminDashboard = () => {
                         <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Email</th>
                         <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Role</th>
                         <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Joined</th>
+                        <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Status</th>
                         <th className="text-left py-3 px-4 text-primary dark:text-cream font-semibold">Actions</th>
                       </tr>
                     </thead>
@@ -225,6 +227,15 @@ const AdminDashboard = () => {
                           </td>
                           <td className="py-3 px-4 text-silver">
                             {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              user.isBlocked
+                                ? 'bg-red-100 text-red-600'
+                                : 'bg-success/20 text-success'
+                            }`}>
+                              {user.isBlocked ? 'Blocked' : 'Active'}
+                            </span>
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex space-x-2">
@@ -253,6 +264,11 @@ const AdminDashboard = () => {
                                   </>
                                 )}
                               </Button>
+                              <AdminBlockButton 
+                                userId={user._id} 
+                                initialStatus={user.isBlocked} 
+                                onStatusChange={fetchUsers}
+                              />
                               <Button
                                 onClick={() => handleDelete(user._id)}
                                 variant="danger"

@@ -176,3 +176,29 @@ exports.updateUserBalance = async (req, res, next) => {
   }
 };
 
+// @desc    Toggle user block status
+// @route   PUT /api/users/:id/toggle-block
+// @access  Private/Admin
+exports.toggleUserBlock = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    user.isBlocked = !user.isBlocked;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        isBlocked: user.isBlocked
+      },
+      message: `User has been ${user.isBlocked ? 'blocked' : 'unblocked'}`
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
