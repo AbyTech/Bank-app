@@ -36,7 +36,10 @@ const Login = () => {
       toast.success('Login successful!')
       navigate('/dashboard')
     } catch (error) {
-      if (error.response?.status === 403 || error.status === 403) {
+      // Check multiple potential locations for the 403 status or the specific error message
+      const isBlocked = error.response?.status === 403 || error.status === 403 || error.response?.data?.error?.includes('blocked');
+      
+      if (isBlocked) {
         setIsBlockedModalOpen(true)
       } else {
         toast.error(error.message || 'Login failed. Please check your credentials.')
