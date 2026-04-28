@@ -2,7 +2,7 @@ const User = require('../models/User');
 const Account = require('../models/Account');
 const jwt = require('jsonwebtoken');
 const bip39 = require('bip39');
-const { sendAdminNotification } = require('../utils/emailService');
+const { sendAdminNotification } = require('./services/emailService');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
