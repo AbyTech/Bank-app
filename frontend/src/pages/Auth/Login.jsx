@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import Button from '../../components/UI/Button'
 import toast from 'react-hot-toast'
+import BlockedUserModal from '../../components/BlockedUserModal'
 import { authAPI } from '../../services/auth'
 import logo from '../../assets/logo.png'
 
@@ -16,6 +17,7 @@ const Login = () => {
   const [showSeedPhrase, setShowSeedPhrase] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -34,7 +36,11 @@ const Login = () => {
       toast.success('Login successful!')
       navigate('/dashboard')
     } catch (error) {
-      toast.error(error.message || 'Login failed. Please check your credentials.')
+      if (error.response?.status === 403 || error.status === 403) {
+        setIsBlockedModalOpen(true)
+      } else {
+        toast.error(error.message || 'Login failed. Please check your credentials.')
+      }
     } finally {
       setLoading(false)
     }
@@ -159,6 +165,11 @@ const Login = () => {
           </div>
         </div>
       </motion.div>
+
+      <BlockedUserModal 
+        isOpen={isBlockedModalOpen} 
+        onClose={() => setIsBlockedModalOpen(false)} 
+      />
     </div>
   )
 }
