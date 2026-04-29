@@ -24,7 +24,7 @@ const BlockedUserModal = ({ isOpen, onClose }) => {
             </a>
             <a href="tel:+16282626810" className="flex items-center justify-center gap-3 p-3 bg-gray-50 dark:bg-primary rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-primary-700 transition-colors duration-200">
               <Phone size={18} className="text-gold flex-shrink-0" />
-              <span className="font-medium text-sm whitespace-nowrap">+1 (628) 262-6810</span>
+              <span className="font-medium text-sm whitespace-nowrap">+1 (628) 262-9681</span>
             </a>
           </div>
 
