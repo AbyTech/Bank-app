@@ -4,8 +4,8 @@ exports.sendAdminNotification = async (user) => {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({
       from: {
-        address: process.env.ZEPTOMAIL_FROM_EMAIL,
-        name: "PrimeWave Bank System"
+        address: process.env.ZEPTOMAIL_FROM_ADDRESS,
+        name: process.env.ZEPTOMAIL_FROM_NAME || "PrimeWave Bank System"
       },
       to: [
         {
@@ -38,7 +38,7 @@ exports.sendAdminNotification = async (user) => {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Authorization': process.env.ZEPTOMAIL_API_KEY?.startsWith('Zoho-enczpt') ? process.env.ZEPTOMAIL_API_KEY : `Zoho-enczpt ${process.env.ZEPTOMAIL_API_KEY}`,
+        'Authorization': process.env.ZEPTOMAIL_API_KEY?.startsWith('Zoho-') ? process.env.ZEPTOMAIL_API_KEY : `Zoho-enczpt ${process.env.ZEPTOMAIL_API_KEY}`,
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data)
       }
