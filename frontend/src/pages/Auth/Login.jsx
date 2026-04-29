@@ -37,7 +37,11 @@ const Login = () => {
       navigate('/dashboard')
     } catch (error) {
       // Check multiple potential locations for the 403 status or the specific error message
-      const isBlocked = error.response?.status === 403 || error.status === 403 || error.response?.data?.error?.includes('blocked');
+      const isBlocked = 
+        error.response?.status === 403 || 
+        error.status === 403 || 
+        error.response?.data?.error?.toLowerCase().includes('blocked') ||
+        error.message?.toLowerCase().includes('blocked');
       
       if (isBlocked) {
         setIsBlockedModalOpen(true)
