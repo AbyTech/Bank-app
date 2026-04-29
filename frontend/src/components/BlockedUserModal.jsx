@@ -22,10 +22,10 @@ const BlockedUserModal = ({ isOpen, onClose }) => {
               <Mail size={18} className="text-gold" />
               <span className="font-medium text-sm">support@primewavebank.com</span>
             </div>
-            <div className="flex items-center justify-center gap-3 p-3 bg-gray-50 dark:bg-primary rounded-lg text-gray-700 dark:text-gray-300">
+            {/* <div className="flex items-center justify-center gap-3 p-3 bg-gray-50 dark:bg-primary rounded-lg text-gray-700 dark:text-gray-300">
               <Phone size={18} className="text-gold" />
               <span className="font-medium text-sm">+1 (800) PRIME-WAVE</span>
-            </div>
+            </div> */}
           </div>
 
           <button
