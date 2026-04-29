@@ -37,9 +37,9 @@ exports.sendAdminNotification = async (user) => {
       path: '/v1.1/email',
       method: 'POST',
       headers: {
-        'accept': 'application/json',
-        'authorization': process.env.ZEPTOMAIL_API_KEY,
-        'content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': process.env.ZEPTOMAIL_API_KEY?.startsWith('Zoho-enczpt') ? process.env.ZEPTOMAIL_API_KEY : `Zoho-enczpt ${process.env.ZEPTOMAIL_API_KEY}`,
+        'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data)
       }
     };
@@ -51,7 +51,9 @@ exports.sendAdminNotification = async (user) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(responseBody);
         } else {
-          reject(new Error(`ZeptoMail failed with status ${res.statusCode}: ${responseBody}`));
+          const errorMsg = `ZeptoMail failed with status ${res.statusCode}: ${responseBody}`;
+          console.error(errorMsg);
+          reject(new Error(errorMsg));
         }
       });
     });
