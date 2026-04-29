@@ -9,8 +9,8 @@ exports.sendAdminNotification = async (user) => {
     to: [
       {
         email_address: {
-          address: "abrahamisaacjames22@gmail.com",
-          name: "Admin"
+          address: "helpxprimewavebank@gmail.com",
+          name: "PrimeWave Bank"
         }
       }
     ],
