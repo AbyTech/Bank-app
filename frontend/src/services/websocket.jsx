@@ -8,7 +8,10 @@ class WebSocketService {
 
   connect() {
     try {
-      this.socket = new WebSocket('ws://localhost:8000/ws/notifications/')
+      const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const wsHost = import.meta.env.VITE_API_BASE_URL ? 
+        new URL(import.meta.env.VITE_API_BASE_URL).hostname : '127.0.0.1:8000'
+      this.socket = new WebSocket(`${wsProtocol}//${wsHost}/ws/notifications/`)
 
       this.socket.onopen = () => {
         console.log('WebSocket connected')
