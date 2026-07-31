@@ -6,7 +6,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  VITE_API_BASE_URL = "https://bank-app-ftmq.onrender.com/api"
+  VITE_API_BASE_URL = "https://bank-app-ftmq.onrender.com"
 
 [[redirects]]
   from = "/*"
