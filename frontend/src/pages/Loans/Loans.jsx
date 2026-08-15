@@ -152,7 +152,7 @@ const Loans = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -318,7 +318,7 @@ const Loans = () => {
                   name="amount"
                   value={applicationForm.amount}
                   onChange={handleFormChange}
-                  className="w-full pl-10 pr-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                   placeholder="Enter loan amount"
                   min="100"
                   max="500000000000"
@@ -334,7 +334,7 @@ const Loans = () => {
                 name="duration"
                 value={applicationForm.duration}
                 onChange={handleFormChange}
-                className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
               >
                 <option value="6">6 months</option>
                 <option value="12">12 months</option>
@@ -353,7 +353,7 @@ const Loans = () => {
                 name="phoneNumber"
                 value={applicationForm.phoneNumber}
                 onChange={handleFormChange}
-                className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                 placeholder="Enter your phone number"
               />
             </div>
@@ -368,7 +368,7 @@ const Loans = () => {
                 value={applicationForm.address}
                 onChange={handleFormChange}
                 rows="3"
-                className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                 placeholder="Enter your full address"
               />
             </div>
@@ -381,7 +381,7 @@ const Loans = () => {
                 name="identificationType"
                 value={applicationForm.identificationType}
                 onChange={handleFormChange}
-                className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
               >
                 <option value="passport">Passport</option>
                 <option value="drivers_license">Driver's License</option>
@@ -412,7 +412,7 @@ const Loans = () => {
                 value={applicationForm.purpose}
                 onChange={handleFormChange}
                 rows="3"
-                className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                 placeholder="Describe what you need the loan for..."
               />
             </div>
@@ -651,7 +651,7 @@ const Loans = () => {
                       required
                       value={paymentAmount}
                       onChange={(e) => setPaymentAmount(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                      className="w-full pl-10 pr-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                       placeholder="Enter payment amount"
                       min="1"
                       max={selectedLoan.remainingBalance}

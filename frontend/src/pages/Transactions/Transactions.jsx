@@ -67,7 +67,7 @@ const Transactions = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -103,7 +103,7 @@ const Transactions = () => {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
                         placeholder="Search transactions..."
                       />
                     </div>
@@ -116,7 +116,7 @@ const Transactions = () => {
                     <select
                       value={filter}
                       onChange={(e) => setFilter(e.target.value)}
-                      className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                      className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
                     >
                       <option value="all">All Transactions</option>
                       <option value="deposit">Deposits</option>
@@ -130,7 +130,7 @@ const Transactions = () => {
                     <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
                       Date Range
                     </label>
-                    <select className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
+                    <select className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent">
                       <option>Last 30 days</option>
                       <option>Last 90 days</option>
                       <option>Last year</option>

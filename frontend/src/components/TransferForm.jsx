@@ -195,7 +195,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               name="fromAccountId"
               value={formData.fromAccountId}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+              className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
               disabled={accountsLoading}
             >
               <option value="">
@@ -238,7 +238,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
                   setRecipientName('')
                 }
               }}
-              className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+              className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
               placeholder="Enter account number"
             />
           </div>
@@ -267,7 +267,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
                 name="amount"
                 value={formData.amount}
                 onChange={handleInputChange}
-                className="w-full pl-8 pr-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                className="w-full pl-8 pr-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
                 placeholder="0.00"
                 min="0.01"
                 step="0.01"
@@ -306,7 +306,7 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+              className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
               placeholder="What's this transfer for?"
             />
           </div>

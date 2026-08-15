@@ -18,9 +18,9 @@ const BlockedUserModal = ({ isOpen, onClose }) => {
           </p>
 
           <div className="space-y-3 mb-8">
-            <a href="mailto:support@primewavebank.com" className="flex items-center justify-center gap-3 p-3 bg-gray-50 dark:bg-primary rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-primary-700 transition-colors duration-200">
+            <a href="mailto:helpxprimewavebank@gmail.com" className="flex items-center justify-center gap-3 p-3 bg-gray-50 dark:bg-primary rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-primary-700 transition-colors duration-200">
               <Mail size={18} className="text-gold flex-shrink-0" />
-              <span className="font-medium text-sm truncate">support@primewavebank.com</span>
+              <span className="font-medium text-sm truncate">helpxprimewavebank@gmail.com</span>
             </a>
             <a href="tel:+16282626810" className="flex items-center justify-center gap-3 p-3 bg-gray-50 dark:bg-primary rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-primary-700 transition-colors duration-200">
               <Phone size={18} className="text-gold flex-shrink-0" />

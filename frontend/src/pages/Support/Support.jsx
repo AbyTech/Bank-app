@@ -55,16 +55,16 @@ const ChatBubble = ({ message }) => {
     >
       <div className={`flex space-x-3 max-w-xs lg:max-w-md ${isUser ? 'flex-row-reverse space-x-reverse' : ''}`}>
         <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-          isUser ? 'bg-gold text-primary' : isAgent ? 'bg-blue-500 text-white' : 'bg-primary text-cream'
+          isUser ? 'bg-gold text-white' : isAgent ? 'bg-gold-600 text-white' : 'bg-primary text-cream'
         }`}>
           <Icon size={16} />
         </div>
         <div>
           <div className={`px-4 py-2 rounded-2xl whitespace-pre-line ${
             isUser
-              ? 'bg-gold text-primary'
+              ? 'bg-gold text-white'
               : isAgent
-              ? 'bg-blue-50 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 text-primary dark:text-cream'
+              ? 'bg-gold-100 dark:bg-gold-900/30 border border-gold-200 dark:border-gold-800 text-primary dark:text-cream'
               : 'bg-primary-100 dark:bg-primary-700 text-primary dark:text-cream'
           }`}>
             {message.text}
@@ -201,7 +201,7 @@ const Support = () => {
     new Date(date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -336,7 +336,7 @@ const Support = () => {
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="Type your message..."
-                        className="flex-1 px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                        className="flex-1 px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                       />
                       <Button
                         onClick={() => handleSend()}

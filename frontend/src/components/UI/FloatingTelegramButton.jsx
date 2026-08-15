@@ -4,7 +4,7 @@ const FloatingTelegramButton = () => {
   return (
     <a
       href="https://t.me/helpxprimewavebank"
-      className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-colors z-50"
+      className="fixed bottom-4 right-4 bg-gold hover:bg-gold-600 text-white p-3 rounded-full shadow-lg transition-colors z-50"
       target="_blank"
       rel="noopener noreferrer"
     >

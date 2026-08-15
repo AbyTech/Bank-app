@@ -34,11 +34,11 @@ const SeedPhraseDisplay = ({ seedPhrase, onConfirm }) => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
-        <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+      <div className="bg-gold-100 dark:bg-gold-900/20 border border-gold-200 dark:border-gold-800 rounded-xl p-4">
+        <h3 className="font-semibold text-gold-700 dark:text-gold-200 mb-2">
           🔒 Critical Security Warning
         </h3>
-        <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+        <ul className="text-sm text-gold-700 dark:text-gold-300 space-y-1">
           <li>• Write down these words in the exact order</li>
           <li>• Store them in a secure, offline location</li>
           <li>• Never share your seed phrase with anyone</li>

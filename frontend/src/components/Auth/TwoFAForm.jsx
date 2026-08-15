@@ -114,7 +114,7 @@ const TwoFAForm = ({ email, onVerify, onResend }) => {
               onChange={(e) => handleChange(e.target.value, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={handlePaste}
-              className="w-12 h-12 text-center text-xl font-bold bg-cream dark:bg-primary-700 border-2 border-silver dark:border-primary-600 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold transition-all"
+              className="w-12 h-12 text-center text-xl font-bold bg-primary-100 dark:bg-primary-700 border-2 border-silver dark:border-primary-600 rounded-xl focus:border-gold focus:ring-2 focus:ring-gold transition-all"
               whileFocus={{ scale: 1.05 }}
             />
           ))}
@@ -144,12 +144,12 @@ const TwoFAForm = ({ email, onVerify, onResend }) => {
         </button>
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-        <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2 flex items-center gap-2">
+      <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-4">
+        <h4 className="font-semibold text-primary-600 dark:text-primary-200 mb-2 flex items-center gap-2">
           <Shield size={16} />
           Security Notice
         </h4>
-        <p className="text-sm text-blue-700 dark:text-blue-300">
+        <p className="text-sm text-primary-600 dark:text-primary-300">
           Two-factor authentication adds an extra layer of security to your account. 
           Even if someone has your seed phrase, they won't be able to access your account without this code.
         </p>

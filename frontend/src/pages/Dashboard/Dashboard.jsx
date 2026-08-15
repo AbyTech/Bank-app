@@ -67,7 +67,7 @@ const Dashboard = () => {
       setRecentTransactions(transactionsData.slice(0, 3))
 
       const cardsResponse = await api.get('/api/cards/')
-      const activeCards = cardsResponse.data.data.filter(card => card.purchase_status === 'active').length
+      const activeCards = cardsResponse.data.data.filter(card => card.status === 'active').length
 
       const loansResponse = await api.get('/api/loans/')
       const activeLoans = loansResponse.data.data.filter(loan => loan.status === 'active').length
@@ -217,7 +217,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Profile Completion Notification */}
         {showProfileNotification && (
@@ -225,21 +225,21 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4"
+            className="mb-6 bg-gradient-to-r from-gold-100 to-gold-200 dark:from-gold-900/20 dark:to-gold-900/20 border border-gold-200 dark:border-gold-800 rounded-xl p-4"
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3">
-                <AlertTriangle className="text-amber-500 mt-0.5" size={20} />
+                <AlertTriangle className="text-gold-500 mt-0.5" size={20} />
                 <div>
-                  <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                  <h3 className="text-sm font-semibold text-gold-700 dark:text-gold-200">
                     Complete Your Profile
                   </h3>
-                  <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                  <p className="text-sm text-gold-700 dark:text-gold-300 mt-1">
                     Please update your profile information to access all features. Add your name, country, and phone number.
                   </p>
                   <Link
                     to="/profile"
-                    className="inline-flex items-center mt-2 text-sm font-medium text-amber-800 dark:text-amber-200 hover:text-amber-900 dark:hover:text-amber-100"
+                    className="inline-flex items-center mt-2 text-sm font-medium text-gold-700 dark:text-gold-200 hover:text-gold-800 dark:hover:text-gold-100"
                   >
                     Update Profile →
                   </Link>
@@ -247,7 +247,7 @@ const Dashboard = () => {
               </div>
               <button
                 onClick={() => setShowProfileNotification(false)}
-                className="text-amber-500 hover:text-amber-600 dark:hover:text-amber-400"
+                className="text-gold-500 hover:text-gold-600 dark:hover:text-gold-400"
               >
                 <X size={16} />
               </button>
@@ -273,7 +273,7 @@ const Dashboard = () => {
             {isAdmin && (
               <Link
                 to="/admin"
-                className="flex items-center space-x-2 bg-gradient-to-r from-gold to-gold-400 text-primary px-4 py-2 rounded-xl font-semibold hover:from-gold-400 hover:to-gold-500 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="flex items-center space-x-2 bg-gold text-white px-4 py-2 rounded-xl font-semibold hover:bg-gold-600 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Shield size={20} />
                 <span>Admin Panel</span>
@@ -326,7 +326,7 @@ const Dashboard = () => {
         <div className="lg:hidden space-y-6">
           {primaryAccount && (
             <div className="mb-8">
-              <Card className="!bg-[#223032] dark:!bg-[#223032] backdrop-blur-sm border-gold/30 shadow-2xl">
+              <Card className="!bg-primary-700 dark:!bg-primary-800 backdrop-blur-sm border-gold/30 shadow-2xl">
                 <CardHeader>
                   <h3 className="text-lg font-heading font-semibold text-gold dark:text-cream">
                     Account Overview

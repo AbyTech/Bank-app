@@ -41,15 +41,15 @@ const ActivityFeed = () => {
       const colorMap = {
         deposit: 'text-success',
         withdrawal: 'text-danger',
-        transfer: 'text-blue-500',
+        transfer: 'text-primary-500',
         payment: 'text-gold',
         card_purchase: 'text-gold',
-        loan_deposit: 'text-purple-500',
+        loan_deposit: 'text-gold-600',
         fee: 'text-danger',
-        login: 'text-blue-500',
+        login: 'text-primary-500',
         transaction: 'text-success',
-        loan_application: 'text-purple-500',
-        profile_update: 'text-green-500',
+        loan_application: 'text-gold-600',
+        profile_update: 'text-success',
       }
 
       const formattedActivities = activityData.map(activity => ({
@@ -65,10 +65,10 @@ const ActivityFeed = () => {
     } catch (error) {
       console.error('Failed to fetch activity feed:', error)
       setActivities([
-        { id: 1, type: 'login', description: 'You logged in from new device', timestamp: new Date().toISOString(), icon: User, color: 'text-blue-500' },
+        { id: 1, type: 'login', description: 'You logged in from new device', timestamp: new Date().toISOString(), icon: User, color: 'text-primary-500' },
         { id: 2, type: 'transaction', description: 'Transfer of $250.00 completed', timestamp: new Date().toISOString(), icon: TrendingUp, color: 'text-success' },
         { id: 3, type: 'card_purchase', description: 'Card purchase at Amazon', timestamp: new Date().toISOString(), icon: CreditCard, color: 'text-gold' },
-        { id: 4, type: 'security', description: 'Two-factor authentication enabled', timestamp: new Date().toISOString(), icon: Shield, color: 'text-purple-500' }
+        { id: 4, type: 'security', description: 'Two-factor authentication enabled', timestamp: new Date().toISOString(), icon: Shield, color: 'text-gold-600' }
       ])
     } finally {
       setLoading(false)

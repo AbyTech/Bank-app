@@ -21,10 +21,10 @@ const AdminDashboard = () => {
   const [selectedCardForRejection, setSelectedCardForRejection] = useState(null)
   const [rejectionReason, setRejectionReason] = useState('')
   const [stats, setStats] = useState([
-    { title: 'Total Users', value: '0', change: '+0%', icon: Users, color: 'text-blue-500' },
+    { title: 'Total Users', value: '0', change: '+0%', icon: Users, color: 'text-primary-600' },
     { title: 'Active Cards', value: '0', change: '+0%', icon: CreditCard, color: 'text-gold' },
     { title: 'Transactions', value: '0', change: '+0%', icon: TrendingUp, color: 'text-success' },
-    { title: 'Total Revenue', value: '$0', change: '+0%', icon: DollarSign, color: 'text-purple-500' }
+    { title: 'Total Revenue', value: '$0', change: '+0%', icon: DollarSign, color: 'text-gold-600' }
   ])
 
   useEffect(() => {
@@ -87,10 +87,10 @@ const AdminDashboard = () => {
       const userData = response.data.data || []
       setUsers(userData)
       setStats([
-        { title: 'Total Users', value: userData.length.toString(), change: '+0%', icon: Users, color: 'text-blue-500' },
+        { title: 'Total Users', value: userData.length.toString(), change: '+0%', icon: Users, color: 'text-primary-600' },
         { title: 'Active Cards', value: '0', change: '+0%', icon: CreditCard, color: 'text-gold' },
         { title: 'Transactions', value: '0', change: '+0%', icon: TrendingUp, color: 'text-success' },
-        { title: 'Total Revenue', value: '$0', change: '+0%', icon: DollarSign, color: 'text-purple-500' }
+        { title: 'Total Revenue', value: '$0', change: '+0%', icon: DollarSign, color: 'text-gold-600' }
       ])
     } catch (error) {
       console.error('Failed to fetch users:', error)
@@ -168,7 +168,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream">Admin Dashboard</h1>
@@ -420,7 +420,7 @@ const AdminDashboard = () => {
                   value={rejectionReason}
                   onChange={(e) => setRejectionReason(e.target.value)}
                   placeholder="Please provide a clear reason for rejecting this card application..."
-                  className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-danger resize-none"
+                  className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-danger resize-none"
                   rows="4"
                 />
                 <p className="text-xs text-silver mt-1">
@@ -601,14 +601,14 @@ const AdminDashboard = () => {
                               placeholder="New Balance"
                               value={newBalance}
                               onChange={(e) => setNewBalance(e.target.value)}
-                              className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold"
+                              className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold"
                             />
                             <input
                               type="text"
                               placeholder="Update Description"
                               value={balanceUpdateDescription}
                               onChange={(e) => setBalanceUpdateDescription(e.target.value)}
-                              className="w-full px-3 py-2 bg-cream dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold"
+                              className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver/30 dark:border-primary-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gold"
                             />
                             <Button
                               onClick={() => handleUpdateBalance(selectedUser._id)}
@@ -669,16 +669,16 @@ const AdminDashboard = () => {
                       <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {userDetails.cards.map((card) => (
-                            <div key={card._id} className="p-4 bg-gradient-to-r from-gold to-gold-400 text-primary rounded-lg">
+                            <div key={card._id} className="p-4 bg-gradient-to-r from-gold to-gold-600 text-white rounded-lg">
                               <div className="flex justify-between items-start mb-4">
                                 <div>
                                   <p className="font-medium">{card.cardType} Card</p>
                                   <p className="text-sm opacity-80">**** **** **** {card.cardNumber.slice(-4)}</p>
                                 </div>
                                 <span className={`px-2 py-1 rounded text-xs ${
-                                  card.purchase_status === 'active' ? 'bg-success/20 text-success' : 'bg-danger/20 text-danger'
+                                  card.status === 'active' ? 'bg-success/20 text-success' : 'bg-danger/20 text-danger'
                                 }`}>
-                                  {card.purchase_status}
+                                  {card.status}
                                 </span>
                               </div>
                               <div className="flex justify-between text-sm">

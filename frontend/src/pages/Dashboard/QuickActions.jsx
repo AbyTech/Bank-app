@@ -30,7 +30,7 @@ const QuickActions = () => {
   const checkActiveCard = async () => {
     try {
       const response = await api.get('/api/cards/')
-      const activeCards = response.data.data.filter(card => card.purchase_status === 'active')
+      const activeCards = response.data.data.filter(card => card.status === 'active')
       setHasActiveCard(activeCards.length > 0)
     } catch (error) {
       console.error('Failed to check cards:', error)
@@ -55,7 +55,7 @@ const QuickActions = () => {
       icon: Send,
       label: 'Send Money',
       description: 'Transfer to anyone',
-      color: 'from-blue-500 to-cyan-500',
+      color: 'from-primary-600 to-primary-400',
       onClick: () => {
         sessionStorage.setItem('openTransferModal', 'true')
         window.location.href = '/transactions'
@@ -65,28 +65,28 @@ const QuickActions = () => {
       icon: Plus,
       label: 'Add Money',
       description: 'Deposit funds',
-      color: 'from-green-500 to-emerald-500',
+      color: 'from-success to-green-600',
       href: '/transactions'
     },
     {
       icon: CreditCard,
       label: 'Cards',
       description: 'Manage cards',
-      color: 'from-gold to-gold-400',
+      color: 'from-gold to-gold-600',
       href: '/cards'
     },
     {
       icon: Download,
       label: 'Withdraw',
       description: 'Cash out',
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-gold to-gold-600',
       onClick: handleWithdrawClick
     },
     {
       icon: Shield,
       label: 'Security',
       description: 'Protect account',
-      color: 'from-red-500 to-orange-500',
+      color: 'from-danger to-gold-600',
       href: '/profile'
     },
     {

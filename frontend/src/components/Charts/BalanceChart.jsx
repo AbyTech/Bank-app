@@ -138,10 +138,10 @@ const BalanceChart = () => {
           <Line 
             type="monotone" 
             dataKey="balance" 
-            stroke="#d4af37"
+            stroke="#BB6125"
             strokeWidth={3}
-            dot={{ fill: '#d4af37', strokeWidth: 2, r: 4 }}
-            activeDot={{ r: 6, fill: '#d4af37' }}
+            dot={{ fill: '#BB6125', strokeWidth: 2, r: 4 }}
+            activeDot={{ r: 6, fill: '#BB6125' }}
           />
         </LineChart>
       </ResponsiveContainer>

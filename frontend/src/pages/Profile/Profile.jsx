@@ -278,7 +278,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 flex items-center justify-center">
+      <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
           <p className="text-silver">Loading profile...</p>
@@ -288,7 +288,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -316,7 +316,7 @@ const Profile = () => {
                       className="w-32 h-32 rounded-full object-cover border-4 border-gold"
                     />
                   ) : (
-                    <div className="w-32 h-32 bg-gradient-to-r from-gold to-gold-400 rounded-full flex items-center justify-center text-white text-4xl font-bold">
+                    <div className="w-32 h-32 bg-gradient-to-r from-gold to-gold-600 rounded-full flex items-center justify-center text-white text-4xl font-bold">
                       {profile.name ? profile.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U'}
                     </div>
                   )}
@@ -404,7 +404,7 @@ const Profile = () => {
                       value={profile.name}
                       onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
+                      className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
                     />
                   </div>
 
@@ -419,7 +419,7 @@ const Profile = () => {
                         value={profile.email}
                         onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                         disabled={!isEditing}
-                        className="w-full pl-12 pr-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
+                        className="w-full pl-12 pr-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
                       />
                     </div>
                   </div>
@@ -432,7 +432,7 @@ const Profile = () => {
                       value={profile.country}
                       onChange={(e) => setProfile({ ...profile, country: e.target.value })}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
+                      className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
                     >
                       {countries.map(country => (
                         <option key={country.code} value={country.code}>
@@ -451,7 +451,7 @@ const Profile = () => {
                       value={profile.phone}
                       onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                       disabled={!isEditing}
-                      className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
+                      className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent disabled:opacity-50"
                     />
                   </div>
 

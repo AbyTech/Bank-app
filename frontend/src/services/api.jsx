@@ -20,7 +20,10 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Handle 401 errors (token expired → refresh)
+// ✅ Handle 401 errors (token expired/invalid → clear session & redirect)
+// NOTE: The backend issues a single 30-day JWT and has no refresh-token
+// endpoint, so on a 401 we simply log the user out instead of attempting a
+// refresh that does not exist.
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -29,23 +32,14 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      try {
-        const refreshToken = localStorage.getItem('refresh_token');
-        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh/`, {
-          refresh: refreshToken,
-        });
+      // Don't redirect when the 401 comes from the login attempt itself,
+      // otherwise the Login page can never show its error message.
+      const isLoginRequest = (originalRequest.url || '').includes('/api/auth/login');
 
-        const newToken = response.data.access;
-        localStorage.setItem('access_token', newToken);
-
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails, log out user
+      if (!isLoginRequest) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         window.location.href = '/login';
-        return Promise.reject(refreshError);
       }
     }
 

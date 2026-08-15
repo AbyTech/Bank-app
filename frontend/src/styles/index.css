@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* Reset */
 * {
@@ -43,16 +43,16 @@ main::before {
 
 body::before {
   background: 
-    radial-gradient(circle at 20% 80%, #ffde25 0%, #ffde25aa 20%, transparent 50%),
-    radial-gradient(circle at 80% 10%, #ffde25cc 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, #fff8e744 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, #bb6125 0%, #bb6125aa 20%, transparent 50%),
+    radial-gradient(circle at 80% 10%, #bb6125cc 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, #f8f8f844 0%, transparent 50%);
 }
 
 .dark body::before {
   background: 
-    radial-gradient(circle at 20% 80%, #e6be0088 0%, #ffde2555 25%, transparent 50%),
-    radial-gradient(circle at 80% 10%, #ffde25aa 0%, transparent 50%),
-    radial-gradient(circle at 40% 60%, #1a1a1aee 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, #984c1d88 0%, #bb612555 25%, transparent 50%),
+    radial-gradient(circle at 80% 10%, #bb6125aa 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, #0b2b29ee 0%, transparent 50%);
 }
 
 @keyframes blobFloat {

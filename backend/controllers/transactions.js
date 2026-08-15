@@ -93,7 +93,9 @@ exports.getRecipientDetails = async (req, res, next) => {
 
     // Fetch recipient user details to return the name
     const recipientUser = await User.findById(account.user);
-    const recipientName = recipientUser ? recipientUser.name : 'Unknown Recipient'; // Assuming 'name' field in User model
+    const recipientName = recipientUser
+      ? `${recipientUser.firstName || ''} ${recipientUser.lastName || ''}`.trim() || recipientUser.email || 'Unknown Recipient'
+      : 'Unknown Recipient';
 
     res.status(200).json({
       success: true,
@@ -215,6 +217,10 @@ exports.transfer = async (req, res, next) => {
       account: toAccount._id,
       type: 'transfer',
       amount: convertedAmount,
+      // Leave toAccount null on the recipient's record: the frontend treats a
+      // transfer as "outgoing" whenever toAccount is present, so leaving it
+      // null lets incoming transfers display as incoming/positive.
+      toAccount: null,
       convertedAmount: convertedAmount,
       originalCurrency: fromCurrency,
       convertedCurrency: toCurrency,

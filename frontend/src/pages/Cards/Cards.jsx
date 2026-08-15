@@ -95,7 +95,7 @@ const Cards = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16">
+    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -123,7 +123,7 @@ const Cards = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map((card, index) => (
             <motion.div
-              key={card.id}
+              key={card._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -147,7 +147,7 @@ const Cards = () => {
                   <div className={`relative rounded-xl p-6 text-white mb-4 shadow-lg overflow-hidden ${
                     card.status === 'rejected' 
                       ? 'bg-gradient-to-br from-red-600 to-red-800 opacity-75' 
-                      : 'bg-gradient-to-br from-gray-600 to-gray-800'
+                      : 'bg-gradient-to-br from-primary-600 to-primary-800'
                   }`}>
                     {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-10">
@@ -189,7 +189,7 @@ const Cards = () => {
                     <button
                       onClick={() => {
                         const updatedCards = cards.map(c =>
-                          c.id === card.id ? { ...c, showFullNumber: !c.showFullNumber } : c
+                          c._id === card._id ? { ...c, showFullNumber: !c.showFullNumber } : c
                         )
                         setCards(updatedCards)
                       }}
@@ -334,7 +334,7 @@ const Cards = () => {
                   cardType: e.target.value,
                   amount: e.target.value === 'virtual' ? 5500.00 : 8000.00
                 })}
-                className="w-full px-4 py-3 bg-cream dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
               >
                 <option value="virtual">Virtual Card - $5,500.00</option>
                 <option value="physical">Physical Card - $8,000.00</option>

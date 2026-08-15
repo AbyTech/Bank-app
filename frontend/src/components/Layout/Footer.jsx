@@ -3,7 +3,7 @@ import { Mail, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-[#223032] dark:from-primary-900/100 dark:to-primary-800/100 text-primary dark:text-cream py-8 border-t border-silver/30 dark:border-primary-700">
+    <footer className="bg-primary-700 dark:bg-primary-800 text-cream py-8 border-t border-white/10 dark:border-primary-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}

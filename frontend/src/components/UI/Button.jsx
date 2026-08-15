@@ -13,7 +13,8 @@ const Button = ({
   const baseClasses = 'font-semibold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-offset-2'
   
   const variants = {
-    primary: 'bg-gradient-to-r from-gold to-gold-400 text-primary hover:shadow-lux-gold focus:ring-gold',
+    primary: 'bg-gold text-white hover:bg-gold-600 hover:shadow-lux-gold focus:ring-gold',
+    brand: 'bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lux-card focus:ring-primary-600',
     secondary: 'bg-primary-100 dark:bg-primary-700 text-primary dark:text-cream hover:bg-primary-200 dark:hover:bg-primary-600 focus:ring-primary',
     danger: 'bg-danger text-white hover:bg-danger/90 focus:ring-danger',
     ghost: 'text-primary dark:text-cream hover:bg-silver/20 focus:ring-silver'
