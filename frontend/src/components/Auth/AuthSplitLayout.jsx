@@ -23,16 +23,16 @@ const AuthSplitLayout = ({
   const tealOnLeft = tealSide === 'left'
 
   return (
-    <div className="min-h-screen bg-[#F8F8F8] overflow-x-hidden flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+    <div className="min-h-dvh bg-[#F8F8F8] overflow-x-hidden flex flex-col px-4 sm:px-6 py-6 sm:py-8">
       {/* Subtle page-level background accents */}
       <div className="pointer-events-none fixed -top-32 -right-32 w-[30rem] h-[30rem] rounded-full bg-gold/10 blur-3xl" />
       <div className="pointer-events-none fixed -bottom-40 -left-32 w-[34rem] h-[34rem] rounded-full bg-primary-100/80 blur-3xl" />
 
       {/* Contained card */}
-      <div className="relative w-full max-w-6xl rounded-3xl overflow-hidden shadow-2xl flex flex-col lg:flex-row bg-white">
+      <div className="relative w-full max-w-md sm:max-w-lg md:max-w-2xl lg:max-w-5xl 2xl:max-w-6xl rounded-3xl overflow-hidden shadow-2xl flex flex-col lg:flex-row bg-white m-auto">
         {/* ================= Teal greeting panel ================= */}
         <div
-          className={`relative overflow-hidden bg-primary-600 text-white px-6 sm:px-10 lg:px-12 lg:w-1/2 py-12 lg:py-16 flex flex-col justify-center order-1 ${
+          className={`relative overflow-hidden bg-primary-600 text-white px-6 sm:px-10 lg:px-12 lg:w-1/2 py-10 lg:py-12 flex flex-col justify-center order-1 ${
             tealOnLeft ? 'lg:order-1' : 'lg:order-2'
           }`}
         >
@@ -89,7 +89,7 @@ const AuthSplitLayout = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5 }}
-              className="mt-10"
+              className="mt-6"
             >
               <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-gold-200 text-xs font-semibold">
                 <Sparkles size={13} />
@@ -102,7 +102,7 @@ const AuthSplitLayout = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.5 }}
-              className="mt-5 font-heading font-bold text-4xl sm:text-5xl leading-tight"
+              className="mt-4 font-heading font-bold text-3xl sm:text-4xl xl:text-5xl leading-tight"
             >
               {title}
             </motion.h1>
@@ -113,7 +113,7 @@ const AuthSplitLayout = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35, duration: 0.5 }}
-                className="mt-4 text-white/80 text-lg leading-relaxed"
+                className="mt-3 text-white/80 text-base sm:text-lg leading-relaxed"
               >
                 {subtitle}
               </motion.p>
@@ -125,7 +125,7 @@ const AuthSplitLayout = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45, duration: 0.5 }}
-                className="mt-10 space-y-5"
+                className="mt-7 space-y-4"
               >
                 {points.map((p) => (
                   <li key={p.title} className="flex items-start gap-4">
@@ -145,7 +145,7 @@ const AuthSplitLayout = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              className="mt-12 text-sm text-white/40"
+              className="mt-8 text-sm text-white/40"
             >
               © 2026 Primewave Bank. All rights reserved.
             </motion.p>
@@ -154,7 +154,7 @@ const AuthSplitLayout = ({
 
         {/* ================= Form panel ================= */}
         <div
-          className={`relative bg-[#F8F8F8] flex-1 flex items-center justify-center px-6 sm:px-10 lg:px-12 py-12 lg:py-16 order-2 ${
+          className={`relative bg-[#F8F8F8] flex-1 flex items-center justify-center px-6 sm:px-10 lg:px-12 py-10 lg:py-12 order-2 ${
             tealOnLeft ? 'lg:order-2' : 'lg:order-1'
           }`}
         >

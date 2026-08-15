@@ -82,11 +82,11 @@ const Register = () => {
       subtitle="Open your account in under a minute and start banking smarter, safer and faster."
       points={greetingPoints}
     >
-      <div className="bg-white rounded-3xl shadow-lux-card border border-silver/20 p-8 sm:p-12">
+      <div className="bg-white rounded-3xl shadow-lux-card border border-silver/20 p-6 sm:p-10">
         <h2 className="font-heading font-bold text-3xl sm:text-4xl text-primary">Create Account</h2>
         <p className="text-silver mt-3">Fill in your details to get started.</p>
 
-        <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <div>
             <label className="block text-sm font-medium text-primary mb-2">
               Full Name
