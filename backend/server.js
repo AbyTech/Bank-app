@@ -21,7 +21,12 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
-app.use(express.json());
+// Capture raw request body so Smartsupp webhooks can be verified via HMAC
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf.toString('utf8');
+  },
+}));
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
@@ -43,6 +48,7 @@ app.use('/api/loans', require('./routes/loans'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/smartsupp', require('./routes/smartsupp'));
 
 // Basic Route
 app.get('/', (req, res) => {
