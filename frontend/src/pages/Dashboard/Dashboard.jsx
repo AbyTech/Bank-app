@@ -8,24 +8,47 @@ import {
   DollarSign,
   ArrowUpRight,
   ArrowDownLeft,
-  Plus,
-  Send,
+  ArrowLeftRight,
+  Clock,
+  Gauge,
   Shield,
   AlertTriangle,
   X,
   Copy,
   Eye,
-  EyeOff
+  EyeOff,
+  Wallet
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
+import NotificationsBell from '../../components/Layout/NotificationsBell'
 import QuickActions from './QuickActions'
 import ActivityFeed from './ActivityFeed'
 import BalanceChart from '../../components/Charts/BalanceChart'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 import { formatAmount, getCurrencyByCountry } from '../../services/currency'
+
+// App-wide daily transaction cap (no backend field exists for this value)
+const DAILY_TRANSACTION_LIMIT = 100
+
+// Time-based greeting (based on the user's local time)
+const getGreeting = () => {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 17) return 'Good afternoon'
+  return 'Good evening'
+}
+
+// Today's date formatted as "Saturday, August 15, 2026"
+const getTodayString = () =>
+  new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
 
 const Dashboard = () => {
   const { user, isAdmin } = useAuth()
@@ -37,6 +60,8 @@ const Dashboard = () => {
   const [showProfileNotification, setShowProfileNotification] = useState(false)
   const [hideBalance, setHideBalance] = useState(false)
   const [primaryAccount, setPrimaryAccount] = useState(null)
+  const [pendingCount, setPendingCount] = useState(0)
+  const [transactionVolume, setTransactionVolume] = useState(0)
 
   useEffect(() => {
     if (user) {
@@ -65,6 +90,8 @@ const Dashboard = () => {
       const transactionsResponse = await api.get('/api/transactions/')
       const transactionsData = transactionsResponse.data.data || []
       setRecentTransactions(transactionsData.slice(0, 3))
+      setPendingCount(transactionsData.filter(t => t.status === 'pending').length)
+      setTransactionVolume(transactionsData.reduce((sum, t) => sum + Math.abs(parseFloat(t.amount) || 0), 0))
 
       const cardsResponse = await api.get('/api/cards/')
       const activeCards = cardsResponse.data.data.filter(card => card.status === 'active').length
@@ -219,6 +246,25 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Top Navbar */}
+        <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl bg-white dark:bg-primary-800 border border-silver/20 dark:border-primary-700 shadow-lux-card px-4 sm:px-6 py-3">
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm lg:text-base font-medium text-primary dark:text-cream truncate">
+              {getTodayString()}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Wallet + balance (hidden on small mobile) */}
+            <div className="hidden sm:flex items-center gap-2 bg-primary-600 text-white rounded-xl px-3.5 py-2">
+              <Wallet size={16} className="shrink-0" />
+              <span className="font-semibold text-xs sm:text-sm whitespace-nowrap">
+                {formatAmount(balance, currency)}
+              </span>
+            </div>
+            <NotificationsBell />
+          </div>
+        </div>
+
         {/* Profile Completion Notification */}
         {showProfileNotification && (
           <motion.div
@@ -273,7 +319,7 @@ const Dashboard = () => {
             {isAdmin && (
               <Link
                 to="/admin"
-                className="flex items-center space-x-2 bg-gold text-white px-4 py-2 rounded-xl font-semibold hover:bg-gold-600 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="flex items-center space-x-2 bg-primary-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-700 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 <Shield size={20} />
                 <span>Admin Panel</span>
@@ -283,7 +329,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Desktop Stats Grid */}
-        <div className="hidden lg:grid grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.title}
@@ -292,13 +338,13 @@ const Dashboard = () => {
               transition={{ delay: index * 0.1 }}
             >
               <Card hover>
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-silver dark:text-silver mb-1">
+                      <p className="text-xs sm:text-sm text-silver dark:text-silver mb-1">
                         {stat.title}
                       </p>
-                      <p className="text-2xl font-bold text-primary dark:text-cream mb-2">
+                      <p className="text-lg sm:text-2xl font-bold text-primary dark:text-cream mb-2">
                         {stat.value}
                       </p>
                       <div className={`flex items-center space-x-1 text-sm ${stat.color}`}>
@@ -322,75 +368,157 @@ const Dashboard = () => {
           
         </div>
 
-        {/* Mobile View */}
-        <div className="lg:hidden space-y-6">
-          {primaryAccount && (
-            <div className="mb-8">
-              <Card className="!bg-primary-700 dark:!bg-primary-800 backdrop-blur-sm border-gold/30 shadow-2xl">
-                <CardHeader>
-                  <h3 className="text-lg font-heading font-semibold text-gold dark:text-cream">
-                    Account Overview
-                  </h3>
-                </CardHeader>
-                <CardContent className="space-y-4 pt-2">
-                <div className="space-y-6 pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-silver dark:text-silver">Total Balance</span>
-                    <div className="flex items-center space-x-2">
-                      <motion.span 
-                        key={hideBalance ? 'hidden' : 'shown'}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-2xl font-bold bg-gradient-to-r from-gold via-gold-300 to-gold bg-clip-text text-transparent drop-shadow-lg"
-                      >
-                        {hideBalance 
-                          ? '******' 
-                          : formatAmount(primaryAccount.balance, currency)
-                        }
-                      </motion.span>
+        {/* ============ Main Account Overview (all screen sizes) ============ */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Teal Main Account Card */}
+          <div className="lg:col-span-3">
+            <div className="relative overflow-hidden h-full rounded-3xl bg-primary-600 text-white p-6 sm:p-8 shadow-lux-card">
+              <div className="pointer-events-none absolute -top-20 -right-16 w-64 h-64 rounded-full bg-gold/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-primary-400/40 blur-3xl" />
+              <div
+                className="pointer-events-none absolute inset-0 opacity-[0.10]"
+                style={{
+                  backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px)',
+                  backgroundSize: '22px 22px',
+                }}
+              />
+
+              <div className="relative flex flex-col h-full">
+                {/* Greeting + username + date */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm text-white/70">{getGreeting()},</p>
+                    <h3 className="font-heading font-bold text-2xl sm:text-3xl mt-1 truncate">
+                      {user?.username || user?.firstName || 'User'}
+                    </h3>
+                  </div>
+                  <span className="inline-flex self-start shrink-0 text-xs text-white/70 font-medium px-3 py-1.5 rounded-full bg-white/10 border border-white/15">
+                    {getTodayString()}
+                  </span>
+                </div>
+
+                {/* Available balance */}
+                <div className="mt-6 sm:mt-8">
+                  <p className="text-xs uppercase tracking-wider text-white/60 font-semibold">
+                    Available Balance
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <p className="text-3xl sm:text-4xl font-bold break-words">
+                      {hideBalance ? '******' : formatAmount(balance, currency)}
+                    </p>
+                    <button
+                      onClick={() => setHideBalance(!hideBalance)}
+                      aria-label={hideBalance ? 'Show balance' : 'Hide balance'}
+                      className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors shrink-0"
+                    >
+                      {hideBalance ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Account number + status */}
+                <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  <div>
+                    <p className="text-xs text-white/60">Account Number</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="font-mono font-semibold text-sm sm:text-base">
+                        {primaryAccount?.accountNumber || '—'}
+                      </p>
                       <button
-                        onClick={() => setHideBalance(!hideBalance)}
-                        className="p-2 text-silver hover:text-gold hover:bg-gold/20 rounded-lg transition-all duration-200"
+                        onClick={() => {
+                          if (primaryAccount?.accountNumber) {
+                            navigator.clipboard.writeText(primaryAccount.accountNumber)
+                            toast.success('Account number copied!')
+                          }
+                        }}
+                        aria-label="Copy account number"
+                        className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
                       >
-                        {hideBalance ? <EyeOff size={18} /> : <Eye size={18} />}
+                        <Copy size={14} />
                       </button>
                     </div>
                   </div>
-
-                  <div className="pt-4 border-t border-silver/20 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-silver dark:text-silver">Account Number</span>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-mono text-sm font-semibold text-primary dark:text-cream bg-cream/50 dark:bg-primary-800 px-3 py-1 rounded-lg">
-                          {primaryAccount.accountNumber}
-                        </span>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(primaryAccount.accountNumber)
-                            toast.success('Account number copied!')
-                          }}
-                          className="p-2 text-silver hover:text-gold hover:bg-gold/20 rounded-lg transition-all duration-200"
-                        >
-                          <Copy size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-silver dark:text-silver">Account Type</span>
-                      <span className="px-3 py-1 bg-success/20 text-success text-sm font-semibold rounded-lg">
-                        Savings
-                      </span>
-                    </div>
+                  <div>
+                    <p className="text-xs text-white/60">Status</p>
+                    <span className={`mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                      user?.isBlocked
+                        ? 'bg-danger/80 text-white'
+                        : 'bg-white/10 text-white border border-success/50'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${user?.isBlocked ? 'bg-white' : 'bg-success'}`} />
+                      {user?.isBlocked ? 'Inactive' : 'Active'}
+                    </span>
                   </div>
                 </div>
-                </CardContent>
-              </Card>
+
+                {/* Transactions button */}
+                <div className="mt-8 lg:mt-auto pt-2">
+                  <Link
+                    to="/transactions"
+                    className="inline-flex items-center gap-2 bg-white text-primary-600 font-semibold px-5 py-2.5 rounded-xl hover:bg-cream hover:shadow-lg transition-all"
+                  >
+                    <ArrowLeftRight size={16} />
+                    Transactions
+                  </Link>
+                </div>
+              </div>
             </div>
-          )}
-          <QuickActions />
+          </div>
+
+          {/* Account Statistics Card */}
+          <div className="lg:col-span-2">
+            <div className="h-full bg-white dark:bg-primary-800 rounded-3xl border border-silver/20 dark:border-primary-700 shadow-lux-card p-6 sm:p-8">
+              <h3 className="font-heading font-bold text-xl text-primary dark:text-cream">
+                Account Statistics
+              </h3>
+              <p className="text-sm text-silver mt-1">Your activity at a glance</p>
+
+              <div className="mt-6 space-y-4">
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-cream dark:bg-primary-700/50 border border-silver/20 dark:border-primary-700">
+                  <div className="w-11 h-11 rounded-xl bg-gold/15 text-gold flex items-center justify-center shrink-0">
+                    <Clock size={20} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-silver">Pending Transactions</p>
+                    <p className="text-xl font-bold text-primary dark:text-cream mt-0.5">
+                      {pendingCount}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-cream dark:bg-primary-700/50 border border-silver/20 dark:border-primary-700">
+                  <div className="w-11 h-11 rounded-xl bg-primary-600/10 text-primary-600 dark:text-gold-300 flex items-center justify-center shrink-0">
+                    <Gauge size={20} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-silver">Transaction Limit</p>
+                    <p className="text-xl font-bold text-primary dark:text-cream mt-0.5">
+                      {DAILY_TRANSACTION_LIMIT}
+                      <span className="text-sm font-medium text-silver ml-1">/ day</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 p-4 rounded-2xl bg-cream dark:bg-primary-700/50 border border-silver/20 dark:border-primary-700">
+                  <div className="w-11 h-11 rounded-xl bg-success/15 text-success flex items-center justify-center shrink-0">
+                    <ArrowLeftRight size={20} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-silver">Transaction Volume</p>
+                    <p className="text-xl font-bold text-primary dark:text-cream mt-0.5 truncate">
+                      {formatAmount(transactionVolume, currency)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
+        {/* Mobile View: Quick Actions */}
+        <div className="lg:hidden space-y-6 mt-8">
+          <QuickActions />
+        </div>
         {/* Desktop Layout: Split Grid */}
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left side: Transactions */}

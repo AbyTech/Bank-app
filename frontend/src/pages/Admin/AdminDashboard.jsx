@@ -471,15 +471,15 @@ const AdminDashboard = () => {
             >
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center space-x-4">
-                    <Button onClick={closeUserDetails} variant="ghost" size="sm">
+                  <div className="flex items-center space-x-4 min-w-0 flex-1">
+                    <Button onClick={closeUserDetails} variant="ghost" size="sm" className="shrink-0">
                       <ArrowLeft size={20} />
                     </Button>
-                    <div>
-                      <h2 className="text-2xl font-heading font-bold text-primary dark:text-cream">
+                    <div className="min-w-0">
+                      <h2 className="text-xl sm:text-2xl font-heading font-bold text-primary dark:text-cream truncate">
                         {selectedUser.firstName} {selectedUser.lastName}
                       </h2>
-                      <p className="text-silver">{selectedUser.email}</p>
+                      <p className="text-silver truncate">{selectedUser.email}</p>
                     </div>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -501,7 +501,7 @@ const AdminDashboard = () => {
                         <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">Profile Information</h3>
                       </CardHeader>
                       <CardContent>
-                        <div className="flex items-start space-x-6">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:space-x-6 gap-4">
                           <div className="flex-shrink-0">
                             {userDetails.user.profilePhoto ? (
                               <img
@@ -595,7 +595,7 @@ const AdminDashboard = () => {
                         {/* Update Balance Form */}
                         <div className="mt-6 pt-4 border-t border-silver/20 dark:border-primary-700">
                           <h4 className="text-md font-heading font-semibold text-primary dark:text-cream mb-2">Update Balance</h4>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 space-y-2 sm:space-y-0">
                             <input
                               type="number"
                               placeholder="New Balance"
@@ -613,6 +613,7 @@ const AdminDashboard = () => {
                             <Button
                               onClick={() => handleUpdateBalance(selectedUser._id)}
                               variant="primary"
+                              className="shrink-0"
                             >
                               Update
                             </Button>

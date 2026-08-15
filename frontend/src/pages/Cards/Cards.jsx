@@ -110,11 +110,11 @@ const Cards = () => {
           </p>
         </motion.div>
 
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-6">
           <h2 className="text-2xl font-heading font-semibold text-primary dark:text-cream">
             Your Cards
           </h2>
-          <Button variant="primary" className="flex items-center space-x-2" onClick={handleOrderCard}>
+          <Button variant="primary" className="flex items-center justify-center space-x-2" onClick={handleOrderCard}>
             <Plus size={20} />
             <span>Order New Card</span>
           </Button>
