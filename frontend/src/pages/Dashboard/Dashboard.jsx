@@ -30,8 +30,9 @@ import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 import { formatAmount, getCurrencyByCountry } from '../../services/currency'
 
-// App-wide daily transaction cap (no backend field exists for this value)
-const DAILY_TRANSACTION_LIMIT = 100
+// Daily transaction limit: normal users 3/day, admins 100/day
+// (no backend field exists for this value)
+const getTransactionLimit = (isAdmin) => (isAdmin ? 100 : 3)
 
 // Time-based greeting (based on the user's local time)
 const getGreeting = () => {
@@ -329,7 +330,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Desktop Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.title}
@@ -493,7 +494,7 @@ const Dashboard = () => {
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-silver">Transaction Limit</p>
                     <p className="text-xl font-bold text-primary dark:text-cream mt-0.5">
-                      {DAILY_TRANSACTION_LIMIT}
+                      {getTransactionLimit(isAdmin)}
                       <span className="text-sm font-medium text-silver ml-1">/ day</span>
                     </p>
                   </div>
