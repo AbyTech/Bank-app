@@ -161,7 +161,7 @@ const Transactions = () => {
                       <span>Export</span>
                     </Button>
                     <Button
-                      variant="primary"
+                      variant="brand"
                       size="sm"
                       onClick={() => setShowTransferForm(true)}
                     >

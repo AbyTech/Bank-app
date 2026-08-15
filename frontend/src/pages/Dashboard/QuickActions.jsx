@@ -160,7 +160,7 @@ const QuickActions = () => {
               Cancel
             </Button>
             <Button
-              variant="primary"
+              variant="brand"
               onClick={handleOrderCard}
               className="flex-1"
             >

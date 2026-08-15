@@ -172,7 +172,7 @@ const Loans = () => {
             Your Loans
           </h2>
           <Button 
-            variant="primary" 
+            variant="brand" 
             className="flex items-center space-x-2"
             onClick={() => setShowApplication(true)}
           >

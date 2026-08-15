@@ -285,7 +285,7 @@ const Support = () => {
 
           {/* Live Chat */}
           <div className="lg:col-span-3">
-            <Card className="flex flex-col h-[36rem] lg:h-[42rem]">
+            <Card className="flex flex-col h-[calc(100dvh-16rem)] min-h-[24rem] lg:h-[42rem]">
               <CardHeader className="flex items-center justify-between">
                 <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
                   Live Chat Support
@@ -329,19 +329,20 @@ const Support = () => {
                 {/* Input */}
                 <div className="border-t border-silver/20 dark:border-primary-700 p-4">
                   {chatEnabled ? (
-                    <div className="flex space-x-3">
+                    <div className="flex gap-2 sm:gap-3 items-end">
                       <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                         placeholder="Type your message..."
-                        className="flex-1 px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                        className="flex-1 min-w-0 px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                       />
                       <Button
                         onClick={() => handleSend()}
                         disabled={!newMessage.trim() || sending}
-                        className="flex items-center space-x-2"
+                        variant="brand"
+                        className="flex items-center space-x-2 shrink-0"
                       >
                         <Send size={16} />
                         <span>Send</span>

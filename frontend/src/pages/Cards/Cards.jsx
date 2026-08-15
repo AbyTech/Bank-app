@@ -6,7 +6,14 @@ import Button from '../../components/UI/Button'
 import Modal from '../../components/UI/Modal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
-import logo from '../../assets/logo.png'
+import DebitCard from '../../components/UI/DebitCard'
+
+// Format a card expiry date as MM/YY
+const formatCardExpiry = (date) => {
+  if (!date) return '--/--'
+  const d = new Date(date)
+  return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`
+}
 
 const Cards = () => {
   const { user } = useAuth()
@@ -39,6 +46,13 @@ const Cards = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleToggleCardNumber = (card) => {
+    const updatedCards = cards.map(c =>
+      c._id === card._id ? { ...c, showFullNumber: !c.showFullNumber } : c
+    )
+    setCards(updatedCards)
   }
 
   const handleOrderCard = () => {
@@ -114,7 +128,7 @@ const Cards = () => {
           <h2 className="text-2xl font-heading font-semibold text-primary dark:text-cream">
             Your Cards
           </h2>
-          <Button variant="primary" className="flex items-center justify-center space-x-2" onClick={handleOrderCard}>
+          <Button variant="brand" className="flex items-center justify-center space-x-2" onClick={handleOrderCard}>
             <Plus size={20} />
             <span>Order New Card</span>
           </Button>
@@ -144,60 +158,15 @@ const Cards = () => {
                     </div>
                   </div>
 
-                  <div className={`relative rounded-xl p-6 text-white mb-4 shadow-lg overflow-hidden ${
-                    card.status === 'rejected' 
-                      ? 'bg-gradient-to-br from-red-600 to-red-800 opacity-75' 
-                      : 'bg-gradient-to-br from-primary-600 to-primary-800'
-                  }`}>
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-10">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16"></div>
-                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white rounded-full -ml-12 -mb-12"></div>
-                    </div>
-
-                    {/* Company Logo */}
-                    <div className="absolute top-4 right-4">
-                      <img src={logo} alt="Logo" className="w-16 h-16 rounded-full" />
-                    </div>
-
-                    {/* Card Number */}
-                    <div className="mt-8 mb-4">
-                      <p className="text-lg font-mono tracking-widest">
-                        {card.showFullNumber ? card.cardNumber : `**** **** **** ${card.cardNumber?.slice(-4) || '****'}`}
-                      </p>
-                    </div>
-
-                    {/* CVV only */}
-                    <div className="mb-2">
-                      <div className="flex justify-start items-center text-sm">
-                        <span>CVV {card.cvv}</span>
-                      </div>
-                    </div>
-
-                    {/* Bank Name */}
-                    <div className="mb-4">
-                      <p className="text-sm font-semibold tracking-wide">PRIMEWAVE BANK</p>
-                    </div>
-
-                    {/* VISA Text */}
-                    <div className="absolute bottom-4 right-4 text-right">
-                      <div className="text-xs text-white opacity-75 mb-1">DEBIT</div>
-                      <div className="text-white font-bold text-xl tracking-wider">VISA</div>
-                    </div>
-
-                    {/* View/Hide Toggle */}
-                    <button
-                      onClick={() => {
-                        const updatedCards = cards.map(c =>
-                          c._id === card._id ? { ...c, showFullNumber: !c.showFullNumber } : c
-                        )
-                        setCards(updatedCards)
-                      }}
-                      className="absolute bottom-4 left-4 text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded text-white hover:bg-white/30 transition-colors"
-                    >
-                      {card.showFullNumber ? 'Hide' : 'View'}
-                    </button>
-                  </div>
+                  <DebitCard
+                    cardNumber={card.cardNumber}
+                    cardName={card.cardName}
+                    expiry={formatCardExpiry(card.expiryDate)}
+                    cvv={card.cvv}
+                    status={card.status}
+                    showNumber={card.showFullNumber}
+                    onToggleShow={() => handleToggleCardNumber(card)}
+                  />
 
                   <div className="space-y-3">
                     {card.status === 'rejected' && card.rejectionReason && (

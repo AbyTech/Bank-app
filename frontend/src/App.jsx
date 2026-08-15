@@ -18,6 +18,8 @@ import Loans from './pages/Loans/Loans';
 import Profile from './pages/Profile/Profile';
 import Support from './pages/Support/Support';
 import AdminDashboard from './pages/Admin/AdminDashboard';
+// Landing Page
+import LandingPage from './pages/Landing/LandingPage';
 import { useAuth } from './hooks/useAuth';
 
 import './styles/index.css';
@@ -58,8 +60,8 @@ function AppRoutes() {
       <Route path="/support" element={<MainLayout><Support /></MainLayout>} />
       {isAdmin && <Route path="/admin" element={<MainLayout><AdminDashboard /></MainLayout>} />}
 
-      {/* Default Route */}
-      <Route path="/" element={<AuthLayout><Register /></AuthLayout>} />
+      {/* Default Route - public landing page */}
+      <Route path="/" element={<LandingPage />} />
     </Routes>
   );
 }
