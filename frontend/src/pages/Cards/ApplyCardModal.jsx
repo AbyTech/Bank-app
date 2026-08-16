@@ -289,7 +289,7 @@ const ApplyCardModal = ({ isOpen, onClose, type, category, onSuccess }) => {
               </div>
             )}
             {/* Review step */}
-            {step === 2 && (
+            {step === totalSteps - 1 && (
               <div className="space-y-5">
                 <div>
                   <DebitCard
@@ -373,7 +373,7 @@ const ApplyCardModal = ({ isOpen, onClose, type, category, onSuccess }) => {
                   variant="primary"
                   className="flex-1"
                   loading={submitting}
-                  disabled={!canProceedPin}
+                  disabled={!canProceedPin || !termsAccepted}
                   onClick={handleSubmit}
                 >
                   <CreditCard size={16} className="mr-2" />
