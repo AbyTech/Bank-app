@@ -1,11 +1,57 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, Clock, CheckCircle, XCircle, DollarSign } from 'lucide-react'
-import Card, { CardContent, CardHeader } from '../../components/UI/Card'
+import {
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  XCircle,
+  DollarSign,
+  Landmark,
+  Wallet,
+  Calendar,
+  Percent,
+  Banknote,
+  Phone,
+  MapPin,
+  BadgeCheck,
+  FileText,
+  ShieldCheck,
+  Sparkles,
+  User,
+} from 'lucide-react'
+import Card, { CardContent } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import Modal from '../../components/UI/Modal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
+
+// ---------- Presentation helpers (UI only - no business-logic changes) ----------
+
+// Labels/colours for every loan status the backend can return.
+const STATUS_CONFIG = {
+  approved: { label: 'Approved', cls: 'bg-success/15 text-success border-success/30', dot: 'bg-success' },
+  active: {
+    label: 'Active',
+    cls: 'bg-primary-100 text-primary-600 border-primary-400/30 dark:bg-primary-600/20 dark:text-primary-300 dark:border-primary-400/40',
+    dot: 'bg-primary-400',
+  },
+  paid: { label: 'Paid Off', cls: 'bg-success/15 text-success border-success/30', dot: 'bg-success' },
+  pending: { label: 'Pending', cls: 'bg-gold/10 text-gold border-gold/40', dot: 'bg-gold' },
+  defaulted: { label: 'Defaulted', cls: 'bg-danger/10 text-danger border-danger/30', dot: 'bg-danger' },
+}
+const getStatus = (status) => STATUS_CONFIG[status] || { label: status || 'Unknown', cls: 'bg-silver/10 text-silver border-silver/30', dot: 'bg-silver' }
+
+// Interest rate is stored as a decimal (0.08 = 8%) - present it as a percentage.
+const formatRate = (rate) => {
+  const num = Number(rate) || 0
+  return `${num > 1 ? num : num * 100}%`
+}
+
+// Currency formatting for loan amounts.
+const formatMoney = (value) => {
+  const num = Number(value) || 0
+  return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 
 const Loans = () => {
   const { user } = useAuth()
@@ -48,19 +94,6 @@ const Loans = () => {
       setLoans([])
     } finally {
       setLoading(false)
-    }
-  }
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'approved':
-        return <CheckCircle className="text-success" size={16} />
-      case 'pending':
-        return <Clock className="text-gold" size={16} />
-      case 'rejected':
-        return <XCircle className="text-danger" size={16} />
-      default:
-        return null
     }
   }
 
@@ -151,127 +184,250 @@ const Loans = () => {
     }
   }
 
+  // Derived summary stats for the dashboard strip (UI only).
+  const totalBorrowed = loans.reduce((sum, l) => sum + (Number(l.loanAmount) || 0), 0)
+  const outstanding = loans.reduce((sum, l) => sum + (Number(l.remainingBalance) || 0), 0)
+  const activeLoans = loans.filter((l) => l.status === 'approved' || l.status === 'active').length
+  const paidLoans = loans.filter((l) => l.status === 'paid').length
+
   return (
     <div className="min-h-screen bg-cream dark:bg-primary-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* ================= Hero header ================= */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white p-6 sm:p-8 shadow-lux-card mb-6"
         >
-          <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream mb-2">
-            Loans
-          </h1>
-          <p className="text-silver dark:text-silver">
-            Apply for and manage your loans
-          </p>
+          <div className="pointer-events-none absolute -top-20 -right-16 w-64 h-64 rounded-full bg-gold/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-primary-400/40 blur-3xl" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.10]"
+            style={{
+              backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px)',
+              backgroundSize: '22px 22px',
+            }}
+          />
+
+          <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-gold/20 border border-gold/40 flex items-center justify-center shrink-0">
+                <Landmark size={26} className="text-gold-300" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs uppercase tracking-[0.2em] text-gold-300 font-semibold">Loan Center</p>
+                <h1 className="font-heading font-bold text-3xl sm:text-4xl mt-1">Loans</h1>
+                <p className="text-white/70 text-sm mt-2 max-w-md">
+                  Apply for personal loans with instant approval and repay at your own pace.
+                </p>
+              </div>
+            </div>
+            <div className="lg:justify-end">
+              <Button
+                variant="primary"
+                size="lg"
+                className="shadow-lux-gold"
+                onClick={() => setShowApplication(true)}
+              >
+                <Sparkles size={18} className="mr-2" />
+                Apply for Loan
+              </Button>
+            </div>
+          </div>
         </motion.div>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-heading font-semibold text-primary dark:text-cream">
-            Your Loans
-          </h2>
-          <Button 
-            variant="brand" 
-            className="flex items-center space-x-2"
-            onClick={() => setShowApplication(true)}
-          >
-            <TrendingUp size={20} />
-            <span>Apply for Loan</span>
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loans.map((loan, index) => (
+        {/* ================= Summary stats ================= */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          {[
+            { label: 'Total Borrowed', value: `$${formatMoney(totalBorrowed)}`, icon: Banknote, color: 'text-gold', bg: 'bg-gold/10' },
+            { label: 'Outstanding Balance', value: `$${formatMoney(outstanding)}`, icon: Wallet, color: 'text-success', bg: 'bg-success/10' },
+            { label: 'Active Loans', value: activeLoans, icon: TrendingUp, color: 'text-primary-500 dark:text-primary-300', bg: 'bg-primary-100 dark:bg-primary-700' },
+            { label: 'Paid Off', value: paidLoans, icon: CheckCircle, color: 'text-success', bg: 'bg-success/10' },
+          ].map((stat, index) => (
             <motion.div
-              key={loan._id}
+              key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: 0.06 * index }}
             >
               <Card hover>
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-semibold text-primary dark:text-cream">
-                        ${loan.loanAmount.toLocaleString()}
-                      </h3>
-                      <p className="text-silver text-sm">{loan.termMonths} months</p>
+                <CardContent className="p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs sm:text-sm text-silver mb-1 truncate">{stat.label}</p>
+                      <p className="text-lg sm:text-2xl font-bold text-primary dark:text-cream truncate">{stat.value}</p>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      {getStatusIcon(loan.status)}
-                      <span className={`text-sm capitalize ${
-                        loan.status === 'approved' ? 'text-success' : 
-                        loan.status === 'pending' ? 'text-gold' : 'text-danger'
-                      }`}>
-                        {loan.status}
-                      </span>
+                    <div className={`p-3 rounded-xl shrink-0 ${stat.bg} ${stat.color}`}>
+                      <stat.icon size={22} />
                     </div>
-                  </div>
-
-                  {loan.status === 'approved' && (
-                    <div className="mb-4">
-                      <div className="flex justify-between text-sm text-silver mb-1">
-                        <span>Repayment Progress</span>
-                        <span>{loan.repaymentProgress}%</span>
-                      </div>
-                      <div className="w-full bg-silver/20 rounded-full h-2">
-                        <div 
-                          className="bg-success h-2 rounded-full" 
-                          style={{ width: `${loan.repaymentProgress}%` }}
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-2 text-sm text-silver">
-                    <div className="flex justify-between">
-                      <span>Interest Rate</span>
-                      <span className="text-primary dark:text-cream">{loan.interestRate}%</span>
-                    </div>
-                    {loan.monthlyPayment && (
-                      <div className="flex justify-between">
-                        <span>Monthly Payment</span>
-                        <span className="text-primary dark:text-cream">${loan.monthlyPayment}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span>Applied</span>
-                      <span>{new Date(loan.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex space-x-3">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => {
-                        setSelectedLoan(loan)
-                        setShowDetailsModal(true)
-                      }}
-                    >
-                      Details
-                    </Button>
-                    {loan.status === 'approved' && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => {
-                          setSelectedLoan(loan)
-                          setShowPaymentModal(true)
-                        }}
-                      >
-                        Make Payment
-                      </Button>
-                    )}
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
         </div>
+
+        {/* ================= Loans list header ================= */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div>
+            <h2 className="text-2xl font-heading font-semibold text-primary dark:text-cream">
+              Your Loans
+            </h2>
+            <p className="text-silver text-sm mt-1">
+              {loans.length === 0 ? 'No loan applications yet' : `${loans.length} loan${loans.length === 1 ? '' : 's'} on record`}
+            </p>
+          </div>
+          <Button
+            variant="brand"
+            onClick={() => setShowApplication(true)}
+          >
+            <TrendingUp size={18} className="mr-2" />
+            Apply for Loan
+          </Button>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[0, 1, 2].map((i) => (
+              <Card key={i}>
+                <CardContent className="p-6 space-y-4">
+                  <div className="h-6 bg-silver/15 rounded-full animate-pulse" />
+                  <div className="h-9 w-3/4 bg-silver/15 rounded-full animate-pulse" />
+                  <div className="h-4 bg-silver/15 rounded-full animate-pulse" />
+                  <div className="h-4 bg-silver/15 rounded-full animate-pulse" />
+                  <div className="h-11 bg-silver/15 rounded-xl animate-pulse" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : loans.length === 0 ? (
+          <Card>
+            <CardContent className="p-10 sm:p-16 text-center">
+              <div className="w-20 h-20 rounded-3xl bg-gold/10 flex items-center justify-center mx-auto mb-5">
+                <Banknote size={36} className="text-gold" />
+              </div>
+              <h3 className="text-xl font-heading font-semibold text-primary dark:text-cream mb-2">
+                No loans yet
+              </h3>
+              <p className="text-silver max-w-md mx-auto mb-6 leading-relaxed">
+                When you take out a loan, it will appear here. Apply now to get instant funding straight into your account.
+              </p>
+              <Button variant="primary" onClick={() => setShowApplication(true)}>
+                <Sparkles size={18} className="mr-2" />
+                Apply for your first loan
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loans.map((loan, index) => {
+              const status = getStatus(loan.status)
+              const repaid = Math.max(0, Math.min(100, Number(loan.repaymentProgress) || 0))
+              const showProgress = ['approved', 'active', 'paid'].includes(loan.status)
+              const canPay = loan.status === 'approved' || loan.status === 'active'
+              return (
+                <motion.div
+                  key={loan._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.08 }}
+                  className="h-full"
+                >
+                  <Card hover className="h-full flex flex-col">
+                    <CardContent className="p-6 flex flex-col flex-1">
+                      {/* Top row: status badge + applied date */}
+                      <div className="flex items-center justify-between gap-3 mb-5">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${status.cls}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                          {status.label}
+                        </span>
+                        <span className="text-xs text-silver flex items-center gap-1.5">
+                          <Calendar size={13} />
+                          {new Date(loan.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      {/* Amount + purpose */}
+                      <p className="font-heading font-bold text-3xl text-primary dark:text-cream">
+                        ${formatMoney(loan.loanAmount)}
+                      </p>
+                      <p className="text-xs text-silver mt-1 mb-5 line-clamp-1">
+                        {loan.purpose}
+                      </p>
+
+                      {/* Key terms */}
+                      <div className="grid grid-cols-3 gap-2 bg-cream dark:bg-primary-700/50 rounded-2xl p-3 mb-5">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-silver font-semibold flex items-center gap-1">
+                            <Percent size={11} /> Rate
+                          </p>
+                          <p className="text-sm font-bold text-primary dark:text-cream mt-0.5">{formatRate(loan.interestRate)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-silver font-semibold">Term</p>
+                          <p className="text-sm font-bold text-primary dark:text-cream mt-0.5">{loan.termMonths} mo</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase tracking-wider text-silver font-semibold">Monthly</p>
+                          <p className="text-sm font-bold text-primary dark:text-cream mt-0.5">${formatMoney(loan.monthlyPayment)}</p>
+                        </div>
+                      </div>
+
+                      {/* Repayment progress */}
+                      {showProgress && (
+                        <div className="mb-5">
+                          <div className="flex justify-between text-xs text-silver mb-1.5">
+                            <span>Repayment Progress</span>
+                            <span className="font-semibold text-primary dark:text-cream">{repaid}%</span>
+                          </div>
+                          <div className="w-full bg-silver/20 dark:bg-primary-600 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="h-2.5 rounded-full bg-gradient-to-r from-success to-emerald-400 transition-all duration-500"
+                              style={{ width: `${repaid}%` }}
+                            />
+                          </div>
+                          <p className="text-[11px] text-silver mt-1.5">
+                            {loan.status === 'paid'
+                              ? 'Fully repaid 🎉'
+                              : `$${formatMoney(loan.remainingBalance)} remaining`}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Actions */}
+                      <div className="mt-auto pt-2 flex space-x-3">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => {
+                            setSelectedLoan(loan)
+                            setShowDetailsModal(true)
+                          }}
+                        >
+                          Details
+                        </Button>
+                        {canPay && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => {
+                              setSelectedLoan(loan)
+                              setShowPaymentModal(true)
+                            }}
+                          >
+                            Make Payment
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
 
         {/* Success Modal */}
         <Modal
@@ -280,15 +436,22 @@ const Loans = () => {
           title="Loan Approved!"
         >
           <div className="text-center py-8">
-            <CheckCircle className="text-success mx-auto mb-4" size={64} />
-            <h3 className="text-xl font-semibold text-primary dark:text-cream mb-2">
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 bg-success/20 rounded-full blur-xl" />
+              <div className="relative w-20 h-20 rounded-full bg-success/10 border border-success/40 flex items-center justify-center">
+                <CheckCircle className="text-success" size={44} />
+              </div>
+            </div>
+            <h3 className="text-2xl font-heading font-semibold text-primary dark:text-cream mb-3">
               Congratulations!
             </h3>
-            <p className="text-silver mb-6">
+            <p className="text-silver mb-8 max-w-sm mx-auto leading-relaxed">
               Your loan application has been approved immediately and the funds have been deposited to your account.
             </p>
             <Button
               variant="primary"
+              size="lg"
+              className="shadow-lux-gold"
               onClick={handleSuccessModalClose}
             >
               Continue
@@ -304,104 +467,134 @@ const Loans = () => {
             setApplicationError('') // Clear errors when closing modal
           }}
           title="Apply for a Loan"
+          size="lg"
         >
           <form onSubmit={handleApplicationSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Loan Amount */}
+              <div>
+                <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
+                  Loan Amount
+                </label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver" size={20} />
+                  <input
+                    type="number"
+                    required
+                    name="amount"
+                    value={applicationForm.amount}
+                    onChange={handleFormChange}
+                    className="w-full pl-10 pr-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                    placeholder="Enter loan amount"
+                    min="100"
+                    max="500000000000"
+                  />
+                </div>
+              </div>
+
+              {/* Loan Duration */}
+              <div>
+                <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
+                  Loan Duration
+                </label>
+                <select
+                  name="duration"
+                  value={applicationForm.duration}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                >
+                  <option value="6">6 months</option>
+                  <option value="12">12 months</option>
+                  <option value="24">24 months</option>
+                  <option value="36">36 months</option>
+                </select>
+              </div>
+
+              {/* Phone Number */}
+              <div>
+                <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver" size={18} />
+                  <input
+                    type="number"
+                    required
+                    name="phoneNumber"
+                    value={applicationForm.phoneNumber}
+                    onChange={handleFormChange}
+                    className="w-full pl-10 pr-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+              </div>
+
+              {/* Means of Identification */}
+              <div>
+                <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
+                  Means of Identification
+                </label>
+                <select
+                  name="identificationType"
+                  value={applicationForm.identificationType}
+                  onChange={handleFormChange}
+                  className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
+                >
+                  <option value="passport">Passport</option>
+                  <option value="drivers_license">Driver's License</option>
+                  <option value="id_card">National ID Card</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Address */}
             <div>
               <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Loan Amount
+                Address
               </label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-silver" size={20} />
-                <input
-                  type="number"
+                <MapPin className="absolute left-3 top-3 text-silver" size={18} />
+                <textarea
                   required
-                  name="amount"
-                  value={applicationForm.amount}
+                  name="address"
+                  value={applicationForm.address}
                   onChange={handleFormChange}
+                  rows="2"
                   className="w-full pl-10 pr-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
-                  placeholder="Enter loan amount"
-                  min="100"
-                  max="500000000000"
+                  placeholder="Enter your full address"
                 />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Loan Duration
-              </label>
-              <select
-                name="duration"
-                value={applicationForm.duration}
-                onChange={handleFormChange}
-                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
-              >
-                <option value="6">6 months</option>
-                <option value="12">12 months</option>
-                <option value="24">24 months</option>
-                <option value="36">36 months</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Phone Number
-              </label>
-              <input
-                type="number"
-                required
-                name="phoneNumber"
-                value={applicationForm.phoneNumber}
-                onChange={handleFormChange}
-                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
-                placeholder="Enter your phone number"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Address
-              </label>
-              <textarea
-                required
-                name="address"
-                value={applicationForm.address}
-                onChange={handleFormChange}
-                rows="3"
-                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
-                placeholder="Enter your full address"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Means of Identification
-              </label>
-              <select
-                name="identificationType"
-                value={applicationForm.identificationType}
-                onChange={handleFormChange}
-                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
-              >
-                <option value="passport">Passport</option>
-                <option value="drivers_license">Driver's License</option>
-                <option value="id_card">National ID Card</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
                 Upload Identification Document
               </label>
-              <input
-                type="file"
-                required
-                name="identificationDocument"
-                onChange={handleFormChange}
-                className="w-full text-sm text-silver file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold-100 file:text-gold-700 hover:file:bg-gold-200"
-              />
+              <label className="flex flex-col items-center justify-center gap-2 w-full px-4 py-6 border-2 border-dashed border-silver/40 dark:border-primary-600 rounded-xl bg-primary-50 dark:bg-primary-700/50 cursor-pointer hover:border-gold/60 hover:bg-gold/5 transition-colors text-center">
+                <div className="w-11 h-11 rounded-xl bg-gold/10 flex items-center justify-center">
+                  <BadgeCheck className="text-gold" size={22} />
+                </div>
+                <span className="text-sm text-primary dark:text-cream font-medium">
+                  {applicationForm.identificationDocument
+                    ? applicationForm.identificationDocument.name
+                    : 'Click to choose a file'}
+                </span>
+                <span className="text-xs text-silver">
+                  {applicationForm.identificationDocument
+                    ? 'File selected — ready to upload'
+                    : 'Passport, Driver\u2019s License or National ID (JPG, PNG, PDF)'}
+                </span>
+                <input
+                  type="file"
+                  required
+                  name="identificationDocument"
+                  onChange={handleFormChange}
+                  className="hidden"
+                />
+              </label>
             </div>
 
+            {/* Loan Purpose */}
             <div>
               <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
                 Loan Purpose
@@ -411,24 +604,26 @@ const Loans = () => {
                 name="purpose"
                 value={applicationForm.purpose}
                 onChange={handleFormChange}
-                rows="3"
+                rows="2"
                 className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
                 placeholder="Describe what you need the loan for..."
               />
             </div>
 
-            <div className="bg-primary-50 dark:bg-primary-700 rounded-xl p-4">
-              <h4 className="font-semibold text-primary dark:text-cream mb-2">
+            {/* Estimated Terms */}
+            <div className="bg-primary-50 dark:bg-primary-700 rounded-xl p-4 border border-silver/20 dark:border-primary-600">
+              <h4 className="font-semibold text-primary dark:text-cream mb-3 flex items-center gap-2">
+                <ShieldCheck size={16} className="text-gold" />
                 Estimated Terms
               </h4>
-              <div className="text-sm text-silver space-y-1">
+              <div className="text-sm text-silver space-y-2">
                 <div className="flex justify-between">
-                  <span>Interest Rate:</span>
-                  <span className="text-primary dark:text-cream">5.5% - 7.5%</span>
+                  <span>Interest Rate</span>
+                  <span className="text-primary dark:text-cream font-semibold">5.5% - 7.5%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Processing Time:</span>
-                  <span className="text-primary dark:text-cream">1-3 business days</span>
+                  <span>Processing Time</span>
+                  <span className="text-primary dark:text-cream font-semibold">1-3 business days</span>
                 </div>
               </div>
             </div>
@@ -467,50 +662,61 @@ const Loans = () => {
             setSelectedLoan(null)
           }}
           title="Loan Details"
+          size="lg"
         >
           {selectedLoan && (
             <div className="space-y-6">
+              {/* Summary banner */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white p-5">
+                <div className="pointer-events-none absolute -top-10 -right-10 w-40 h-40 rounded-full bg-gold/20 blur-2xl" />
+                <div className="pointer-events-none absolute -bottom-14 -left-8 w-40 h-40 rounded-full bg-primary-400/40 blur-2xl" />
+                <div className="relative flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <p className="text-xs text-white/60 uppercase tracking-wider">Loan Amount</p>
+                    <p className="font-heading font-bold text-2xl sm:text-3xl mt-1">
+                      ${formatMoney(selectedLoan.loanAmount)}
+                    </p>
+                  </div>
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${getStatus(selectedLoan.status).cls}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${getStatus(selectedLoan.status).dot}`} />
+                    {getStatus(selectedLoan.status).label}
+                  </span>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-primary dark:text-cream mb-4">
+                  <h3 className="text-sm font-semibold text-silver uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <ShieldCheck size={15} className="text-gold" />
                     Loan Information
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-silver">Loan Amount:</span>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Loan Amount</span>
                       <span className="text-primary dark:text-cream font-semibold">
-                        ${selectedLoan.loanAmount.toLocaleString()}
+                        ${formatMoney(selectedLoan.loanAmount)}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Interest Rate:</span>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Interest Rate</span>
                       <span className="text-primary dark:text-cream font-semibold">
-                        {selectedLoan.interestRate}%
+                        {formatRate(selectedLoan.interestRate)}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Term:</span>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Term</span>
                       <span className="text-primary dark:text-cream font-semibold">
                         {selectedLoan.termMonths} months
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Monthly Payment:</span>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Monthly Payment</span>
                       <span className="text-primary dark:text-cream font-semibold">
-                        ${selectedLoan.monthlyPayment}
+                        ${formatMoney(selectedLoan.monthlyPayment)}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Status:</span>
-                      <span className={`font-semibold capitalize ${
-                        selectedLoan.status === 'approved' ? 'text-success' :
-                        selectedLoan.status === 'pending' ? 'text-gold' : 'text-danger'
-                      }`}>
-                        {selectedLoan.status}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Applied Date:</span>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Applied Date</span>
                       <span className="text-primary dark:text-cream font-semibold">
                         {new Date(selectedLoan.createdAt).toLocaleDateString()}
                       </span>
@@ -519,24 +725,25 @@ const Loans = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-primary dark:text-cream mb-4">
+                  <h3 className="text-sm font-semibold text-silver uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <User size={15} className="text-gold" />
                     Personal Information
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-silver">Phone Number:</span>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Phone Number</span>
                       <span className="text-primary dark:text-cream font-semibold">
                         {selectedLoan.phoneNumber}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Address:</span>
-                      <span className="text-primary dark:text-cream font-semibold">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Address</span>
+                      <span className="text-primary dark:text-cream font-semibold text-right">
                         {selectedLoan.address}
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Identification Type:</span>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-silver">Identification Type</span>
                       <span className="text-primary dark:text-cream font-semibold capitalize">
                         {selectedLoan.identificationType.replace('_', ' ')}
                       </span>
@@ -545,34 +752,40 @@ const Loans = () => {
                 </div>
               </div>
 
+              {/* Loan Purpose */}
               <div>
-                <h3 className="text-lg font-semibold text-primary dark:text-cream mb-4">
+                <h3 className="text-sm font-semibold text-silver uppercase tracking-wider mb-3 flex items-center gap-2">
+                  <FileText size={15} className="text-gold" />
                   Loan Purpose
                 </h3>
-                <p className="text-silver bg-primary-50 dark:bg-primary-700 p-4 rounded-lg">
+                <p className="text-silver bg-primary-50 dark:bg-primary-700 p-4 rounded-xl leading-relaxed border border-silver/20 dark:border-primary-600">
                   {selectedLoan.purpose}
                 </p>
               </div>
 
-              {selectedLoan.status === 'approved' && (
+              {/* Repayment progress */}
+              {(selectedLoan.status === 'approved' || selectedLoan.status === 'active' || selectedLoan.status === 'paid') && (
                 <div>
-                  <h3 className="text-lg font-semibold text-primary dark:text-cream mb-4">
+                  <h3 className="text-sm font-semibold text-silver uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <TrendingUp size={15} className="text-gold" />
                     Repayment Progress
                   </h3>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm text-silver">
-                      <span>Remaining Balance:</span>
+                      <span>Remaining Balance</span>
                       <span className="text-primary dark:text-cream font-semibold">
-                        ${selectedLoan.remainingBalance.toLocaleString()}
+                        ${formatMoney(selectedLoan.remainingBalance)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm text-silver mb-1">
                       <span>Repayment Progress</span>
-                      <span>{selectedLoan.repaymentProgress}%</span>
+                      <span className="font-semibold text-primary dark:text-cream">
+                        {selectedLoan.repaymentProgress}%
+                      </span>
                     </div>
-                    <div className="w-full bg-silver/20 rounded-full h-3">
+                    <div className="w-full bg-silver/20 dark:bg-primary-600 rounded-full h-3 overflow-hidden">
                       <div
-                        className="bg-success h-3 rounded-full"
+                        className="h-3 rounded-full bg-gradient-to-r from-success to-emerald-400"
                         style={{ width: `${selectedLoan.repaymentProgress}%` }}
                       />
                     </div>
@@ -619,22 +832,26 @@ const Loans = () => {
         >
           {selectedLoan && (
             <div className="space-y-6">
-              <div className="bg-primary-50 dark:bg-primary-700 rounded-xl p-4">
-                <h3 className="text-lg font-semibold text-primary dark:text-cream mb-4">
-                  Payment Details
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-silver">Remaining Balance:</span>
-                    <span className="text-primary dark:text-cream font-semibold">
-                      ${selectedLoan.remainingBalance.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-silver">Monthly Payment:</span>
-                    <span className="text-primary dark:text-cream font-semibold">
-                      ${selectedLoan.monthlyPayment}
-                    </span>
+              <div className="relative overflow-hidden bg-primary-50 dark:bg-primary-700 rounded-xl p-5 border border-silver/20 dark:border-primary-600">
+                <div className="pointer-events-none absolute -top-8 -right-8 w-24 h-24 rounded-full bg-gold/10 blur-2xl" />
+                <div className="relative">
+                  <h3 className="text-sm font-semibold text-silver uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <Wallet size={15} className="text-gold" />
+                    Payment Details
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-silver">Remaining Balance</span>
+                      <span className="text-primary dark:text-cream font-bold">
+                        ${formatMoney(selectedLoan.remainingBalance)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-silver">Monthly Payment</span>
+                      <span className="text-primary dark:text-cream font-bold">
+                        ${formatMoney(selectedLoan.monthlyPayment)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
