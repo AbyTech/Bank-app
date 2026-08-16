@@ -25,7 +25,7 @@ export default {
           900: "#0B2B29",       // dark-mode page background
         },
         // Muted borders / secondary text
-        silver: "#D8D8D8",
+        silver: "#8f8e8e",
         // Brand accent (burnt-orange family)
         gold: {
           DEFAULT: "#BB6125",   // primary CTA / accent
