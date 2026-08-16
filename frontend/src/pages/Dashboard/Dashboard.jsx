@@ -17,13 +17,11 @@ import {
   Copy,
   Eye,
   EyeOff,
-  Wallet,
   Plus
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
-import NotificationsBell from '../../components/Layout/NotificationsBell'
 import QuickActions from './QuickActions'
 import ActivityFeed from './ActivityFeed'
 import BalanceChart from '../../components/Charts/BalanceChart'
@@ -251,27 +249,8 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
+    <div className="min-h-screen bg-cream dark:bg-primary-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Top Navbar */}
-        <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl bg-white dark:bg-primary-800 border border-silver/20 dark:border-primary-700 shadow-lux-card px-4 sm:px-6 py-3">
-          <div className="min-w-0">
-            <p className="text-xs sm:text-sm lg:text-base font-medium text-primary dark:text-cream truncate">
-              {getTodayString()}
-            </p>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Wallet + balance (hidden on small mobile) */}
-            <div className="hidden sm:flex items-center gap-2 bg-primary-600 text-white rounded-xl px-3.5 py-2">
-              <Wallet size={16} className="shrink-0" />
-              <span className="font-semibold text-xs sm:text-sm whitespace-nowrap">
-                {formatAmount(balance, currency)}
-              </span>
-            </div>
-            <NotificationsBell />
-          </div>
-        </div>
-
         {/* Profile Completion Notification */}
         {showProfileNotification && (
           <motion.div
@@ -337,7 +316,7 @@ const Dashboard = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream mb-2">
+              <h1 className="text-xl sm:text-3xl font-heading font-bold text-primary dark:text-cream mb-2">
                 Welcome back, {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.firstName || 'User'}! 👋
               </h1>
               <p className="text-silver dark:text-silver">

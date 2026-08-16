@@ -260,7 +260,7 @@ const AdminDashboard = () => {
   }, [users, searchTerm, statusFilter])
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
+    <div className="min-h-screen bg-cream dark:bg-primary-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream">Admin Dashboard</h1>
@@ -538,7 +538,7 @@ const AdminDashboard = () => {
                               </td>
                               <td className="py-3 px-3">
                                 <div className="flex gap-2">
-                                  <Button onClick={() => handleApproveCard(card._id, 'approve')} variant="primary" size="sm">
+                                  <Button onClick={() => handleApproveCard(card._id, 'approve')} variant="brand" size="sm">
                                     <CheckCircle2 size={14} className="mr-1" />
                                     Approve
                                   </Button>
@@ -573,7 +573,7 @@ const AdminDashboard = () => {
                             <span className="text-silver">Applied · {new Date(card.createdAt).toLocaleDateString()}</span>
                           </div>
                           <div className="flex gap-2">
-                            <Button onClick={() => handleApproveCard(card._id, 'approve')} variant="primary" size="sm" className="flex-1">
+                            <Button onClick={() => handleApproveCard(card._id, 'approve')} variant="brand" size="sm" className="flex-1">
                               <CheckCircle2 size={14} className="mr-1" />
                               Approve
                             </Button>

@@ -7,6 +7,7 @@ import {
   CreditCard,
   Landmark,
   Headphones,
+  User,
   Shield,
   LogOut,
   X,
@@ -30,6 +31,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
     { name: 'Cards', href: '/cards', icon: CreditCard },
     { name: 'Loans', href: '/loans', icon: Landmark },
     { name: 'Support', href: '/support', icon: Headphones },
+    { name: 'Profile', href: '/profile', icon: User },
   ]
   const navigation = isAdmin
     ? [...baseNavigation, { name: 'Admin', href: '/admin', icon: Shield }]
@@ -148,12 +150,21 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
         <div className="rounded-2xl bg-white/5 backdrop-blur border border-white/10 p-4">
           {isCollapsed ? (
             <div className="flex flex-col items-center gap-3">
-              <div
-                title={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || ''}
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-gold-600 text-white flex items-center justify-center font-bold text-sm shrink-0"
-              >
-                {initials}
-              </div>
+              {user?.profilePhoto ? (
+                <img
+                  src={user.profilePhoto}
+                  alt={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Profile'}
+                  title={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || ''}
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-gold/70 shrink-0"
+                />
+              ) : (
+                <div
+                  title={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || ''}
+                  className="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-gold-600 text-white flex items-center justify-center font-bold text-sm shrink-0"
+                >
+                  {initials}
+                </div>
+              )}
               <button
                 onClick={logout}
                 title="Sign Out"
@@ -164,9 +175,18 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-gold-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
-                {initials}
-              </div>
+              {user?.profilePhoto ? (
+                <img
+                  src={user.profilePhoto}
+                  alt={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Profile'}
+                  title={`${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || ''}
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-gold/70 shrink-0"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold to-gold-600 text-white flex items-center justify-center font-bold text-sm shrink-0">
+                  {initials}
+                </div>
+              )}
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold truncate">
                   {user?.firstName} {user?.lastName}
@@ -198,7 +218,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
       <button
         onClick={() => setIsOpen(true)}
         aria-label="Open menu"
-        className="lg:hidden fixed top-4 left-4 z-40 p-2.5 rounded-xl bg-primary-600 text-white shadow-lux-gold border border-white/10"
+        className="lg:hidden fixed top-[10px] left-4 z-40 p-2.5 rounded-xl bg-primary-600 text-white shadow-lux-gold border border-white/10"
       >
         <Menu size={20} />
       </button>

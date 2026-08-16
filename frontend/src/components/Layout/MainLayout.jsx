@@ -1,5 +1,6 @@
 import React from 'react';
 import Sidebar from './Sidebar';
+import TopNavbar from './TopNavbar';
 import Footer from './Footer';
 import MobileBottomNav from './MobileBottomNav';
 import FloatingTelegramButton from '../UI/FloatingTelegramButton';
@@ -18,6 +19,7 @@ const MainLayout = ({ children }) => {
       <div
         className={`${collapsed ? 'lg:pl-20' : 'lg:pl-72'} flex flex-col min-h-screen transition-all duration-300 pb-28 lg:pb-0`}
       >
+        <TopNavbar />
         <main className="flex-1">{children}</main>
         <Footer />
       </div>

@@ -295,7 +295,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0 flex items-center justify-center">
+      <div className="min-h-screen bg-cream dark:bg-primary-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
           <p className="text-silver">Loading profile...</p>
@@ -305,7 +305,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-primary-900 pt-16 lg:pt-0">
+    <div className="min-h-screen bg-cream dark:bg-primary-900">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

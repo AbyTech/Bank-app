@@ -41,7 +41,7 @@ const MobileBottomNav = () => {
         <Link
           to="/profile"
           aria-label="My Profile"
-          className="absolute left-1/2 -translate-x-1/2 -top-6 z-10"
+          className="absolute left-1/2 -translate-x-1/2 -top-9 z-10"
         >
           <span className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white ring-4 ring-white dark:ring-primary-800 shadow-lux-gold hover:shadow-[0_8px_24px_rgba(187,97,37,0.45)] hover:scale-105 transition-all duration-200">
             <User size={24} />
@@ -49,7 +49,7 @@ const MobileBottomNav = () => {
         </Link>
       </div>
 
-      <div className="flex items-stretch pt-2.5">
+      <div className="flex items-stretch pt-5">
         {items.map((item) => (
           <NavLink
             key={item.name}
