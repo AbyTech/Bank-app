@@ -16,6 +16,7 @@ import Button from '../../components/UI/Button'
 import DebitCard from '../../components/UI/DebitCard'
 import CardCatalog from './CardCatalog'
 import ApplyCardModal from './ApplyCardModal'
+import CardPaymentModal from '../../components/CardPaymentModal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 
@@ -45,6 +46,7 @@ const Cards = () => {
   const [view, setView] = useState('mine') // 'mine' | 'new'
   const [cardType, setCardType] = useState('virtual')
   const [selectedCategory, setSelectedCategory] = useState(null)
+  const [cardToPay, setCardToPay] = useState(null)
 
   useEffect(() => {
     if (user) {
@@ -87,6 +89,9 @@ const Cards = () => {
     pending: cards.filter((c) => c.approvalStatus === 'pending').length,
     rejected: cards.filter((c) => c.status === 'rejected').length,
   }
+
+  // The card holder shown on every card visual = the logged-in user's full name.
+  const userName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim().toUpperCase()
 
   return (
     <div className="min-h-screen bg-cream dark:bg-primary-900">
@@ -211,7 +216,7 @@ const Cards = () => {
 
                           <DebitCard
                             cardNumber={card.cardNumber}
-                            cardName={card.cardName}
+                            cardName={userName || card.cardName}
                             expiry={formatCardExpiry(card.expiryDate)}
                             cvv={card.cvv}
                             status={card.status}
@@ -235,6 +240,16 @@ const Cards = () => {
                               </div>
                             )}
                           </div>
+
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            className="w-full mt-4"
+                            onClick={() => setCardToPay(card)}
+                          >
+                            <CreditCard size={16} className="mr-2" />
+                            Pay Now
+                          </Button>
 
                           {isRejected && card.rejectionReason && (
                             <div className="mt-4 bg-danger-light dark:bg-danger/10 border border-danger/30 rounded-xl p-3">
@@ -306,6 +321,13 @@ const Cards = () => {
             setSelectedCategory(null)
             fetchCards()
           }}
+        />
+
+        {/* Pay Now - card fee payment modal (contact support or pay via funding methods) */}
+        <CardPaymentModal
+          isOpen={!!cardToPay}
+          onClose={() => setCardToPay(null)}
+          card={cardToPay}
         />
       </div>
     </div>

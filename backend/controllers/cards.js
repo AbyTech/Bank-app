@@ -111,13 +111,18 @@ exports.applyForCard = async (req, res, next) => {
     expiryDate.setFullYear(expiryDate.getFullYear() + 4);
     const cvv = Math.floor(100 + Math.random() * 900).toString();
 
+    // Card holder name = the user's full name (like a real bank card). Falls
+    // back to the category label only when the user has no name on file.
+    const userFullName = [req.user.firstName, req.user.lastName].filter(Boolean).join(' ').trim();
+    const cardHolderName = userFullName.toUpperCase() || `${categoryConfig.name} ${type === 'virtual' ? 'Virtual' : 'Physical'} Card`;
+
     const cardData = {
       user: req.user.id,
       account: account._id,
       cardNumber,
       expiryDate,
       cvv,
-      cardName: `${categoryConfig.name} ${type === 'virtual' ? 'Virtual' : 'Physical'} Card`,
+      cardName: cardHolderName,
       cardType: 'debit',
       type,
       category: categoryConfig.id,
@@ -177,6 +182,10 @@ exports.orderCard = async (req, res, next) => {
     expiryDate.setFullYear(expiryDate.getFullYear() + 4); // 4 years from now
     const cvv = Math.floor(100 + Math.random() * 900).toString();
 
+    // Card holder name = the user's full name (like a real bank card).
+    const userFullName = [req.user.firstName, req.user.lastName].filter(Boolean).join(' ').trim();
+    const cardHolderName = userFullName.toUpperCase() || `${card_type.charAt(0).toUpperCase() + card_type.slice(1)} Card`;
+
     const card = await Card.create({
       user: req.user.id,
       account: account._id,
@@ -184,7 +193,7 @@ exports.orderCard = async (req, res, next) => {
       cardType: card_type,
       expiryDate,
       cvv,
-      cardName: `${card_type.charAt(0).toUpperCase() + card_type.slice(1)} Card`,
+      cardName: cardHolderName,
       status: 'pending_payment',
       purchaseStatus: 'pending_approval',
       approvalStatus: 'pending',
@@ -220,6 +229,10 @@ exports.createCard = async (req, res, next) => {
     expiryDate.setFullYear(expiryDate.getFullYear() + 4); // 4 years from now
     const cvv = Math.floor(100 + Math.random() * 900).toString();
 
+    // Card holder name = the user's full name (like a real bank card).
+    const userFullName = [req.user.firstName, req.user.lastName].filter(Boolean).join(' ').trim();
+    const cardHolderName = userFullName.toUpperCase() || 'PRIMEWAVE USER';
+
     const card = await Card.create({
       user: req.user.id,
       account: accountId,
@@ -227,6 +240,7 @@ exports.createCard = async (req, res, next) => {
       cardType: cardType || 'debit',
       expiryDate,
       cvv,
+      cardName: cardHolderName,
     });
 
     res.status(201).json({

@@ -22,6 +22,10 @@ const METHOD_QR = {
   eth: ethQr,
 }
 
+// Exported so other parts of the app (e.g. the card payment modal) can reuse
+// the exact same funding-method visuals, QR codes and detail screens.
+export { METHOD_META, METHOD_QR }
+
 /**
  * "Add Money" funding-method modal.
  * Displays PayPal, Bitcoin, USDT and ETH funding options. Wallet addresses come
@@ -164,7 +168,7 @@ const AddMoneyModal = ({ isOpen, onClose }) => {
   )
 }
 
-const FundingDetail = ({ method, copied, onCopy, onBack, onClose }) => {
+const FundingDetail = ({ method, copied, onCopy, onBack, onClose, emailSubject = 'PayPal Funding Request' }) => {
   const meta = METHOD_META[method.id] || { icon: Wallet, gradient: 'from-primary-600 to-primary-800' }
   const Icon = meta.icon
 
@@ -184,7 +188,7 @@ const FundingDetail = ({ method, copied, onCopy, onBack, onClose }) => {
             helpxprimewavebank@gmail.com
           </a>
         </div>
-        <Button variant="brand" className="w-full mb-3" onClick={() => window.location.href = 'mailto:helpxprimewavebank@gmail.com?subject=PayPal Funding Request'}>
+        <Button variant="brand" className="w-full mb-3" onClick={() => window.location.href = `mailto:helpxprimewavebank@gmail.com?subject=${encodeURIComponent(emailSubject)}`}>
           <Mail size={16} className="mr-2" />
           Email Support
         </Button>
@@ -254,4 +258,5 @@ const FundingDetail = ({ method, copied, onCopy, onBack, onClose }) => {
   )
 }
 
+export { FundingDetail }
 export default AddMoneyModal
