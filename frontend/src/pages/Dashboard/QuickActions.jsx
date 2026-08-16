@@ -12,12 +12,14 @@ import {
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import Modal from '../../components/UI/Modal'
+import AddMoneyModal from '../../components/AddMoneyModal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 
 const QuickActions = () => {
   const { user } = useAuth()
   const [showCardModal, setShowCardModal] = useState(false)
+  const [showAddMoneyModal, setShowAddMoneyModal] = useState(false)
   const [hasActiveCard, setHasActiveCard] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -66,7 +68,7 @@ const QuickActions = () => {
       label: 'Add Money',
       description: 'Deposit funds',
       color: 'from-success to-green-600',
-      href: '/transactions'
+      onClick: () => setShowAddMoneyModal(true)
     },
     {
       icon: CreditCard,
@@ -169,6 +171,12 @@ const QuickActions = () => {
           </div>
         </div>
       </Modal>
+
+      {/* Add Money - funding methods modal */}
+      <AddMoneyModal
+        isOpen={showAddMoneyModal}
+        onClose={() => setShowAddMoneyModal(false)}
+      />
     </Card>
   )
 }

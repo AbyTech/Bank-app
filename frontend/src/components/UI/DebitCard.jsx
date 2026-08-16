@@ -7,6 +7,13 @@ import logo from '../../assets/logo.png'
  * Presentational only - all displayed data comes from props.
  * Used by both the Cards page (real user data) and the Landing page (showcase).
  */
+const CATEGORY_STYLES = {
+  teal: 'bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900',
+  gold: 'bg-gradient-to-br from-gold via-gold-500 to-gold-700',
+  platinum: 'bg-gradient-to-br from-slate-400 via-slate-500 to-slate-700',
+  black: 'bg-gradient-to-br from-gray-700 via-gray-900 to-black',
+}
+
 const DebitCard = ({
   cardNumber = '',
   cardName = 'PRIMEWAVE USER',
@@ -16,8 +23,14 @@ const DebitCard = ({
   showNumber = false,
   onToggleShow = null,
   className = '',
+  categoryLabel = null,
+  variant = 'teal',
 }) => {
   const rejected = status === 'rejected'
+  const gradient = rejected
+    ? 'bg-gradient-to-br from-red-600 to-red-800 opacity-80'
+    : CATEGORY_STYLES[variant] || CATEGORY_STYLES.teal
+
   const displayNumber = showNumber
     ? cardNumber
     : cardNumber
@@ -26,11 +39,7 @@ const DebitCard = ({
 
   return (
     <div
-      className={`relative w-full aspect-[1.586] rounded-2xl overflow-hidden shadow-xl select-none ${
-        rejected
-          ? 'bg-gradient-to-br from-red-600 to-red-800 opacity-80'
-          : 'bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900'
-      } ${className}`}
+      className={`relative w-full aspect-[1.586] rounded-2xl overflow-hidden shadow-xl select-none ${gradient} ${className}`}
     >
       {/* Sheen + texture */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-white/20" />
@@ -63,6 +72,11 @@ const DebitCard = ({
             >
               {showNumber ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
+          )}
+          {categoryLabel && !onToggleShow && (
+            <span className="px-2 py-0.5 rounded-full bg-white/15 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-white/90 border border-white/20">
+              {categoryLabel}
+            </span>
           )}
         </div>
 

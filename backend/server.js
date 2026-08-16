@@ -49,6 +49,18 @@ app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/smartsupp', require('./routes/smartsupp'));
+app.use('/api/config', require('./routes/config'));
+
+// Background job: automatically expire card applications that have stayed
+// pending for 7+ days (runs every 6 hours, in addition to lazy checks in the
+// card controllers). Idempotent and safe to run on multiple instances.
+const { expireOverdueCards } = require('./services/cardExpiration');
+const CARD_EXPIRATION_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 hours
+setInterval(() => {
+  expireOverdueCards().catch((error) => {
+    console.error('[cardExpiration] background job error:', error.message);
+  });
+}, CARD_EXPIRATION_INTERVAL_MS);
 
 // Basic Route
 app.get('/', (req, res) => {

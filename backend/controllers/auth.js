@@ -122,6 +122,7 @@ const sendTokenResponse = (user, statusCode, res, seedPhrase = null) => {
       lastName: user.lastName,
       role: user.role,
       profilePhoto: user.profilePhoto,
+      accountStatus: user.accountStatus,
     },
   };
 

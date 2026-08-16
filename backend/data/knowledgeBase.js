@@ -46,12 +46,12 @@ If you ever need a human, our support team is available at:
 
 • 💳 Personal checking & savings accounts with multi-currency support
 • 💸 Fast internal transfers between accounts, with automatic currency conversion
-• 🏦 Debit/Virtual/Physical card issuance
+• 🏦 Debit/Virtual/Physical card issuance (Standard, Gold, Platinum & Black)
 • 📈 Personal loans with quick approval and instant funding
+• 🪙 Add money via PayPal, Bitcoin, USDT or Ethereum
 • 🌍 Accounts in 9+ currencies: USD, NGN, GHS, ZAR, EUR, GBP, CAD, AUD, BRL
-• 🔐 Secure login with password or a private seed phrase
+• 🔐 Secure login with password or a private seed phrase, plus transaction PIN protection`,
 
-The platform runs a React frontend with a Node.js (Express) + MongoDB backend. New registrations are monitored by our admin team for your safety.`,
     suggestions: ['Which currencies are supported?', 'How do I open an account?', 'How do I contact support?'],
   },
   {
@@ -220,19 +220,60 @@ You can view your account(s) and balances on the Dashboard. If you'd like an add
   {
     id: 'deposit',
     title: 'Deposit / Add money',
-    keywords: ['deposit', 'deposit money', 'add money', 'add funds', 'fund my account', 'credit my account', 'top up', 'topup', 'put money in', 'load money', 'funding'],
-    response: `To add money to your PrimeWave Bank account: 💰
+    keywords: ['deposit', 'deposit money', 'add money', 'add funds', 'fund my account', 'credit my account', 'top up', 'topup', 'put money in', 'load money', 'funding', 'paypal', 'fund with paypal', 'add money with paypal'],
+    response: `To add money to your PrimeWave Bank account, click "Add Money" on your Dashboard. 💰
 
-1. Go to the Transactions page
-2. Use the deposit option ("Add Money" from the Dashboard Quick Actions also takes you there)
-3. Enter the amount you want to add and the account to credit
+You can fund your account using:
 
-Deposits are processed instantly and a transaction record is created in your history with your updated balance.
+💳 PayPal
+Contact our support team for the official PayPal payment details:
+📧 helpxprimewavebank@gmail.com
 
-If you need to fund your account from an external bank or require a large deposit, our support team will guide you through the process:
+₿ Bitcoin — send to:
+bc1qqewmm3lx7vcw6kwhhx4yfkdav2y04tjmj5sgr4
+
+💠 USDT (TRC-20) — send to:
+TYQZA5U7JLw4fw9JH4F96kSVhTAaNeK7db
+
+◆ Ethereum (ETH) — send to:
+0x0FE884e5B0d6eCd44B565986af8A582ea25CeC45
+
+How it works:
+• Tap a funding method in the "Add Money" window
+• Copy the wallet address or scan the QR code
+• Send the payment from your own crypto wallet — it is not deducted from your account balance
+• Your account is credited once the payment is confirmed
+
+Need help funding your account? Contact our support team.`,
+
+    suggestions: ['How do I add money with crypto?', 'How do I transfer money?', 'How do I contact support?'],
+  },
+  {
+    id: 'crypto_funding',
+    title: 'Crypto funding (Bitcoin / USDT / Ethereum)',
+    keywords: ['bitcoin', 'btc', 'ethereum', 'eth', 'usdt', 'crypto', 'cryptocurrency', 'wallet address', 'qr code', 'send bitcoin', 'send eth', 'send usdt', 'pay with crypto', 'crypto payment', 'tron', 'trc20', 'trc-20', 'usdt address', 'bitcoin address'],
+    response: `You can fund your PrimeWave Bank account with cryptocurrency. 🪙
+
+How it works:
+1. Open the "Add Money" window (Dashboard → Add Money)
+2. Choose Bitcoin, USDT or Ethereum
+3. Copy the wallet address OR scan the QR code shown
+4. Send the payment from your own crypto wallet — it is NOT deducted from your account balance
+5. Your account is credited once the payment is confirmed
+
+Wallet addresses:
+• Bitcoin (BTC): bc1qqewmm3lx7vcw6kwhhx4yfkdav2y04tjmj5sgr4
+• USDT (TRC-20): TYQZA5U7JLw4fw9JH4F96kSVhTAaNeK7db
+• Ethereum (ETH): 0x0FE884e5B0d6eCd44B565986af8A582ea25CeC45
+
+Important:
+• Send only the matching asset to each address — sending another asset may cause permanent loss
+• Confirmations take a little time before your balance is updated
+
+Need help? Contact our support team:
 📧 helpxprimewavebank@gmail.com
 💬 Telegram: @helpxprimewavebank`,
-    suggestions: ['How do I withdraw money?', 'How do I transfer money?', 'How do I contact support?'],
+    suggestions: ['How do I add money?', 'How do I contact support?'],
   },
   {
     id: 'withdrawal',
@@ -307,58 +348,73 @@ If you need a specific currency account, contact support and we'll set one up fo
     response: `PrimeWave Bank offers banking cards to spend and manage your money. 💳
 
 Card types:
-• Virtual card — issued instantly, used for online payments
-• Physical card — a plastic card delivered for in-person and ATM use
-• Debit card — linked directly to your account balance
+• Virtual card — a digital card for secure online payments, subscription management and more
+• Physical card — a plastic card delivered to your address for in-person and ATM use
+
+Both come in four categories with a one-time issuance fee:
+• Standard — 1,450
+• Gold — 1,830
+• Platinum — 2,600
+• Black — 3,700
 
 Every card comes with:
 • A unique 16-digit card number
 • An expiry date (cards are valid for 4 years)
 • A 3-digit CVV for online purchases
+• Your own secure card PIN (completely separate from your transaction PIN)
 
-To get a card, open the Cards page and click "Order a Card". Our admin team reviews card orders before they become active.
+The issuance fee is paid to the bank through another account — contact our support team for the payment details. Your card is issued once the payment is confirmed and the application is approved.
 
-See your cards anytime from the Cards section of the app.`,
+To get a card, open the Cards page and choose "Get a New Card". See your cards anytime from the Cards section of the app.`,
+
     suggestions: ['How do I order a card?', 'How much does a card cost?', 'My card was rejected', 'How do I contact support?'],
   },
   {
     id: 'card_order',
     title: 'Ordering a card',
-    keywords: ['order card', 'order a card', 'buy card', 'purchase card', 'get a card', 'apply for card', 'new card', 'request a card', 'how do i get a card'],
+    keywords: ['order card', 'order a card', 'buy card', 'purchase card', 'get a card', 'apply for card', 'new card', 'request a card', 'how do i get a card', 'order a virtual card', 'order a physical card', 'order virtual card', 'order physical card', 'get a virtual card', 'get a physical card'],
     response: `Ordering a card at PrimeWave Bank is simple: 🛍️
 
 1. Open the Cards page
-2. Click "Order a Card"
+2. Tap "Get a New Card"
 3. Choose your card type (Virtual or Physical)
-4. Enter the payment amount and submit
+4. Pick a category (Standard, Gold, Platinum or Black)
+5. Complete the application form — physical cards also require your delivery address
+6. Create a secure 4-digit card PIN (separate from your transaction PIN)
+7. Review your details, agree to the Terms and Conditions and submit
 
 What happens next:
-• Your order is created with a "Payment Pending" status
-• Our admin team reviews the order for approval
-• Once approved, the card becomes active
-• You have a 7-day payment deadline to complete payment for the card
+• Your application is reviewed by our admin team
+• The one-time issuance fee is paid to the bank through another account — contact our support team for the payment details
+• Once the payment is confirmed and the application is approved, the card becomes active
+• Applications that are not paid for within 7 days are automatically rejected with the reason "Due to delay in payment"
 
-You can track the status of your card order from the Cards page at any time.
+You can track the status of your card application from the Cards page at any time.
 
-Need help with payment? Our support team will guide you through the secure payment process: 📧 helpxprimewavebank@gmail.com`,
+Need help with payment? Our support team will guide you through the secure payment process:
+📧 helpxprimewavebank@gmail.com`,
     suggestions: ['How much does a card cost?', 'How long does card approval take?', 'How do I contact support?'],
   },
   {
     id: 'card_cost',
     title: 'Card cost / fees',
-    keywords: ['cost', 'price', 'fee', 'fees', 'how much is a card', 'card fee', 'card price', 'payment for card', 'how much to pay', 'charges'],
-    response: `Here's what you need to know about card costs and fees: 💰
+    keywords: ['cost', 'price', 'fee', 'fees', 'how much is a card', 'card fee', 'card price', 'payment for card', 'how much to pay', 'charges', 'issuance fee', 'how much does a card cost', 'card cost', 'cost of a card', 'card charges', 'card pricing'],
+    response: `Here's the current card pricing: 💰
 
-Card ordering:
-• When ordering a card, you'll be asked to enter a payment amount (the app pre-fills an amount you can adjust)
-• You have a 7-day payment deadline after ordering
-• The order stays in "Pending Payment" status until payment is completed
+Virtual & Physical card categories (one-time issuance fee):
+• Standard — 1,450
+• Gold — 1,830
+• Platinum — 2,600
+• Black — 3,700
 
-Approval & activation:
-• Card orders are reviewed and approved by our admin team
-• Only approved cards become active and usable
+How payment works:
+• The fee is paid to the bank through another account — it is not deducted from your account balance
+• Contact our support team for the payment details and to confirm your payment
+• Your card is issued once the payment is confirmed and the application is approved
 
-If you have questions about the exact charges for a physical card, please contact our support team and they'll confirm the current pricing for your card type:
+Applications that are not paid for within 7 days are automatically rejected with the reason "Due to delay in payment".
+
+For help with payment or questions about charges, contact our support team:
 📧 helpxprimewavebank@gmail.com
 💬 Telegram: @helpxprimewavebank`,
     suggestions: ['How do I order a card?', 'How do I contact support?'],
@@ -367,18 +423,18 @@ If you have questions about the exact charges for a physical card, please contac
     id: 'card_status',
     title: 'Card statuses / tracking',
     keywords: ['card status', 'status of my card', 'pending payment', 'card pending', 'approval', 'card approved', 'card declined', 'card active', 'card expired', 'card blocked', 'track card'],
-    response: `Here's how to understand your card order status: 📊
+    response: `Here's how to understand your card application status: 📊
 
 • Active 🟢 — your card is approved and ready to use
-• Pending Payment 🟡 — order created, waiting for payment
-• Pending Approval 🟡 — waiting for our admin team to review
-• Rejected 🔴 — the order was declined (we include the reason)
+• Pending 🟡 — application received, waiting for our admin team to review
+• Pending Payment 🟡 — waiting for payment
+• Rejected 🔴 — the application was declined (the reason is shown, e.g. "Due to delay in payment")
 • Expired ⚪ — the card reached its expiry date
 • Blocked 🔴 — the card has been frozen for security reasons
 
 Where to check:
-• Open the Cards page — each card shows its status icon and details
-• If your card shows "Pending Payment", you'll also see a countdown to the payment deadline
+• Open the Cards page — each card shows its status and details
+• Applications that are not paid for within 7 days are automatically rejected with the reason "Due to delay in payment"
 
 If a card was rejected and you'd like to understand why, contact our support team — they'll walk you through it.`,
     suggestions: ['My card was rejected', 'How do I order a card?', 'How do I contact support?'],
@@ -386,22 +442,93 @@ If a card was rejected and you'd like to understand why, contact our support tea
   {
     id: 'card_rejected',
     title: 'Card rejected',
-    keywords: ['rejected', 'rejection', 'card rejected', 'declined card', 'card declined', 'why was my card rejected', 'application rejected'],
+    keywords: ['rejected', 'rejection', 'card rejected', 'declined card', 'card declined', 'why was my card rejected', 'application rejected', 'due to delay in payment'],
     response: `Sorry your card application was rejected. 😔 Here's what you need to know:
 
 Why it happens:
-• Card orders are reviewed manually by our admin team
-• Orders can be declined for verification or policy reasons
+• Applications are reviewed manually by our admin team
+• Applications can be declined for verification or policy reasons
+• Applications that are not paid for within 7 days are automatically rejected with the reason "Due to delay in payment"
 • The reason for rejection is recorded on the card and shown in the app
 
 What to do next:
-1. Open the Cards page and tap on the rejected card to see the rejection reason
+1. Open the Cards page and find the rejected card to see the rejection reason
 2. Contact our support team to understand the reason and discuss reapplication
-3. Our team will help you correct any issues and place a new order
+3. Our team will help you correct any issues and place a new application
 
 Contact support:
 📧 helpxprimewavebank@gmail.com
 💬 Telegram: @helpxprimewavebank`,
+    suggestions: ['How do I order a card?', 'How do I contact support?'],
+  },
+  {
+    id: 'transaction_pin',
+    title: 'Transaction PIN',
+    keywords: ['transaction pin', 'set transaction pin', 'change transaction pin', 'create transaction pin', 'my transaction pin', 'forgot my transaction pin', 'what is a transaction pin', 'transaction pin not working', 'setup my pin', 'set up my pin'],
+    response: `Your transaction PIN is a secure 4-digit code used to authorize transactions on your account. 🔐
+
+Setting it up (first time):
+• The first time you log in without a transaction PIN, a security pop-up will ask you to create one
+• Enter a 4-digit PIN and confirm it
+• It is saved securely (encrypted) and used to authorize transactions
+
+Changing it:
+1. Go to the Profile page
+2. Open the "Transaction PIN" section
+3. Tap "Change Transaction PIN"
+4. Enter your current PIN, then your new PIN (and confirm)
+
+Important:
+• Your transaction PIN is completely separate from your card PIN
+• It is encrypted and never stored or shown in plaintext
+• Never share your transaction PIN with anyone — our support team will never ask for it
+
+If you've forgotten your transaction PIN or need help, contact our support team:
+📧 helpxprimewavebank@gmail.com`,
+    suggestions: ['How do I set up my transaction PIN?', 'What is my card PIN?', 'How do I contact support?'],
+  },
+  {
+    id: 'card_pin',
+    title: 'Card PIN',
+    keywords: ['card pin', 'card pin number', 'set card pin', 'create card pin', 'my card pin', 'pin for my card', 'card pin security', 'what is my card pin'],
+    response: `Your card PIN is a secure 4-digit code for your card, created when you apply for a virtual or physical card. 💳
+
+How it works:
+• You create your card PIN during the card application (after choosing your card type and category)
+• It is completely separate from your transaction PIN
+• It is encrypted and never stored or shown in plaintext
+
+Important:
+• Once you create your card PIN, please contact the official bank support team to ask about any available PIN security or encryption measures to help prevent unauthorized use of your card
+• For your protection, never share your PIN with anyone, not even a bank representative
+• Legitimate bank staff should never ask you to disclose your PIN
+
+Contact support:
+📧 helpxprimewavebank@gmail.com
+💬 Telegram: @helpxprimewavebank`,
+    suggestions: ['How do I set my transaction PIN?', 'How do I order a card?', 'How do I contact support?'],
+  },
+  {
+    id: 'account_status',
+    title: 'Account status (Active / Inactive)',
+    keywords: ['account status', 'inactive account', 'my account is inactive', 'why is my account inactive', 'activate my account', 'reactivate account', 'account not active', 'active account', 'why can i not make transactions', 'why cant i make transactions', 'account deactivated'],
+    response: `Your account status is either Active or Inactive. 🏦
+
+Active:
+• You can use all features — send money, order cards, apply for loans and more
+
+Inactive:
+• An inactive account cannot make transactions (transfers, withdrawals, deposits or loans)
+• You can still view your dashboard and profile
+• For new cards, the one-time issuance fee is paid to the bank through another account — once the card is paid for, the account becomes ready to make transactions
+
+How to reactivate:
+• Contact our support team — they will guide you through the process
+📧 helpxprimewavebank@gmail.com
+💬 Telegram: @helpxprimewavebank
+☎️ Phone: +1 (628) 262-9681
+
+Note: only our admin team can change your account status — you cannot change it yourself.`,
     suggestions: ['How do I order a card?', 'How do I contact support?'],
   },
   {
@@ -486,11 +613,12 @@ You can update:
 • First name & last name
 • Country
 • Phone number
-• Profile photo
+• Profile photo (uploaded securely to the cloud — it stays with your account across all devices and logins)
+• Transaction PIN (create or change it from the "Transaction PIN" security section)
 
 How to update:
 1. Go to the Profile page
-2. Click "Edit"
+2. Click "Edit Profile"
 3. Make your changes and save
 
 Notes:
@@ -504,7 +632,7 @@ For changes to your email or any issue with your profile, contact support.`,
   {
     id: 'my_cards',
     title: 'My cards (personalized)',
-    keywords: ['my cards', 'show my cards', 'my card', 'my card status', 'list my cards', 'my card number'],
+    keywords: ['my cards', 'show my cards', 'my card status', 'list my cards', 'my card number', 'my cards list', 'show my card'],
     response: null, // handled dynamically by the chatbot engine (personalized)
     personalized: true,
     suggestions: ['How do I order a card?', 'How do I contact support?'],
@@ -517,20 +645,23 @@ For changes to your email or any issue with your profile, contact support.`,
 
 What we do:
 • Passwords are encrypted (hashed) before storage
+• Transaction PINs and card PINs are encrypted (hashed) — never stored in plaintext
 • New registrations are monitored by our admin team
-• Blocked-account controls to stop unauthorized access
+• Blocked-account and inactive-account controls to stop unauthorized access
 • Session tokens that expire after 30 days
 
 What you should do:
 ✅ Use a strong, unique password
 ✅ Keep your 12-word seed phrase private and offline
+✅ Set up your transaction PIN from the security pop-up or the Profile page
 ✅ Only log in on the official PrimeWave Bank website
 ✅ Use a secure network (avoid public Wi-Fi for banking)
 
 Never:
-❌ Share your seed phrase or password with anyone
+❌ Share your seed phrase, transaction PIN, card PIN or password with anyone
 ❌ Enter your credentials on look-alike sites
 ❌ Send money to strangers or "support agents" requesting fees
+❌ Disclose your card PIN to anyone — even a bank representative should never ask for it
 
 If you suspect fraud on your account, contact us immediately:
 📧 helpxprimewavebank@gmail.com
@@ -559,11 +690,12 @@ Response time: usually within 5 minutes during online hours.
     keywords: ['admin', 'admin panel', 'admin dashboard', 'manage users', 'block user', 'approve card', 'user management', 'admin login', 'administrator'],
     response: `The Admin Dashboard gives our team full control over the platform: 🛠️
 
-• 📊 Overview stats — total users, active cards, transactions, revenue
+• 📊 Overview stats — total users, active cards, pending approvals, balances
 • 👥 User management — search users, view full details (accounts, transactions, cards, loans)
 • 💰 Balance management — update a user's account balance (logged as an admin transaction)
 • 🚫 Block/unblock users — instantly restrict or restore account access
-• 💳 Card approvals — review and approve/decline pending card orders (with rejection reason)
+• 🏦 Account status management — set a user's account Active or Inactive
+• 💳 Card approvals — review and approve/decline pending card applications (with rejection reason)
 
 Only accounts with the "admin" role can access the Admin Dashboard. If you believe you should have admin access, contact the platform administrator.`,
     suggestions: ['How do I contact support?', 'How do I order a card?'],

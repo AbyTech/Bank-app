@@ -35,7 +35,7 @@ const CardSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'blocked', 'expired', 'pending_payment', 'rejected'],
+    enum: ['active', 'blocked', 'expired', 'pending', 'pending_payment', 'rejected'],
     default: 'active',
   },
   purchaseStatus: {
@@ -75,6 +75,42 @@ const CardSchema = new mongoose.Schema({
   type: {
     type: String,
     enum: ['virtual', 'physical'],
+  },
+  // Card category/tier (configurable via data/cardCategories.js). Fees are
+  // always computed server-side from that config - never trusted from clients.
+  category: {
+    type: String,
+    enum: ['standard', 'gold', 'platinum', 'black'],
+    default: 'standard',
+  },
+  // Issuance fee charged to the user's account upon approval (server-side).
+  fee: {
+    type: Number,
+    default: 0,
+  },
+  termsAccepted: {
+    type: Boolean,
+    default: false,
+  },
+  // Card PIN - hashed with bcrypt, NEVER stored or returned in plaintext.
+  // Kept completely separate from the user's transaction PIN.
+  cardPin: {
+    type: String,
+    select: false,
+  },
+  cardPinSet: {
+    type: Boolean,
+    default: false,
+  },
+  // Physical-card delivery information (only populated for physical cards).
+  deliveryInfo: {
+    fullName: { type: String, default: '' },
+    phone: { type: String, default: '' },
+    country: { type: String, default: '' },
+    state: { type: String, default: '' },
+    city: { type: String, default: '' },
+    address: { type: String, default: '' },
+    zipCode: { type: String, default: '' },
   },
   createdAt: {
     type: Date,

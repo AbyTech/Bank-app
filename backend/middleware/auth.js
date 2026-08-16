@@ -13,8 +13,8 @@ exports.protect = async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
 
-  // Set token from cookie
-  else if (req.cookies.token) {
+  // Set token from cookie (guarded - cookie-parser is not mounted)
+  else if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
   }
 
@@ -43,4 +43,17 @@ exports.authorize = (...roles) => {
     }
     next();
   };
+};
+
+// Block financial operations for accounts that an admin has set to "inactive".
+// Inactive users can still log in and view their dashboard/status, but they
+// cannot move money, order cards or take loans until reactivated.
+exports.requireActiveAccount = (req, res, next) => {
+  if (req.user && req.user.accountStatus === 'inactive') {
+    return res.status(403).json({
+      success: false,
+      error: 'Your account is currently inactive. Please contact support to reactivate your account.',
+    });
+  }
+  next();
 };

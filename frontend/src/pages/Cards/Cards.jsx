@@ -1,37 +1,55 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { CreditCard, Plus, Clock, CheckCircle, XCircle, AlertTriangle, AlertCircle } from 'lucide-react'
-import Card, { CardContent, CardHeader } from '../../components/UI/Card'
+import {
+  CreditCard,
+  Plus,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  ShieldCheck,
+  LayoutGrid,
+  Sparkles,
+  Info,
+} from 'lucide-react'
 import Button from '../../components/UI/Button'
-import Modal from '../../components/UI/Modal'
+import DebitCard from '../../components/UI/DebitCard'
+import CardCatalog from './CardCatalog'
+import ApplyCardModal from './ApplyCardModal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
-import DebitCard from '../../components/UI/DebitCard'
 
-// Format a card expiry date as MM/YY
+const CATEGORY_VARIANTS = { standard: 'teal', gold: 'gold', platinum: 'platinum', black: 'black' }
+
+const STATUS_META = {
+  active: { label: 'Active', cls: 'bg-success/15 text-success border-success/30' },
+  pending: { label: 'Pending', cls: 'bg-gold/10 text-gold border-gold/40' },
+  pending_payment: { label: 'Payment Pending', cls: 'bg-gold/10 text-gold border-gold/40' },
+  rejected: { label: 'Rejected', cls: 'bg-danger/10 text-danger border-danger/30' },
+  blocked: { label: 'Blocked', cls: 'bg-danger/10 text-danger border-danger/30' },
+  expired: { label: 'Expired', cls: 'bg-silver/20 text-silver border-silver/40' },
+}
+
 const formatCardExpiry = (date) => {
   if (!date) return '--/--'
   const d = new Date(date)
+  if (isNaN(d.getTime())) return '--/--'
   return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`
 }
 
 const Cards = () => {
   const { user } = useAuth()
   const [cards, setCards] = useState([])
+  const [categories, setCategories] = useState({ virtual: [], physical: [] })
   const [loading, setLoading] = useState(true)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [showDetailsModal, setShowDetailsModal] = useState(false)
-  const [showContactModal, setShowContactModal] = useState(false)
-  const [selectedCard, setSelectedCard] = useState(null)
-  const [paymentForm, setPaymentForm] = useState({
-    cardType: 'virtual',
-    amount: 5500.00
-  })
+  const [view, setView] = useState('mine') // 'mine' | 'new'
+  const [cardType, setCardType] = useState('virtual')
+  const [selectedCategory, setSelectedCategory] = useState(null)
 
   useEffect(() => {
     if (user) {
       fetchCards()
+      fetchCategories()
     }
   }, [user])
 
@@ -48,64 +66,26 @@ const Cards = () => {
     }
   }
 
-  const handleToggleCardNumber = (card) => {
-    const updatedCards = cards.map(c =>
-      c._id === card._id ? { ...c, showFullNumber: !c.showFullNumber } : c
-    )
-    setCards(updatedCards)
-  }
-
-  const handleOrderCard = () => {
-    setShowPaymentModal(true)
-  }
-
-  const handlePaymentSubmit = async (e) => {
-    e.preventDefault()
+  const fetchCategories = async () => {
     try {
-      // Submit card order to backend
-      const response = await api.post('/api/cards/order-card/', {
-        card_type: paymentForm.cardType,
-        amount: paymentForm.amount
-      })
-
-      // Refresh cards list
-      fetchCards()
-      setShowPaymentModal(false)
-      setShowSuccessModal(true)
-      setPaymentForm({ cardType: 'virtual', amount: 5500.00 })
+      const response = await api.get('/api/cards/categories')
+      setCategories(response.data.data || { virtual: [], physical: [] })
     } catch (error) {
-      console.error('Failed to order card:', error)
+      console.error('Failed to fetch card categories:', error)
     }
   }
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'active':
-        return <CheckCircle className="text-success" size={16} />
-      case 'pending_payment':
-        return <Clock className="text-gold" size={16} />
-      case 'expired':
-        return <XCircle className="text-danger" size={16} />
-      case 'blocked':
-        return <XCircle className="text-danger" size={16} />
-      case 'rejected':
-        return <AlertCircle className="text-danger" size={16} />
-      default:
-        return <AlertTriangle className="text-silver" size={16} />
-    }
+  const handleToggleCardNumber = (card) => {
+    setCards((prev) => prev.map((c) =>
+      c._id === card._id ? { ...c, showFullNumber: !c.showFullNumber } : c
+    ))
   }
 
-  const getTimeUntilDeadline = (deadline) => {
-    const now = new Date()
-    const deadlineDate = new Date(deadline)
-    const diff = deadlineDate - now
-    
-    if (diff <= 0) return 'Overdue'
-    
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    
-    return `${days}d ${hours}h`
+  const statusCounts = {
+    total: cards.length,
+    active: cards.filter((c) => c.status === 'active').length,
+    pending: cards.filter((c) => c.approvalStatus === 'pending').length,
+    rejected: cards.filter((c) => c.status === 'rejected').length,
   }
 
   return (
@@ -124,464 +104,209 @@ const Cards = () => {
           </p>
         </motion.div>
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-6">
-          <h2 className="text-2xl font-heading font-semibold text-primary dark:text-cream">
-            Your Cards
-          </h2>
-          <Button variant="brand" className="flex items-center justify-center space-x-2" onClick={handleOrderCard}>
-            <Plus size={20} />
-            <span>Order New Card</span>
-          </Button>
+        {/* Tab switcher */}
+        <div className="mb-8 inline-flex rounded-2xl bg-white dark:bg-primary-800 border border-silver/30 dark:border-primary-600 p-1.5 shadow-lux-card">
+          <button
+            onClick={() => setView('mine')}
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              view === 'mine'
+                ? 'bg-primary-600 text-white shadow-md'
+                : 'text-silver hover:text-primary dark:hover:text-cream'
+            }`}
+          >
+            <LayoutGrid size={16} />
+            <span className="hidden sm:inline">My Cards</span>
+            <span className="sm:hidden">Mine</span>
+          </button>
+          <button
+            onClick={() => setView('new')}
+            className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              view === 'new'
+                ? 'bg-primary-600 text-white shadow-md'
+                : 'text-silver hover:text-primary dark:hover:text-cream'
+            }`}
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">Get a New Card</span>
+            <span className="sm:hidden">New</span>
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cards.map((card, index) => (
-            <motion.div
-              key={card._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Card hover>
-                <CardContent className="p-6">
-                  <div className="flex justify-end items-start mb-4">
-                    <div className="flex items-center space-x-1">
-                      {getStatusIcon(card.status)}
-                      <span className={`text-sm capitalize font-semibold ${
-                        card.status === 'active' ? 'text-success' :
-                        card.status === 'pending_payment' ? 'text-gold' :
-                        card.status === 'rejected' ? 'text-danger' :
-                        card.status === 'blocked' ? 'text-danger' : 'text-danger'
-                      }`}>
-                        {card.status.replace('_', ' ')}
-                      </span>
+        {view === 'mine' ? (
+          <div className="space-y-8">
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: 'Total Cards', value: statusCounts.total, icon: CreditCard, color: 'text-primary-600 dark:text-gold-300' },
+                { label: 'Active', value: statusCounts.active, icon: CheckCircle2, color: 'text-success' },
+                { label: 'Pending', value: statusCounts.pending, icon: Clock, color: 'text-gold' },
+                { label: 'Rejected', value: statusCounts.rejected, icon: XCircle, color: 'text-danger' },
+              ].map((stat, index) => (
+                <motion.div key={stat.label} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
+                  <div className="rounded-2xl bg-white dark:bg-primary-800 border border-silver/30 dark:border-primary-600 p-4 sm:p-5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center shrink-0">
+                      <stat.icon size={18} className={stat.color} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs text-silver">{stat.label}</p>
+                      <p className="text-xl font-bold text-primary dark:text-cream">{stat.value}</p>
                     </div>
                   </div>
+                </motion.div>
+              ))}
+            </div>
 
-                  <DebitCard
-                    cardNumber={card.cardNumber}
-                    cardName={card.cardName}
-                    expiry={formatCardExpiry(card.expiryDate)}
-                    cvv={card.cvv}
-                    status={card.status}
-                    showNumber={card.showFullNumber}
-                    onToggleShow={() => handleToggleCardNumber(card)}
-                  />
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold" />
+                <p className="text-silver mt-4">Loading your cards...</p>
+              </div>
+            ) : cards.length === 0 ? (
+              <div className="rounded-3xl bg-white dark:bg-primary-800 border border-silver/30 dark:border-primary-600 p-12 text-center">
+                <div className="w-20 h-20 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-5">
+                  <CreditCard className="text-gold" size={36} />
+                </div>
+                <h3 className="text-xl font-heading font-semibold text-primary dark:text-cream mb-2">No Cards Yet</h3>
+                <p className="text-silver text-sm mb-6 max-w-sm mx-auto">
+                  Order your first virtual or physical card to unlock secure online payments and more.
+                </p>
+                <Button variant="brand" onClick={() => setView('new')}>
+                  <Sparkles size={16} className="mr-2" />
+                  Get a Card
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {cards.map((card, index) => {
+                  const statusMeta = STATUS_META[card.status] || { label: card.status?.replace('_', ' ') || 'Unknown', cls: 'bg-silver/20 text-silver border-silver/40' }
+                  const StatusIcon = statusMeta.icon || Info
+                  const isRejected = card.status === 'rejected'
+                  return (
+                    <motion.div
+                      key={card._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.06 }}
+                    >
+                      <div className="rounded-3xl bg-white dark:bg-primary-800 border border-silver/30 dark:border-primary-600 shadow-lux-card overflow-hidden h-full flex flex-col">
+                        <div className="p-4 sm:p-5">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${statusMeta.cls}`}>
+                                <StatusIcon size={12} />
+                                {statusMeta.label}
+                              </span>
+                              {card.cardPinSet && (
+                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-semibold bg-primary-600/10 text-primary-600 dark:text-gold-300 border border-primary-600/30" title="Card PIN set">
+                                  <ShieldCheck size={11} />
+                                  PIN
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-right shrink-0">
+                              <p className="text-[10px] uppercase tracking-wider text-silver">{card.type || 'card'}</p>
+                              <p className="text-sm font-bold text-primary dark:text-cream capitalize">{card.category || 'standard'}</p>
+                            </div>
+                          </div>
 
-                  <div className="space-y-3">
-                    {card.status === 'rejected' && card.rejectionReason && (
-                      <div className="bg-danger/10 border border-danger/30 rounded-lg p-3">
-                        <div className="flex items-start space-x-2">
-                          <AlertCircle className="text-danger flex-shrink-0 mt-0.5" size={18} />
-                          <div>
-                            <p className="text-sm font-semibold text-danger mb-1">Card Rejected</p>
-                            <p className="text-sm text-silver">{card.rejectionReason}</p>
-                            {card.rejectionDate && (
-                              <p className="text-xs text-silver mt-1">
-                                Rejected on: {new Date(card.rejectionDate).toLocaleDateString()}
-                              </p>
+                          <DebitCard
+                            cardNumber={card.cardNumber}
+                            cardName={card.cardName}
+                            expiry={formatCardExpiry(card.expiryDate)}
+                            cvv={card.cvv}
+                            status={card.status}
+                            showNumber={card.showFullNumber}
+                            onToggleShow={() => handleToggleCardNumber(card)}
+                            variant={CATEGORY_VARIANTS[card.category] || 'teal'}
+                            categoryLabel={card.category}
+                          />
+
+                          <div className="mt-4 space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-silver">Issuance Fee</span>
+                              <span className="font-semibold text-primary dark:text-cream">
+                                {card.fee ? `$${card.fee.toFixed(2)}` : card.purchaseAmount ? `$${Number(card.purchaseAmount).toFixed(2)}` : '—'}
+                              </span>
+                            </div>
+                            {card.status === 'pending' && card.createdAt && (
+                              <div className="flex justify-between">
+                                <span className="text-silver">Applied</span>
+                                <span className="font-semibold text-primary dark:text-cream">{new Date(card.createdAt).toLocaleDateString()}</span>
+                              </div>
                             )}
                           </div>
+
+                          {isRejected && card.rejectionReason && (
+                            <div className="mt-4 bg-danger-light dark:bg-danger/10 border border-danger/30 rounded-xl p-3">
+                              <p className="text-xs font-semibold text-danger mb-1">Rejection Reason</p>
+                              <p className="text-xs text-danger-dark dark:text-danger-light">{card.rejectionReason}</p>
+                              {card.rejectionDate && (
+                                <p className="text-[10px] text-silver mt-1">
+                                  {new Date(card.rejectionDate).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {card.status === 'active' && (
+                            <div className="mt-4 flex items-center gap-2 bg-success/10 border border-success/30 rounded-xl p-3">
+                              <CheckCircle2 size={14} className="text-success shrink-0" />
+                              <p className="text-xs text-primary dark:text-cream">
+                                Card is active and ready to use.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
-                    {card.purchaseStatus === 'pending_payment' && card.status !== 'rejected' && (
-                      <div className="flex justify-between">
-                        <span className="text-silver">Payment Due</span>
-                        <span className="text-gold font-semibold">
-                          {getTimeUntilDeadline(card.paymentDeadline)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-6 flex space-x-3">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => {
-                        setSelectedCard(card)
-                        setShowDetailsModal(true)
-                      }}
-                    >
-                      Details
-                    </Button>
-                    {card.status === 'rejected' ? (
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => {
-                          setSelectedCard(card)
-                          setShowContactModal(true)
-                        }}
-                      >
-                        Contact Support
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => {
-                          setSelectedCard(card)
-                          setShowContactModal(true)
-                        }}
-                      >
-                        Pay Now
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Card Statistics */}
-        <div className="mt-12">
-          <Card>
-            <CardHeader>
-              <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream">
-                Card Statistics
-              </h3>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-xl">
-                  <div className="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <CreditCard className="text-gold" size={24} />
-                  </div>
-                  <h4 className="font-semibold text-primary dark:text-cream">Total Cards</h4>
-                  <p className="text-2xl font-bold text-gold">{cards.length}</p>
-                </div>
-
-                <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-xl">
-                  <div className="w-12 h-12 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <CheckCircle className="text-success" size={24} />
-                  </div>
-                  <h4 className="font-semibold text-primary dark:text-cream">Active Cards</h4>
-                  <p className="text-2xl font-bold text-success">{cards.filter(card => card.status === 'active').length}</p>
-                </div>
-
-                <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-xl">
-                  <div className="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Clock className="text-gold" size={24} />
-                  </div>
-                  <h4 className="font-semibold text-primary dark:text-cream">Pending Payments</h4>
-                  <p className="text-2xl font-bold text-gold">{cards.filter(card => card.purchaseStatus === 'pending_payment').length}</p>
-                </div>
-
-                <div className="text-center p-4 bg-primary-50 dark:bg-primary-700 rounded-xl">
-                  <div className="w-12 h-12 bg-danger/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <XCircle className="text-danger" size={24} />
-                  </div>
-                  <h4 className="font-semibold text-primary dark:text-cream">Rejected Cards</h4>
-                  <p className="text-2xl font-bold text-danger">{cards.filter(card => card.status === 'rejected').length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Payment Modal */}
-        <Modal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          title="Order New Card"
-        >
-          <form onSubmit={handlePaymentSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
-                Card Type
-              </label>
-              <select
-                value={paymentForm.cardType}
-                onChange={(e) => setPaymentForm({
-                  ...paymentForm,
-                  cardType: e.target.value,
-                  amount: e.target.value === 'virtual' ? 5500.00 : 8000.00
+                    </motion.div>
+                  )
                 })}
-                className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-xl focus:ring-2 focus:ring-gold focus:border-transparent"
-              >
-                <option value="virtual">Virtual Card - $5,500.00</option>
-                <option value="physical">Physical Card - $8,000.00</option>
-              </select>
-            </div>
-
-            <div className="bg-primary-50 dark:bg-primary-700 rounded-xl p-4">
-              <h4 className="font-semibold text-primary dark:text-cream mb-2">
-                Order Summary
-              </h4>
-              <div className="text-sm text-silver space-y-1">
-                <div className="flex justify-between">
-                  <span>{paymentForm.cardType === 'virtual' ? 'Virtual Card' : 'Physical Card'}</span>
-                  <span className="text-primary dark:text-cream">${paymentForm.amount.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Processing Fee</span>
-                  <span className="text-primary dark:text-cream">$2.50</span>
-                </div>
-                <hr className="my-2" />
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span className="text-primary dark:text-cream">${(paymentForm.amount + 2.50).toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex space-x-4">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setShowPaymentModal(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                className="flex-1"
-              >
-                Order Now
-              </Button>
-            </div>
-          </form>
-        </Modal>
-
-        {/* Success Modal */}
-        <Modal
-          isOpen={showSuccessModal}
-          onClose={() => setShowSuccessModal(false)}
-          title="Card Ordered Successfully"
-        >
-          <div className="text-center">
-            <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="text-success" size={32} />
-            </div>
-            <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream mb-2">
-              Card Ordered Successfully!
-            </h3>
-            <p className="text-silver mb-6">
-              Your {paymentForm.cardType} card has been ordered and is now pending. You can view the status in your cards list.
-            </p>
-            <Button
-              variant="primary"
-              onClick={() => setShowSuccessModal(false)}
-              className="w-full"
-            >
-              Continue
-            </Button>
-          </div>
-        </Modal>
-
-        {/* Details Modal */}
-        <Modal
-          isOpen={showDetailsModal}
-          onClose={() => {
-            setShowDetailsModal(false)
-            setSelectedCard(null)
-          }}
-          title="Card Details"
-        >
-          {selectedCard && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-6 text-white">
-                <div className="flex justify-between items-center mb-4">
-                  <CreditCard size={32} />
-                  <span className="text-sm font-semibold">{(selectedCard.type || selectedCard.cardType || 'VIRTUAL').toUpperCase()}</span>
-                </div>
-                <p className="text-2xl font-mono tracking-wider mb-2">
-                  {selectedCard.cardNumber}
-                </p>
-                <div className="flex justify-between text-sm">
-                  <span>EXPIRES</span>
-                  <span>{selectedCard.expiryDate}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
-                  <h4 className="font-semibold text-primary dark:text-cream mb-2">Card Name</h4>
-                  <p className="text-silver">{selectedCard.cardName}</p>
-                </div>
-                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
-                  <h4 className="font-semibold text-primary dark:text-cream mb-2">CVV</h4>
-                  <p className="text-silver">{selectedCard.cvv}</p>
-                </div>
-                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
-                  <h4 className="font-semibold text-primary dark:text-cream mb-2">Status</h4>
-                  <p className={`capitalize font-semibold ${
-                    selectedCard.status === 'active' ? 'text-success' : 
-                    selectedCard.status === 'pending_payment' ? 'text-gold' : 
-                    selectedCard.status === 'rejected' ? 'text-danger' :
-                    selectedCard.status === 'blocked' ? 'text-danger' : 'text-danger'
-                  }`}>
-                    {selectedCard.status.replace('_', ' ')}
-                  </p>
-                </div>
-                <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4">
-                  <h4 className="font-semibold text-primary dark:text-cream mb-2">Type</h4>
-                  <p className="text-silver capitalize">{selectedCard.type || selectedCard.cardType}</p>
-                </div>
-              </div>
-
-              {selectedCard.status === 'rejected' && selectedCard.rejectionReason && (
-                <div className="bg-danger/10 border-2 border-danger/30 rounded-lg p-4">
-                  <div className="flex items-start space-x-3 mb-3">
-                    <AlertCircle className="text-danger flex-shrink-0 mt-1" size={24} />
-                    <div>
-                      <h4 className="font-semibold text-danger text-lg mb-2">Card Application Rejected</h4>
-                      <p className="text-primary dark:text-cream mb-2">{selectedCard.rejectionReason}</p>
-                      {selectedCard.rejectionDate && (
-                        <p className="text-sm text-silver">
-                          Rejected on: {new Date(selectedCard.rejectionDate).toLocaleDateString()}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="bg-cream dark:bg-primary-700 rounded-lg p-3 mt-3">
-                    <p className="text-sm text-primary dark:text-cream">
-                      <strong>What to do next:</strong> Please contact our support team to understand the rejection reason and reapply if eligible.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {selectedCard.purchaseStatus === 'pending_payment' && selectedCard.status !== 'rejected' && (
-                <div className="bg-gold/10 border border-gold/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-gold mb-2">Payment Information</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-silver">Purchase Amount:</span>
-                      <span className="text-primary dark:text-cream">${selectedCard.purchaseAmount?.toFixed(2) || 'N/A'}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Payment Deadline:</span>
-                      <span className="text-gold font-semibold">
-                        {selectedCard.paymentDeadline ? new Date(selectedCard.paymentDeadline).toLocaleDateString() : 'N/A'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-silver">Time Remaining:</span>
-                      <span className="text-gold font-semibold">
-                        {getTimeUntilDeadline(selectedCard.paymentDeadline)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex space-x-4">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setShowDetailsModal(false)
-                    setSelectedCard(null)
-                  }}
-                  className="flex-1"
-                >
-                  Close
-                </Button>
-                {selectedCard.status === 'rejected' ? (
-                  <Button
-                    variant="danger"
-                    onClick={() => {
-                      setShowDetailsModal(false)
-                      setShowContactModal(true)
-                    }}
-                    className="flex-1"
-                  >
-                    Contact Support
-                  </Button>
-                ) : selectedCard.purchaseStatus === 'pending_payment' ? (
-                  <Button
-                    variant="danger"
-                    onClick={() => {
-                      setShowDetailsModal(false)
-                      setShowContactModal(true)
-                    }}
-                    className="flex-1"
-                  >
-                    Pay Now
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          )}
-        </Modal>
-
-        {/* Contact Modal */}
-        <Modal
-          isOpen={showContactModal}
-          onClose={() => {
-            setShowContactModal(false)
-            setSelectedCard(null)
-          }}
-          title={selectedCard?.status === 'rejected' ? 'Contact Support - Card Rejected' : 'Contact Support for Payment'}
-        >
-          <div className="text-center">
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
-              selectedCard?.status === 'rejected' ? 'bg-danger/20' : 'bg-gold/20'
-            }`}>
-              {selectedCard?.status === 'rejected' ? (
-                <AlertCircle className="text-danger" size={32} />
-              ) : (
-                <AlertTriangle className="text-gold" size={32} />
-              )}
-            </div>
-            <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream mb-2">
-              {selectedCard?.status === 'rejected' ? 'Card Application Rejected' : 'Payment Processing'}
-            </h3>
-            <p className="text-silver mb-6">
-              {selectedCard?.status === 'rejected' 
-                ? 'Your card application has been rejected. Please contact our support team to understand the reason and discuss reapplication options.'
-                : 'To proceed with payment for your card, please contact our support team. They will guide you through the secure payment process.'
-              }
-            </p>
-            {selectedCard?.status === 'rejected' && selectedCard?.rejectionReason && (
-              <div className="bg-danger/10 border border-danger/30 rounded-lg p-4 mb-6 text-left">
-                <p className="text-sm font-semibold text-danger mb-1">Rejection Reason:</p>
-                <p className="text-sm text-primary dark:text-cream">{selectedCard.rejectionReason}</p>
               </div>
             )}
-            <div className="bg-primary-50 dark:bg-primary-700 rounded-lg p-4 mb-6">
-              <p className="text-sm text-primary dark:text-cream font-semibold mb-1">Support Email:</p>
-              <p className="text-gold font-mono">helpxprimewavebank@gmail.com</p>
-            </div>
-            <div className="flex space-x-4">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setShowContactModal(false)
-                  setSelectedCard(null)
-                }}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  const subject = selectedCard?.status === 'rejected' 
-                    ? 'Card Rejection Inquiry' 
-                    : 'Card Payment Request'
-                  const body = selectedCard?.status === 'rejected'
-                    ? `I would like to inquire about my rejected card application.\n\nCard Type: ${selectedCard?.cardType}\nRejection Reason: ${selectedCard?.rejectionReason || 'Not specified'}\n\nPlease provide more information and guidance on next steps.`
-                    : 'Please help me process payment for my card.'
-                  window.location.href = `mailto:helpxprimewavebank@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-                  setShowContactModal(false)
-                  setSelectedCard(null)
-                }}
-                className="flex-1"
-              >
-                Contact Support
-              </Button>
-            </div>
           </div>
-        </Modal>
+        ) : (
+          <div className="space-y-6">
+            {/* Virtual / Physical toggle */}
+            <div className="inline-flex rounded-2xl bg-white dark:bg-primary-800 border border-silver/30 dark:border-primary-600 p-1.5 shadow-lux-card">
+              {['virtual', 'physical'].map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setCardType(t)}
+                  className={`flex items-center gap-2 px-5 sm:px-8 py-2.5 rounded-xl text-sm font-semibold capitalize transition-all ${
+                    cardType === t
+                      ? 'bg-gold text-white shadow-lux-gold'
+                      : 'text-silver hover:text-primary dark:hover:text-cream'
+                  }`}
+                >
+                  {t === 'virtual' ? <CreditCard size={16} /> : <CreditCard size={16} className="rotate-0" />}
+                  {t} Card
+                </button>
+              ))}
+            </div>
+
+            <CardCatalog
+              type={cardType}
+              categories={categories}
+              onSelectCategory={(category) => setSelectedCategory(category)}
+            />
+
+            <p className="text-xs text-silver text-center pb-4">
+              The issuance fee is paid to the bank through another account — contact our support team for the payment details. Applications expire automatically after 7 days if not paid for.
+            </p>
+          </div>
+        )}
+
+        {/* Card application wizard */}
+        <ApplyCardModal
+          isOpen={!!selectedCategory}
+          onClose={() => setSelectedCategory(null)}
+          type={cardType}
+          category={selectedCategory}
+          onSuccess={() => {
+            setSelectedCategory(null)
+            fetchCards()
+          }}
+        />
       </div>
     </div>
   )

@@ -41,6 +41,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  // Cloudinary public id of the current profile photo (used to clean up the
+  // previous image when a user uploads a new one). Never exposed to clients.
+  profilePhotoPublicId: {
+    type: String,
+    select: false,
+    default: null,
+  },
   country: {
     type: String,
     default: null,
@@ -59,6 +66,23 @@ const UserSchema = new mongoose.Schema({
     default: 'user',
   },
   isBlocked: {
+    type: Boolean,
+    default: false,
+  },
+  // Account status controlled by admins. Unlike isBlocked (suspension for
+  // security/verification reasons), this is the general Active/Inactive state.
+  accountStatus: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active',
+  },
+  // Transaction PIN - hashed with bcrypt, NEVER stored or returned in
+  // plaintext. This is completely separate from any card PIN.
+  transactionPin: {
+    type: String,
+    select: false,
+  },
+  transactionPinSet: {
     type: Boolean,
     default: false,
   },

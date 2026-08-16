@@ -6,7 +6,8 @@ const {
   deleteUser,
   toggleUserBlock,
   getUserDetails,
-  updateUserBalance
+  updateUserBalance,
+  updateAccountStatus
 } = require('../controllers/users');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -21,5 +22,6 @@ router.route('/:id')
 router.route('/:id/details').get(protect, authorize('admin'), getUserDetails);
 router.route('/:id/toggle-block').put(protect, authorize('admin'), toggleUserBlock);
 router.route('/:id/balance').put(protect, authorize('admin'), updateUserBalance);
+router.route('/:id/account-status').put(protect, authorize('admin'), updateAccountStatus);
 
 module.exports = router;

@@ -9,7 +9,7 @@ const Loan = require('../models/Loan');
 // @access  Private/Admin
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password -seedPhrase');
+    const users = await User.find().select('-password -seedPhrase -transactionPin');
     res.status(200).json({
       success: true,
       count: users.length,
@@ -25,7 +25,7 @@ exports.getUsers = async (req, res, next) => {
 // @access  Private/Admin
 exports.getUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id).select('-password -seedPhrase');
+    const user = await User.findById(req.params.id).select('-password -seedPhrase -transactionPin');
 
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });
@@ -48,7 +48,7 @@ exports.updateUser = async (req, res, next) => {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
-    }).select('-password -seedPhrase');
+    }).select('-password -seedPhrase -transactionPin');
 
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });
@@ -102,7 +102,7 @@ exports.getUserDetails = async (req, res, next) => {
     const userId = req.params.id;
 
     // Get user basic info
-    const user = await User.findById(userId).select('-password -seedPhrase');
+    const user = await User.findById(userId).select('-password -seedPhrase -transactionPin');
     if (!user) {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
@@ -197,6 +197,37 @@ exports.toggleUserBlock = async (req, res, next) => {
         isBlocked: user.isBlocked
       },
       message: `User has been ${user.isBlocked ? 'blocked' : 'unblocked'}`
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Update user account status (Active/Inactive)
+// @route   PUT /api/users/:id/account-status
+// @access  Private/Admin
+exports.updateAccountStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+
+    if (!['active', 'inactive'].includes(status)) {
+      return res.status(400).json({ success: false, error: 'Invalid account status. Use "active" or "inactive".' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { accountStatus: status },
+      { new: true, runValidators: true }
+    ).select('-password -seedPhrase -transactionPin');
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: { id: user._id, accountStatus: user.accountStatus },
+      message: `Account status set to ${status}.`
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });

@@ -17,7 +17,8 @@ import {
   Copy,
   Eye,
   EyeOff,
-  Wallet
+  Wallet,
+  Plus
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
@@ -26,6 +27,7 @@ import NotificationsBell from '../../components/Layout/NotificationsBell'
 import QuickActions from './QuickActions'
 import ActivityFeed from './ActivityFeed'
 import BalanceChart from '../../components/Charts/BalanceChart'
+import AddMoneyModal from '../../components/AddMoneyModal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 import { formatAmount, getCurrencyByCountry } from '../../services/currency'
@@ -63,6 +65,8 @@ const Dashboard = () => {
   const [primaryAccount, setPrimaryAccount] = useState(null)
   const [pendingCount, setPendingCount] = useState(0)
   const [transactionVolume, setTransactionVolume] = useState(0)
+  const [accountStatus, setAccountStatus] = useState(user?.accountStatus || 'active')
+  const [showAddMoneyModal, setShowAddMoneyModal] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -76,6 +80,8 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
+
+      setAccountStatus(user?.accountStatus || 'active')
 
       let userCurrency = 'USD'
       if (user?.country) {
@@ -302,6 +308,27 @@ const Dashboard = () => {
           </motion.div>
         )}
 
+        {/* Inactive Account Banner */}
+        {accountStatus === 'inactive' && !user?.isBlocked && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 bg-danger-light dark:bg-danger/10 border border-danger/30 rounded-xl p-4"
+          >
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="text-danger mt-0.5 shrink-0" size={20} />
+              <div>
+                <h3 className="text-sm font-semibold text-danger-dark dark:text-danger-light">
+                  Account Inactive
+                </h3>
+                <p className="text-sm text-danger-dark/80 dark:text-danger-light/80 mt-1">
+                  Your account is currently inactive. You can still view your dashboard, but money movements and card/loan requests are paused. Please contact support to reactivate your account.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -442,18 +469,18 @@ const Dashboard = () => {
                   <div>
                     <p className="text-xs text-white/60">Status</p>
                     <span className={`mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-                      user?.isBlocked
+                      accountStatus === 'inactive' || user?.isBlocked
                         ? 'bg-danger/80 text-white'
                         : 'bg-white/10 text-white border border-success/50'
                     }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${user?.isBlocked ? 'bg-white' : 'bg-success'}`} />
-                      {user?.isBlocked ? 'Inactive' : 'Active'}
+                      <span className={`w-1.5 h-1.5 rounded-full ${accountStatus === 'inactive' || user?.isBlocked ? 'bg-white' : 'bg-success'}`} />
+                      {user?.isBlocked ? 'Blocked' : accountStatus === 'inactive' ? 'Inactive' : 'Active'}
                     </span>
                   </div>
                 </div>
 
-                {/* Transactions button */}
-                <div className="mt-8 lg:mt-auto pt-2">
+                {/* Transactions + Add Money buttons */}
+                <div className="mt-8 lg:mt-auto pt-2 flex flex-wrap items-center gap-3">
                   <Link
                     to="/transactions"
                     className="inline-flex items-center gap-2 bg-white text-primary-600 font-semibold px-5 py-2.5 rounded-xl hover:bg-cream hover:shadow-lg transition-all"
@@ -461,6 +488,13 @@ const Dashboard = () => {
                     <ArrowLeftRight size={16} />
                     Transactions
                   </Link>
+                  <button
+                    onClick={() => setShowAddMoneyModal(true)}
+                    className="inline-flex items-center gap-2 bg-gold text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-gold-600 hover:shadow-lux-gold transition-all"
+                  >
+                    <Plus size={16} />
+                    Add Money
+                  </button>
                 </div>
               </div>
             </div>
@@ -589,6 +623,12 @@ const Dashboard = () => {
           <ActivityFeed />
         </div>
       </div>
+
+      {/* Add Money - funding methods modal */}
+      <AddMoneyModal
+        isOpen={showAddMoneyModal}
+        onClose={() => setShowAddMoneyModal(false)}
+      />
     </div>
   )
 }
