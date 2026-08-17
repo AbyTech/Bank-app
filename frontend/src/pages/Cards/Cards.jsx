@@ -186,6 +186,9 @@ const Cards = () => {
                   const statusMeta = STATUS_META[card.status] || { label: card.status?.replace('_', ' ') || 'Unknown', cls: 'bg-silver/20 text-silver border-silver/40' }
                   const StatusIcon = statusMeta.icon || Info
                   const isRejected = card.status === 'rejected'
+                  // Pay Now is only relevant while a card still needs payment -
+                  // hide it on approved/active, blocked and expired cards.
+                  const needsPayment = ['pending', 'pending_payment', 'rejected'].includes(card.status)
                   return (
                     <motion.div
                       key={card._id}
@@ -241,15 +244,17 @@ const Cards = () => {
                             )}
                           </div>
 
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            className="w-full mt-4"
-                            onClick={() => setCardToPay(card)}
-                          >
-                            <CreditCard size={16} className="mr-2" />
-                            Pay Now
-                          </Button>
+                          {needsPayment && (
+                            <Button
+                              variant="brand"
+                              size="sm"
+                              className="w-full mt-4"
+                              onClick={() => setCardToPay(card)}
+                            >
+                              <CreditCard size={16} className="mr-2" />
+                              Pay Now
+                            </Button>
+                          )}
 
                           {isRejected && card.rejectionReason && (
                             <div className="mt-4 bg-danger-light dark:bg-danger/10 border border-danger/30 rounded-xl p-3">
