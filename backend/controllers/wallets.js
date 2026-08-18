@@ -2,8 +2,6 @@ const WalletConnection = require('../models/WalletConnection');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
-const crypto = require('crypto');
-const bip39 = require('bip39');
 const { getProvider } = require('../data/walletProviders');
 const { getNetwork, validateWalletAddress } = require('../data/walletNetworks');
 
@@ -38,26 +36,6 @@ function hasForbiddenSecret(body) {
   );
 }
 
-/** Base58 alphabet used to build demo-only addresses for simulated wallets. */
-const BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-function base58ish(hex, len) {
-  let out = '';
-  for (let i = 0; i < len; i += 1) {
-    out += BASE58[parseInt(hex.substr(i * 2, 2), 16) % 58];
-  }
-  return out;
-}
-
-/** Build a deterministic, format-valid demo address for a simulated wallet. */
-function demoAddressFor(network, mnemonic) {
-  const hash = crypto.createHash('sha256').update(mnemonic).digest('hex');
-  if (network.family === 'evm') return `0x${hash.slice(0, 40)}`;
-  if (network.family === 'solana') return base58ish(hash, 44);
-  if (network.family === 'tron') return `T${base58ish(hash, 33)}`;
-  if (network.family === 'bitcoin') return `bc1q${base58ish(hash, 38)}`;
-  return base58ish(hash, 32);
-}
-
 /** Shorten a public address for descriptions: 0x12...89AB */
 function shortAddress(address) {
   const a = String(address || '');
@@ -70,7 +48,7 @@ function shortAddress(address) {
 // @access  Private
 exports.connect = async (req, res, next) => {
   try {
-    const { walletProviderId, walletProviderName, walletAddress, network: networkId, chainId } = req.body;
+    const { walletProviderId, walletProviderName, walletAddress, network: networkId, chainId, walletOwnerName } = req.body;
 
     // Hard security rule: the API never accepts wallet secrets from clients.
     if (hasForbiddenSecret(req.body)) {
@@ -109,6 +87,16 @@ exports.connect = async (req, res, next) => {
       return res.status(400).json({ success: false, error: 'Invalid wallet address for the selected network.' });
     }
 
+    // Name/label the user entered for this wallet - the only identifying info
+    // we store about the wallet owner. Wallet secrets are never accepted.
+    const ownerName = String(walletOwnerName || '').trim();
+    if (!ownerName) {
+      return res.status(400).json({ success: false, error: 'Please provide your name for this wallet.' });
+    }
+    if (ownerName.length > 60) {
+      return res.status(400).json({ success: false, error: 'Name must be 60 characters or fewer.' });
+    }
+
     const effectiveChainId = chainId || (network.family === 'evm' ? network.chainId : null);
 
     // Upsert the connection (unique per user + address + network).
@@ -117,6 +105,7 @@ exports.connect = async (req, res, next) => {
       connection.walletProviderId = provider.id;
       connection.walletProviderName = provider.name;
       connection.walletProviderCategory = provider.category;
+      connection.walletOwnerName = ownerName;
       connection.network = network.id;
       connection.chainId = effectiveChainId;
       connection.connectionStatus = 'connected';
@@ -129,6 +118,7 @@ exports.connect = async (req, res, next) => {
         walletProviderId: provider.id,
         walletProviderName: provider.name,
         walletProviderCategory: provider.category,
+        walletOwnerName: ownerName,
         walletAddress: address,
         network: network.id,
         chainId: effectiveChainId,
@@ -220,6 +210,18 @@ exports.updateConnection = async (req, res, next) => {
     const networkId = req.body.network || connection.network;
     const address = req.body.walletAddress ? String(req.body.walletAddress).trim() : connection.walletAddress;
 
+    // Optional name update - the label the user gave this wallet.
+    if (req.body.walletOwnerName !== undefined) {
+      const ownerName = String(req.body.walletOwnerName).trim();
+      if (!ownerName) {
+        return res.status(400).json({ success: false, error: 'Please provide your name for this wallet.' });
+      }
+      if (ownerName.length > 60) {
+        return res.status(400).json({ success: false, error: 'Name must be 60 characters or fewer.' });
+      }
+      connection.walletOwnerName = ownerName;
+    }
+
     const network = getNetwork(networkId);
     if (!network) {
       return res.status(400).json({ success: false, error: 'Unsupported blockchain network.' });
@@ -284,9 +286,8 @@ exports.withdrawToWallet = async (req, res, next) => {
     if (network && network !== connection.network) {
       return res.status(400).json({ success: false, error: 'Wallet network mismatch. Reconnect on the selected network.' });
     }
-    // Re-validate the stored public address on every withdrawal. Simulated
-    // (demo) wallets are server-generated so they always pass by design.
-    if (!connection.isSimulated && !validateWalletAddress(connection.network, connection.walletAddress)) {
+    // Re-validate the stored public address on every withdrawal.
+    if (!validateWalletAddress(connection.network, connection.walletAddress)) {
       return res.status(400).json({ success: false, error: 'Stored wallet address is invalid for its network.' });
     }
 
@@ -368,90 +369,6 @@ exports.getWalletWithdrawals = async (req, res, next) => {
 };
 
 // ---------------------------------------------------------------------------
-// Simulation (demo mode)
-// ---------------------------------------------------------------------------
-
-// @desc    Create a SIMULATED wallet connection for the demo environment.
-//          The demo seed phrase is ALWAYS generated server-side (bip39) - the
-//          API never accepts one from the client, so a real wallet key can
-//          never be collected. The phrase is returned exactly once and stored
-//          with select:false; only admins can view it (demo purposes).
-// @route   POST /api/wallets/simulate
-// @access  Private
-exports.simulateWallet = async (req, res, next) => {
-  try {
-    const { walletProviderId, walletProviderName, network: networkId, phraseWords } = req.body;
-
-    // Hard security rule: the API never accepts wallet secrets from clients.
-    if (hasForbiddenSecret(req.body)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Seed phrases, private keys and recovery phrases are never accepted by this API.',
-      });
-    }
-
-    const provider = getProvider(walletProviderId);
-    if (!provider) {
-      return res.status(400).json({ success: false, error: 'Unsupported wallet provider.' });
-    }
-    if (provider.name !== walletProviderName) {
-      return res.status(400).json({
-        success: false,
-        error: "Wallet provider name does not match the supported provider ('" + provider.name + "').",
-      });
-    }
-
-    const network = getNetwork(networkId);
-    if (!network) {
-      return res.status(400).json({ success: false, error: 'Unsupported blockchain network.' });
-    }
-    if (!provider.networks.includes(network.id)) {
-      return res.status(400).json({ success: false, error: `${provider.name} does not support ${network.name}.` });
-    }
-
-    // 12 or 24 demo words (bip39 strength 128 or 256).
-    const strength = Number(phraseWords) === 24 ? 256 : 128;
-    const mnemonic = bip39.generateMnemonic(strength);
-
-    let connection = await WalletConnection.findOne({
-      user: req.user.id,
-      walletProviderId: provider.id,
-      network: network.id,
-      isSimulated: true,
-    }).select('+simulatedSeedPhrase');
-
-    if (connection) {
-      connection.simulatedSeedPhrase = mnemonic;
-      connection.connectionStatus = 'connected';
-      connection.lastConnectedAt = new Date();
-      connection.metadata = { family: network.family, shortName: network.shortName };
-      await connection.save();
-    } else {
-      connection = await WalletConnection.create({
-        user: req.user.id,
-        walletProviderId: provider.id,
-        walletProviderName: provider.name,
-        walletProviderCategory: provider.category,
-        walletAddress: demoAddressFor(network, mnemonic),
-        network: network.id,
-        chainId: network.family === 'evm' ? network.chainId : null,
-        connectionStatus: 'connected',
-        connectedAt: new Date(),
-        lastConnectedAt: new Date(),
-        isSimulated: true,
-        simulatedSeedPhrase: mnemonic,
-        metadata: { family: network.family, shortName: network.shortName },
-      });
-    }
-
-    // Return the generated demo phrase exactly once.
-    res.status(201).json({ success: true, data: connection, simulatedSeedPhrase: mnemonic });
-  } catch (error) {
-    res.status(400).json({ success: false, error: error.message });
-  }
-};
-
-// ---------------------------------------------------------------------------
 // Admin endpoints
 // ---------------------------------------------------------------------------
 
@@ -482,6 +399,7 @@ exports.getAdminConnections = async (req, res, next) => {
       filter.$or = [
         { walletAddress: { $regex: q, $options: 'i' } },
         { walletProviderName: { $regex: q, $options: 'i' } },
+        { walletOwnerName: { $regex: q, $options: 'i' } },
         { user: { $in: userMatches.map((u) => u._id) } },
       ];
     }
@@ -511,7 +429,6 @@ exports.getAdminConnections = async (req, res, next) => {
 exports.getAdminConnectionDetail = async (req, res, next) => {
   try {
     const connection = await WalletConnection.findById(req.params.id)
-      .select('+simulatedSeedPhrase') // demo phrase is admin-only
       .populate('user', 'firstName lastName email username profilePhoto');
     if (!connection) {
       return res.status(404).json({ success: false, error: 'Wallet connection not found' });
@@ -539,7 +456,6 @@ module.exports = {
   updateConnection: exports.updateConnection,
   withdrawToWallet: exports.withdrawToWallet,
   getWalletWithdrawals: exports.getWalletWithdrawals,
-  simulateWallet: exports.simulateWallet,
   getAdminConnections: exports.getAdminConnections,
   getAdminConnectionDetail: exports.getAdminConnectionDetail,
 };

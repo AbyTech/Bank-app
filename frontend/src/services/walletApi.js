@@ -31,26 +31,16 @@ export const walletAPI = {
     }
   },
 
+  /**
+   * Save/refresh a connected wallet. Only public metadata + the user-entered
+   * name are sent - the API never accepts wallet secrets.
+   */
   connect: async (payload) => {
     try {
       const response = await api.post('/api/wallets/connect', payload)
       return response.data.data
     } catch (error) {
       throw toError(error, 'Failed to save wallet connection')
-    }
-  },
-
-  /**
-   * Create a SIMULATED wallet (demo mode). The demo seed phrase is generated
-   * server-side and returned exactly once; the API never accepts a user-typed
-   * seed phrase.
-   */
-  simulate: async (payload) => {
-    try {
-      const response = await api.post('/api/wallets/simulate', payload)
-      return response.data // { success, data: connection, simulatedSeedPhrase }
-    } catch (error) {
-      throw toError(error, 'Failed to create simulated wallet')
     }
   },
 

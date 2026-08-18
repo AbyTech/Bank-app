@@ -61,19 +61,15 @@ const WalletConnectionSchema = new mongoose.Schema(
       enum: ['connected', 'disconnected'],
       default: 'connected',
     },
-    // Simulation-only wallet (demo mode). `simulatedSeedPhrase` is ALWAYS
-    // generated server-side with bip39 - the API hard-rejects any seed phrase
-    // supplied by a client, so a real wallet secret can never be collected.
-    // It is select:false so normal queries never return it; only the admin
-    // detail endpoint explicitly includes it (demo purposes).
-    isSimulated: {
-      type: Boolean,
-      default: false,
-    },
-    simulatedSeedPhrase: {
+    // Name/label the user typed when connecting the wallet. This is the ONLY
+    // identifying information stored about the wallet owner - wallet secrets
+    // (seed phrases, private keys, recovery phrases) are never accepted,
+    // stored or exposed anywhere in the system.
+    walletOwnerName: {
       type: String,
-      select: false,
-      default: null,
+      trim: true,
+      default: '',
+      maxlength: [60, 'Wallet name is too long (max 60 characters).'],
     },
     connectedAt: {
       type: Date,

@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   History,
   Plus,
-  FlaskConical,
+  User,
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { useWallet } from '../../context/WalletContext'
@@ -103,11 +103,6 @@ const WalletPage = () => {
                     <Wallet size={18} className="text-gold" /> Connected Wallet
                   </h3>
                   <span className="flex items-center gap-2 ml-0 sm:ml-auto">
-                    {connection.isSimulated && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gold/10 text-gold border border-gold/40">
-                        <FlaskConical size={11} /> Simulation
-                      </span>
-                    )}
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-success/15 text-success border border-success/30">
                       <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" /> Connected
                     </span>
@@ -118,6 +113,11 @@ const WalletPage = () => {
                     {wallet && <WalletIcon wallet={wallet} size="xl" />}
                     <div className="min-w-0 flex-1">
                       <p className="font-heading font-semibold text-lg text-primary dark:text-cream">{connection.walletProviderName}</p>
+                      {connection.walletOwnerName && (
+                        <p className="text-sm font-medium text-primary dark:text-cream mt-0.5 flex items-center gap-1.5">
+                          <User size={14} className="text-gold shrink-0" /> {connection.walletOwnerName}
+                        </p>
+                      )}
                       <button onClick={copyAddress} className="inline-flex items-center gap-2 font-mono text-sm text-primary-600 dark:text-gold-300 hover:underline mt-1" title="Copy full address">
                         {connection.walletAddress}
                         {copied ? <Check size={14} className="text-success" /> : <Copy size={14} className="text-silver" />}
@@ -130,8 +130,8 @@ const WalletPage = () => {
 
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div className="bg-cream dark:bg-primary-700/60 rounded-xl p-3">
-                      <p className="text-[11px] text-silver mb-1">Provider</p>
-                      <p className="text-sm font-semibold text-primary dark:text-cream truncate">{connection.walletProviderName}</p>
+                      <p className="text-[11px] text-silver mb-1">Wallet name</p>
+                      <p className="text-sm font-semibold text-primary dark:text-cream truncate">{connection.walletOwnerName || '—'}</p>
                     </div>
                     <div className="bg-cream dark:bg-primary-700/60 rounded-xl p-3">
                       <p className="text-[11px] text-silver mb-1">Network</p>

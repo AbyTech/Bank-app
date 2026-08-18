@@ -7,7 +7,6 @@ const {
   updateConnection,
   withdrawToWallet,
   getWalletWithdrawals,
-  simulateWallet,
   getAdminConnections,
   getAdminConnectionDetail,
 } = require('../controllers/wallets');
@@ -19,7 +18,6 @@ const router = express.Router();
 router.get('/', protect, getConnections);
 router.get('/current', protect, getCurrentConnection);
 router.post('/connect', protect, connect);
-router.post('/simulate', protect, simulateWallet);
 router.post('/withdraw', protect, requireActiveAccount, withdrawToWallet);
 router.get('/withdrawals', protect, getWalletWithdrawals);
 router.delete('/:id', protect, disconnect);

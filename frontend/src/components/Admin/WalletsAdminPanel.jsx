@@ -8,9 +8,7 @@ import {
   Loader2,
   History,
   ShieldCheck,
-  FlaskConical,
-  Eye,
-  EyeOff,
+  User,
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import api from '../../services/api'
@@ -28,8 +26,9 @@ const STATUS_BADGE = {
 
 /**
  * WalletsAdminPanel - admin view of every user's wallet connections.
- * Displays ONLY public wallet metadata (provider, address, network, dates).
- * Admin never sees any wallet secret - none exist in the system by design.
+ * Displays ONLY public wallet metadata (provider, address, network, dates) and
+ * the name the user entered when connecting. Admin never sees any wallet
+ * secret - none exist in the system by design.
  */
 const WalletsAdminPanel = () => {
   const [connections, setConnections] = useState([])
@@ -44,8 +43,6 @@ const WalletsAdminPanel = () => {
   const [detail, setDetail] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const [detailWithdrawals, setDetailWithdrawals] = useState([])
-  const [showSimPhrase, setShowSimPhrase] = useState(false)
-  const [simPhraseCopied, setSimPhraseCopied] = useState(false)
   const [activeFilter, setActiveFilter] = useState(false)
 
   const fetchConnections = useCallback(async (pageNumber = 1, opts = {}) => {
@@ -97,22 +94,9 @@ const WalletsAdminPanel = () => {
     }
   }
 
-  const copySimPhrase = async () => {
-    if (!detail?.simulatedSeedPhrase) return
-    try {
-      await navigator.clipboard.writeText(detail.simulatedSeedPhrase)
-      setSimPhraseCopied(true)
-      setTimeout(() => setSimPhraseCopied(false), 1500)
-    } catch (e) {
-      toast.error('Could not copy the phrase.')
-    }
-  }
-
   const openDetail = async (connection) => {
     setDetail(connection)
     setDetailLoading(true)
-    setShowSimPhrase(false)
-    setSimPhraseCopied(false)
     try {
       const response = await api.get(`/api/wallets/admin/connections/${connection._id}`)
       setDetail(response.data.data.connection)
@@ -204,6 +188,7 @@ const WalletsAdminPanel = () => {
                 <thead className="bg-cream dark:bg-primary-700/50 text-[11px] uppercase tracking-wider text-silver">
                   <tr>
                     <th className="px-4 py-3 font-semibold">User</th>
+                    <th className="px-4 py-3 font-semibold">Wallet name</th>
                     <th className="px-4 py-3 font-semibold">Provider</th>
                     <th className="px-4 py-3 font-semibold">Address</th>
                     <th className="px-4 py-3 font-semibold">Network</th>
@@ -233,14 +218,15 @@ const WalletsAdminPanel = () => {
                           </div>
                         </td>
                         <td className="px-4 py-3">
+                          <p className="text-sm font-medium text-primary dark:text-cream truncate flex items-center gap-1.5">
+                            <User size={13} className="text-gold shrink-0" />
+                            {conn.walletOwnerName || '—'}
+                          </p>
+                        </td>
+                        <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             {wallet && <WalletIcon wallet={wallet} size="sm" showRing={false} />}
                             <span className="text-sm text-primary dark:text-cream">{conn.walletProviderName}</span>
-                            {conn.isSimulated && (
-                              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-gold/10 text-gold border border-gold/40">
-                                SIM
-                              </span>
-                            )}
                           </div>
                         </td>
                         <td className="px-4 py-3">
@@ -289,6 +275,11 @@ const WalletsAdminPanel = () => {
               })()}
               <div className="min-w-0 flex-1">
                 <p className="font-heading font-semibold text-lg text-primary dark:text-cream">{detail.walletProviderName}</p>
+                {detail.walletOwnerName && (
+                  <p className="text-sm font-medium text-primary dark:text-cream mt-0.5 flex items-center gap-1.5">
+                    <User size={14} className="text-gold shrink-0" /> {detail.walletOwnerName}
+                  </p>
+                )}
                 <p className="font-mono text-sm text-primary-600 dark:text-gold-300 break-all">{detail.walletAddress}</p>
                 <p className="text-xs text-silver mt-1 capitalize">{detail.network} · Connected {new Date(detail.connectedAt).toLocaleString()}</p>
               </div>
@@ -300,48 +291,9 @@ const WalletsAdminPanel = () => {
             <div className="flex items-start gap-2 bg-primary-50 dark:bg-primary-700/60 rounded-xl p-3">
               <ShieldCheck size={16} className="text-success shrink-0 mt-0.5" />
               <p className="text-xs text-silver leading-relaxed">
-                Only public wallet metadata is stored. No recovery phrase, private key or wallet password exists anywhere in the system.
+                Only public wallet metadata and the name the user entered are stored. No recovery phrase, private key or wallet password exists anywhere in the system.
               </p>
             </div>
-
-            {detail.isSimulated && (
-              <div className="bg-gold/10 border border-gold/30 rounded-2xl p-4">
-                <div className="flex items-start gap-2 mb-3">
-                  <FlaskConical size={16} className="text-gold shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-semibold text-gold">Simulated wallet (demo)</p>
-                    <p className="text-xs text-silver mt-0.5">
-                      Wallet type: <span className="font-semibold text-primary dark:text-cream capitalize">{detail.walletProviderCategory || detail.walletProviderName}</span>
-                      <span className="block mt-0.5">This seed phrase was generated by the app for demo purposes only — it is not a real wallet.</span>
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-silver mb-2">
-                  Simulated seed phrase ({detail.simulatedSeedPhrase?.split(' ').length || 0} words)
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2 items-stretch">
-                  <div className="flex-1 bg-white dark:bg-primary-800 rounded-xl border border-silver/30 dark:border-primary-600 p-3 font-mono text-xs text-primary dark:text-cream break-all">
-                    {showSimPhrase ? detail.simulatedSeedPhrase : '•••• •••• •••• ••••'}
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setShowSimPhrase(!showSimPhrase)}
-                      className="px-3 py-2 rounded-lg bg-primary-100 dark:bg-primary-700 text-xs font-semibold text-primary dark:text-cream hover:bg-primary-200 dark:hover:bg-primary-600 transition-colors"
-                      title={showSimPhrase ? 'Hide phrase' : 'Reveal phrase'}
-                    >
-                      {showSimPhrase ? <EyeOff size={14} /> : <Eye size={14} />}
-                    </button>
-                    <button
-                      onClick={copySimPhrase}
-                      className="px-3 py-2 rounded-lg bg-primary-100 dark:bg-primary-700 text-xs font-semibold text-primary dark:text-cream hover:bg-primary-200 dark:hover:bg-primary-600 transition-colors"
-                      title="Copy phrase"
-                    >
-                      {simPhraseCopied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div>
               <h4 className="text-sm font-heading font-semibold text-primary dark:text-cream mb-3 flex items-center gap-2">

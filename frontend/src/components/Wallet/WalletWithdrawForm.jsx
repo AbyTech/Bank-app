@@ -1,6 +1,6 @@
 // @ts-check
 import React, { useState, useEffect } from 'react'
-import { Loader2, AlertCircle, Send, Wallet, Copy, Check, FlaskConical } from 'lucide-react'
+import { Loader2, AlertCircle, Send, Wallet, Copy, Check, User } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import api from '../../services/api'
 import { walletAPI } from '../../services/walletApi'
@@ -93,7 +93,10 @@ const WalletWithdrawForm = ({ connection, onDone, onCancel }) => {
       <div className="flex items-center gap-3 bg-primary-50 dark:bg-primary-700/60 rounded-2xl p-4 border border-silver/25 dark:border-primary-600">
         {wallet ? <WalletIcon wallet={wallet} size="md" /> : <Wallet size={20} className="text-gold shrink-0" />}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-primary dark:text-cream truncate">{connection.walletProviderName}</p>
+          <p className="text-sm font-semibold text-primary dark:text-cream truncate flex items-center gap-1.5">
+            {connection.walletOwnerName && <><User size={13} className="text-gold shrink-0" />{connection.walletOwnerName} · </>}
+            {connection.walletProviderName}
+          </p>
           <button type="button" onClick={copyAddress}
             className="inline-flex items-center gap-1.5 font-mono text-sm text-primary-600 dark:text-gold-300 hover:underline"
             title="Copy full address">
@@ -102,11 +105,6 @@ const WalletWithdrawForm = ({ connection, onDone, onCancel }) => {
           </button>
         </div>
         <span className="flex items-center gap-2 shrink-0">
-          {connection.isSimulated && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gold/10 text-gold border border-gold/40">
-              <FlaskConical size={11} /> Simulation
-            </span>
-          )}
           <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-success/15 text-success border border-success/30 capitalize">
             {network?.name || connection.network}
           </span>

@@ -39,13 +39,14 @@ export const WalletProvider = ({ children }) => {
 
   /**
    * Connect a wallet to a network. Runs the real connector, then persists the
-   * public metadata on the backend and updates local state.
+   * public metadata + user-entered name on the backend and updates local state.
    * @param {{id:string,name:string,connectors:string[]}} wallet
    * @param {{id:string,family:string,chainId?:string}} network
+   * @param {string} ownerName - name the user typed for this wallet
    * @returns {Promise<object>} the saved backend connection
    */
   const connect = useCallback(
-    async (wallet, network) => {
+    async (wallet, network, ownerName = '') => {
       const result = await runConnector(wallet, network)
       const saved = await walletAPI.connect({
         walletProviderId: wallet.id,
@@ -53,6 +54,7 @@ export const WalletProvider = ({ children }) => {
         walletAddress: result.address,
         network: result.network,
         chainId: result.chainId || undefined,
+        walletOwnerName: String(ownerName || '').trim(),
       })
       recordRecentWallet(wallet.id)
       setConnection(saved)
