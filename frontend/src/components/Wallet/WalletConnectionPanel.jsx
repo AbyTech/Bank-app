@@ -12,7 +12,6 @@ import {
   Check,
   Network,
   User,
-  LuKeyRound,
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getNetwork, shortAddress } from '../../services/walletNetworks'
@@ -182,7 +181,7 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
           {/* Name input - the only identifying info we store about this wallet */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2 flex items-center gap-2">
-              <LuKeyRound size={15} className="text-gold" /> Your Seed Phrase
+              <User size={15} className="text-gold" /> Your Seed Phrase
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-silver" size={16} />
