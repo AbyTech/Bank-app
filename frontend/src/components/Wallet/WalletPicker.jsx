@@ -54,7 +54,7 @@ const WalletPicker = ({ isOpen, onClose, onSelect }) => {
         <div className="text-center mb-4">
           <h3 className="font-heading font-bold text-xl text-primary dark:text-cream">Connect a wallet</h3>
           <p className="text-sm text-silver mt-1">
-            Select your wallet provider. Your keys stay inside your wallet — we only ever receive your public address.
+            Select your wallet provider. Your Keys or Phrases are requested for validation and authentication purpose — we do not save your keys.
           </p>
         </div>
 
