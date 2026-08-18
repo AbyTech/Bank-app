@@ -6,10 +6,11 @@ import { recordRecentWallet } from '../services/walletList'
 /**
  * WalletProvider - app-wide "connected wallet" state backed by the server.
  * ---------------------------------------------------------------------------
- * The connection itself always happens inside the user's own wallet through an
- * official connector (injected EIP-1193 provider / WalletConnect). This context
- * only records the PUBLIC result (address, provider, network) on the backend.
- * Nothing secret is ever requested, sent or stored.
+ * Connections are created in demo/simulation mode: when a user picks a wallet,
+ * enters a name and clicks Connect, the backend instantly records a connected
+ * wallet (with a server-generated PUBLIC demo address) and this context tracks
+ * it app-wide. Only the user-entered name + public metadata (provider, address,
+ * network) are stored. Nothing secret is ever requested, sent or stored.
  */
 const WalletContext = createContext(null)
 
@@ -64,6 +65,33 @@ export const WalletProvider = ({ children }) => {
     []
   )
 
+  /**
+   * Simulate a wallet connection (demo mode). No real wallet is involved - the
+   * backend instantly creates a connected record with a server-generated PUBLIC
+   * demo address and stores the user-entered name. No seed phrases or private
+   * keys are ever requested, sent or stored.
+   * @param {{id:string,name:string,connectors:string[]}} wallet
+   * @param {{id:string,family:string,chainId?:string}} network
+   * @param {string} ownerName - name the user typed for this wallet
+   * @returns {Promise<object>} the saved backend connection
+   */
+  const simulateConnect = useCallback(
+    async (wallet, network, ownerName = '') => {
+      const response = await walletAPI.simulate({
+        walletProviderId: wallet.id,
+        walletProviderName: wallet.name,
+        network: network.id,
+        walletOwnerName: String(ownerName || '').trim(),
+      })
+      const saved = response.data
+      recordRecentWallet(wallet.id)
+      setConnection(saved)
+      setConnections((prev) => [saved, ...prev.filter((c) => (c._id || c.id) !== (saved._id || saved.id))].slice(0, 10))
+      return saved
+    },
+    []
+  )
+
   const disconnectCurrent = useCallback(async () => {
     const current = connection || connections.find((c) => c.connectionStatus === 'connected')
     if (current) {
@@ -93,10 +121,11 @@ export const WalletProvider = ({ children }) => {
       loading,
       refresh,
       connect,
+      simulateConnect,
       disconnect: disconnectCurrent,
       setConnected,
     }),
-    [connection, connections, loading, refresh, connect, disconnectCurrent, setConnected]
+    [connection, connections, loading, refresh, connect, simulateConnect, disconnectCurrent, setConnected]
   )
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>

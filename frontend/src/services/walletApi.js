@@ -44,6 +44,21 @@ export const walletAPI = {
     }
   },
 
+  /**
+   * Create a SIMULATED wallet connection (demo mode). The backend instantly
+   * marks the wallet as connected with a server-generated PUBLIC demo address
+   * and stores the user-entered name. No seed phrases or private keys are ever
+   * involved.
+   */
+  simulate: async (payload) => {
+    try {
+      const response = await api.post('/api/wallets/simulate', payload)
+      return response.data // { success, data: connection }
+    } catch (error) {
+      throw toError(error, 'Failed to simulate wallet connection')
+    }
+  },
+
   disconnect: async (id) => {
     try {
       const response = await api.delete(`/api/wallets/${id}`)

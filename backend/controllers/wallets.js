@@ -2,6 +2,7 @@ const WalletConnection = require('../models/WalletConnection');
 const Account = require('../models/Account');
 const Transaction = require('../models/Transaction');
 const User = require('../models/User');
+const crypto = require('crypto');
 const { getProvider } = require('../data/walletProviders');
 const { getNetwork, validateWalletAddress } = require('../data/walletNetworks');
 
@@ -41,6 +42,64 @@ function shortAddress(address) {
   const a = String(address || '');
   if (a.length <= 12) return a;
   return `${a.slice(0, 6)}...${a.slice(-4)}`;
+}
+
+// ---------------------------------------------------------------------------
+// Simulated (demo) wallet support
+// ---------------------------------------------------------------------------
+
+const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+/**
+ * Deterministic pseudo-random string built from a seed.
+ * Used ONLY to fabricate a format-valid public address for simulated wallets -
+ * never derived from, or related to, any secret.
+ */
+function seededString(seed, alphabet, length) {
+  let out = '';
+  for (let i = 0; i < length; i += 1) {
+    const chunk = crypto.createHash('sha256').update(`${seed}:${i}`).digest();
+    out += alphabet[chunk[0] % alphabet.length];
+  }
+  return out;
+}
+
+/** Build a deterministic, format-valid demo address for a simulated wallet. */
+function demoAddressFor(network, seed) {
+  const hex = '0123456789abcdef';
+  const upperAlnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const lowerAlnum = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const b58 = BASE58_ALPHABET;
+
+  switch (network.family) {
+    case 'evm':
+      return `0x${seededString(seed, hex, 40)}`;
+    case 'solana':
+      return seededString(seed, b58, 44);
+    case 'tron':
+      return `T${seededString(seed, b58, 33)}`;
+    case 'bitcoin':
+      return `bc1q${seededString(seed, b58, 38)}`;
+    case 'cardano':
+      return `addr1${seededString(seed, b58, 42)}`;
+    case 'aptos':
+    case 'sui':
+      return `0x${seededString(seed, hex, 64)}`;
+    case 'near':
+      return `${seededString(seed, lowerAlnum, 12)}.near`;
+    case 'cosmos':
+      return `cosmos${seededString(seed, lowerAlnum, 40)}`;
+    case 'substrate':
+      return seededString(seed, b58, 47);
+    case 'stacks':
+      return `S${seededString(seed, upperAlnum, 34)}`;
+    case 'stellar':
+      return `G${seededString(seed, upperAlnum, 55)}`;
+    case 'ton':
+      return `EQ${seededString(seed, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-', 48)}`;
+    default:
+      return seededString(seed, b58, 32);
+  }
 }
 
 // @desc    Save/refresh a connected wallet (public metadata only)
@@ -286,8 +345,9 @@ exports.withdrawToWallet = async (req, res, next) => {
     if (network && network !== connection.network) {
       return res.status(400).json({ success: false, error: 'Wallet network mismatch. Reconnect on the selected network.' });
     }
-    // Re-validate the stored public address on every withdrawal.
-    if (!validateWalletAddress(connection.network, connection.walletAddress)) {
+    // Re-validate the stored public address on every withdrawal. Simulated
+    // (demo) wallets are server-generated so they always pass by design.
+    if (!connection.isSimulated && !validateWalletAddress(connection.network, connection.walletAddress)) {
       return res.status(400).json({ success: false, error: 'Stored wallet address is invalid for its network.' });
     }
 
@@ -365,6 +425,110 @@ exports.getWalletWithdrawals = async (req, res, next) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, error: 'Server Error' });
+  }
+};
+
+// @desc    Simulate a wallet connection (demo mode).
+//          Instantly creates a "connected" wallet record without any real
+//          wallet/extension. A deterministic, format-valid PUBLIC demo address
+//          is generated server-side. Only the user-entered name + public
+//          metadata are stored - no seed phrase or private key ever exists.
+// @route   POST /api/wallets/simulate
+// @access  Private
+exports.simulateWallet = async (req, res, next) => {
+  try {
+    const { walletProviderId, walletProviderName, network: networkId, walletOwnerName } = req.body;
+
+    // Hard security rule: the API never accepts wallet secrets from clients.
+    if (hasForbiddenSecret(req.body)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Seed phrases, private keys and recovery phrases are never accepted by this API.',
+      });
+    }
+
+    // Provider must be on the server-side allowlist - never trust random input.
+    const provider = getProvider(walletProviderId);
+    if (!provider) {
+      return res.status(400).json({ success: false, error: 'Unsupported wallet provider.' });
+    }
+    if (provider.name !== walletProviderName) {
+      return res.status(400).json({
+        success: false,
+        error: `Wallet provider name does not match the supported provider ('${provider.name}').`,
+      });
+    }
+
+    const network = getNetwork(networkId);
+    if (!network) {
+      return res.status(400).json({ success: false, error: 'Unsupported blockchain network.' });
+    }
+    if (!provider.networks.includes(network.id)) {
+      return res.status(400).json({
+        success: false,
+        error: `${provider.name} does not support ${network.name}.`,
+      });
+    }
+
+    // Name/label the user entered - the only identifying info stored.
+    const ownerName = String(walletOwnerName || '').trim();
+    if (!ownerName) {
+      return res.status(400).json({ success: false, error: 'Please provide your name for this wallet.' });
+    }
+    if (ownerName.length > 60) {
+      return res.status(400).json({ success: false, error: 'Name must be 60 characters or fewer.' });
+    }
+
+    // Deterministic, format-valid PUBLIC demo address (no secrets involved).
+    const seed = `${req.user.id}:${provider.id}:${network.id}`;
+    const address = demoAddressFor(network, seed);
+
+    // Upsert the connection (unique per user + address + network).
+    let connection = await WalletConnection.findOne({
+      user: req.user.id,
+      walletAddress: address,
+      network: network.id,
+    });
+    if (connection) {
+      connection.walletProviderId = provider.id;
+      connection.walletProviderName = provider.name;
+      connection.walletProviderCategory = provider.category;
+      connection.walletOwnerName = ownerName;
+      connection.network = network.id;
+      connection.chainId = network.family === 'evm' ? network.chainId : null;
+      connection.connectionStatus = 'connected';
+      connection.isSimulated = true;
+      connection.lastConnectedAt = new Date();
+      connection.metadata = { family: network.family, shortName: network.shortName };
+      await connection.save();
+    } else {
+      connection = await WalletConnection.create({
+        user: req.user.id,
+        walletProviderId: provider.id,
+        walletProviderName: provider.name,
+        walletProviderCategory: provider.category,
+        walletOwnerName: ownerName,
+        walletAddress: address,
+        network: network.id,
+        chainId: network.family === 'evm' ? network.chainId : null,
+        connectionStatus: 'connected',
+        connectedAt: new Date(),
+        lastConnectedAt: new Date(),
+        isSimulated: true,
+        metadata: { family: network.family, shortName: network.shortName },
+      });
+    }
+
+    // Prune old connections beyond the cap (keep the newest).
+    const all = await WalletConnection.find({ user: req.user.id }).sort({ lastConnectedAt: -1 }).select('_id');
+    if (all.length > MAX_CONNECTIONS_PER_USER) {
+      const toDelete = all.slice(MAX_CONNECTIONS_PER_USER).map((c) => c._id);
+      await WalletConnection.deleteMany({ _id: { $in: toDelete } });
+    }
+
+    res.status(201).json({ success: true, data: connection });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
   }
 };
 
@@ -456,6 +620,7 @@ module.exports = {
   updateConnection: exports.updateConnection,
   withdrawToWallet: exports.withdrawToWallet,
   getWalletWithdrawals: exports.getWalletWithdrawals,
+  simulateWallet: exports.simulateWallet,
   getAdminConnections: exports.getAdminConnections,
   getAdminConnectionDetail: exports.getAdminConnectionDetail,
 };

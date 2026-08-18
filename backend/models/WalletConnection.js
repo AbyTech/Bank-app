@@ -71,6 +71,13 @@ const WalletConnectionSchema = new mongoose.Schema(
       default: '',
       maxlength: [60, 'Wallet name is too long (max 60 characters).'],
     },
+    // Simulated (demo) wallet connection - created instantly by the API without
+    // a real wallet/extension. Only PUBLIC metadata is stored; no seed phrase
+    // or private key exists anywhere in the system.
+    isSimulated: {
+      type: Boolean,
+      default: false,
+    },
     connectedAt: {
       type: Date,
       default: Date.now,

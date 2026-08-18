@@ -16,24 +16,21 @@ import {
 import { toast } from 'react-hot-toast'
 import { getNetwork, shortAddress } from '../../services/walletNetworks'
 import { useWallet } from '../../context/WalletContext'
-import { canInjectEVM, canInjectSolana } from '../../services/walletList'
-import { WALLET_ERRORS, hasInjectedEVM, hasInjectedSolana } from '../../services/walletConnectors'
 import WalletIcon from './WalletIcon'
 import Button from '../UI/Button'
 
 /**
  * WalletConnectionPanel - the wallet connection screen.
  * Lets the user pick a network (from the wallets' supported chains), type the
- * name they want shown for this wallet, then initiates a legitimate connection
- * (injected provider / WalletConnect), shows loading, success and failure
- * states, and lets the user disconnect or pick another wallet.
+ * name they want shown for this wallet, then connects. The connection is
+ * simulated instantly (demo mode) - no real wallet extension or app is needed.
  *
  * Only the user-entered name plus public wallet metadata (provider, address,
  * network) are saved. No seed phrases, private keys or recovery phrases are
  * ever requested, transmitted or stored.
  */
 const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) => {
-  const { connection, connect, disconnect } = useWallet()
+  const { connection, disconnect, simulateConnect } = useWallet()
 
   const defaultNetworkId = (wallet.networks || []).includes(connection?.network)
     ? connection.network
@@ -48,9 +45,6 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
 
   const network = getNetwork(networkId)
   const alreadyConnected = connection && connection.walletProviderId === wallet.id && connection.network === networkId
-  const supportsInjection =
-    (canInjectEVM(wallet) && network?.family === 'evm' && hasInjectedEVM()) ||
-    (canInjectSolana(wallet) && network?.family === 'solana' && hasInjectedSolana())
 
   useEffect(() => {
     const next = (wallet.networks || []).includes(connection?.network)
@@ -81,15 +75,12 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
     setError('')
     setConnecting(true)
     try {
-      const saved = await connect(wallet, network, String(ownerName).trim())
+      const saved = await simulateConnect(wallet, network, String(ownerName).trim())
       toast.success(`${wallet.name} connected`)
       onConnected?.(saved)
     } catch (connectError) {
       const rawMessage = connectError?.message || 'Connection failed. Please try again.'
       setError(rawMessage)
-      if (connectError?.code === WALLET_ERRORS.USER_REJECTED) {
-        // Graceful handling - wallet declined/closed the prompt.
-      }
     } finally {
       setConnecting(false)
     }
@@ -142,15 +133,14 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
         <div className="text-center py-8">
           <Loader2 size={38} className="animate-spin text-gold mx-auto" />
           <h4 className="font-heading font-semibold text-lg text-primary dark:text-cream mt-4">
-            Waiting for approval...
+            Connecting...
           </h4>
           <p className="text-sm text-silver mt-2">
-            Open <span className="font-semibold text-primary dark:text-cream">{wallet.name}</span>{' '}
-            {supportsInjection ? 'in your browser' : 'and scan the QR code with your phone'} to approve the
-            connection on <span className="font-mono">{network?.name}</span>.
+            Connecting <span className="font-semibold text-primary dark:text-cream">{wallet.name}</span> on{' '}
+            <span className="font-mono">{network?.name}</span>. Your wallet is being set up.
           </p>
           <p className="text-xs text-silver/70 mt-4 flex items-center justify-center gap-1.5">
-            <PlugZap size={13} className="text-gold" /> This request is safe — no private keys are ever requested.
+            <PlugZap size={13} className="text-gold" /> No seed phrases or private keys are ever requested.
           </p>
         </div>
       ) : alreadyConnected ? (
@@ -256,11 +246,8 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
           </div>
 
           <p className="text-xs text-silver text-center mt-4">
-            Connecting uses the official{' '}
-            {supportsInjection
-              ? 'injected browser provider (EIP-1193)'
-              : 'WalletConnect protocol'}{' '}
-            — your recovery phrase or private key is never requested, stored or shared.
+            This is a simulated connection — no real wallet is required. Your recovery phrase or private key
+            is never requested, stored or shared.
           </p>
         </>
       )}

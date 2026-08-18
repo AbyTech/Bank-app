@@ -227,6 +227,11 @@ const WalletsAdminPanel = () => {
                           <div className="flex items-center gap-2">
                             {wallet && <WalletIcon wallet={wallet} size="sm" showRing={false} />}
                             <span className="text-sm text-primary dark:text-cream">{conn.walletProviderName}</span>
+                            {conn.isSimulated && (
+                              <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-gold/10 text-gold border border-gold/40">
+                                Simulated
+                              </span>
+                            )}
                           </div>
                         </td>
                         <td className="px-4 py-3">
@@ -283,9 +288,16 @@ const WalletsAdminPanel = () => {
                 <p className="font-mono text-sm text-primary-600 dark:text-gold-300 break-all">{detail.walletAddress}</p>
                 <p className="text-xs text-silver mt-1 capitalize">{detail.network} · Connected {new Date(detail.connectedAt).toLocaleString()}</p>
               </div>
-              <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase border ${STATUS_BADGE[detail.connectionStatus] || 'bg-silver/15 text-silver'}`}>
-                {detail.connectionStatus}
-              </span>
+              <div className="flex items-center gap-2">
+                {detail.isSimulated && (
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase border bg-gold/10 text-gold border-gold/40">
+                    Simulated
+                  </span>
+                )}
+                <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase border ${STATUS_BADGE[detail.connectionStatus] || 'bg-silver/15 text-silver'}`}>
+                  {detail.connectionStatus}
+                </span>
+              </div>
             </div>
 
             <div className="flex items-start gap-2 bg-primary-50 dark:bg-primary-700/60 rounded-xl p-3">
