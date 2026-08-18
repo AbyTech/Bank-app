@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ChevronDown, Eye, EyeOff, Globe, Lock, Mail, User, Sparkles, CreditCard, Shield } from 'lucide-react'
 import Button from '../../components/UI/Button'
 import AuthSplitLayout from '../../components/Auth/AuthSplitLayout'

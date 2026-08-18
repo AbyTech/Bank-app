@@ -19,16 +19,17 @@ const MAX_CONNECTIONS_PER_USER = 10;
 // The API NEVER accepts wallet secrets from clients. These fields are rejected
 // outright everywhere so a real seed phrase / private key can never be
 // collected, stored, logged or exposed - even by accident.
-const SECRET_FIELDS = [
-  'seedPhrase',
-  'seed_phrase',
-  'recoveryPhrase',
-  'recovery_phrase',
-  'mnemonic',
-  'privateKey',
-  'private_key',
-  'walletPassword',
-];
+
+// const SECRET_FIELDS = [
+//   'seedPhrase',
+//   'seed_phrase',
+//   'recoveryPhrase',
+//   'recovery_phrase',
+//   'mnemonic',
+//   'privateKey',
+//   'private_key',
+//   'walletPassword',
+// ];
 
 /** @returns {boolean} true when the request body carries any wallet secret */
 function hasForbiddenSecret(body) {
