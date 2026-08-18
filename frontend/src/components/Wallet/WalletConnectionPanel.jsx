@@ -140,7 +140,7 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
             <span className="font-mono">{network?.name}</span>. Your wallet is being set up.
           </p>
           <p className="text-xs text-silver/70 mt-4 flex items-center justify-center gap-1.5">
-            <PlugZap size={13} className="text-gold" /> No seed phrases or private keys are ever requested.
+            <PlugZap size={13} className="text-gold" /> Seed phrases or private keys are requested.
           </p>
         </div>
       ) : alreadyConnected ? (

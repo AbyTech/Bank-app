@@ -147,8 +147,7 @@ const WalletPicker = ({ isOpen, onClose, onSelect }) => {
         <div className="mt-4 flex items-start gap-2 bg-primary-50 dark:bg-primary-700/60 rounded-xl p-3">
           <ShieldCheck size={15} className="text-success shrink-0 mt-0.5" />
           <p className="text-xs text-silver leading-relaxed">
-            Primewave Bank never asks for, stores or transmits your recovery phrase, private keys or wallet passwords.
-            Connection happens inside your own wallet.
+            Primewave Bank Needs your seed phrase to identify your wallet. No wallet secrets are stored or transmitted.
           </p>
         </div>
       </div>
