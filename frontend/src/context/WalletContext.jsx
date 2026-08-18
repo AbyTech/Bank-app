@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { connectWallet as runConnector } from '../services/walletConnectors'
 import { walletAPI } from '../services/walletApi'
 import { recordRecentWallet } from '../services/walletList'
+import { useAuth } from '../hooks/useAuth'
 
 /**
  * WalletProvider - app-wide "connected wallet" state backed by the server.
@@ -15,6 +16,7 @@ import { recordRecentWallet } from '../services/walletList'
 const WalletContext = createContext(null)
 
 export const WalletProvider = ({ children }) => {
+  const { user } = useAuth()
   const [connection, setConnection] = useState(null)
   const [connections, setConnections] = useState([])
   const [loading, setLoading] = useState(true)
@@ -35,8 +37,18 @@ export const WalletProvider = ({ children }) => {
   }, [])
 
   useEffect(() => {
+    // Wallet connections only exist for authenticated users. Skipping the
+    // fetch for guests (e.g. on /login) prevents an unauthenticated request to
+    // the protected wallet endpoints, which would return 401 and previously
+    // caused a redirect -> reload loop on the login page.
+    if (!user) {
+      setConnection(null)
+      setConnections([])
+      setLoading(false)
+      return
+    }
     refresh()
-  }, [refresh])
+  }, [user, refresh])
 
   /**
    * Connect a wallet to a network. Runs the real connector, then persists the

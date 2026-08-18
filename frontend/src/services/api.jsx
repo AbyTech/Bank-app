@@ -32,11 +32,18 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // Don't redirect when the 401 comes from the login attempt itself,c
+      // Don't redirect when the 401 comes from the login attempt itself,
       // otherwise the Login page can never show its error message.
       const isLoginRequest = (originalRequest.url || '').includes('/api/auth/login');
 
-      if (!isLoginRequest) {
+      // Only force a redirect when the request actually carried a token that
+      // the server rejected (expired/invalid session). A 401 on a request
+      // without a token simply means "not authenticated" (e.g. the wallet
+      // endpoints on public pages like /login) - redirecting there would
+      // cause an infinite reload loop when the user is already on /login.
+      const hadToken = Boolean(originalRequest.headers?.Authorization);
+
+      if (!isLoginRequest && hadToken) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         window.location.href = '/login';
