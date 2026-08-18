@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Filter, Download, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+import { Search, Filter, Download, ArrowUpRight, ArrowDownLeft, Wallet as WalletIcon } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import TransferForm from '../../components/TransferForm'
+import WithdrawModal from '../../components/WithdrawModal'
+import WalletBadge from '../../components/WalletBadge'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 import { formatAmount, getCurrencyByCountry } from '../../services/currency'
@@ -15,6 +17,7 @@ const Transactions = () => {
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [showTransferForm, setShowTransferForm] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [currency, setCurrency] = useState('USD')
 
   useEffect(() => {
@@ -72,14 +75,23 @@ const Transactions = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-8 flex flex-col sm:flex-row sm:items-center gap-4"
         >
-          <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream mb-2">
-            Transactions
-          </h1>
-          <p className="text-silver dark:text-silver">
-            View and manage your transaction history
-          </p>
+          <div className="flex-1">
+            <h1 className="text-3xl font-heading font-bold text-primary dark:text-cream mb-2">
+              Transactions
+            </h1>
+            <p className="text-silver dark:text-silver">
+              View and manage your transaction history
+            </p>
+          </div>
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            <WalletBadge />
+            <Button variant="brand" onClick={() => setShowWithdrawModal(true)}>
+              <WalletIcon size={16} className="mr-1.5" />
+              Withdraw
+            </Button>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -244,6 +256,13 @@ const Transactions = () => {
             fetchTransactions()
             setShowTransferForm(false)
           }}
+        />
+
+        {/* Withdraw to card/bank or crypto wallet */}
+        <WithdrawModal
+          isOpen={showWithdrawModal}
+          onClose={() => setShowWithdrawModal(false)}
+          onSuccess={() => fetchTransactions()}
         />
       </div>
     </div>

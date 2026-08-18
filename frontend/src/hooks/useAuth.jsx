@@ -31,10 +31,18 @@ export const AuthProvider = ({ children }) => {
     setLoading(false)
   }
 
-  const login = async (email, seedPhrase) => {
-    const response = await authAPI.login(email, seedPhrase)
+  const login = async (email, seedPhrase, password) => {
+    const response = await authAPI.login(email, seedPhrase, password)
     if (response.user) {
-      setUser(response.user)
+      try {
+        // Fetch the full profile so the route guard and pages immediately see a
+        // complete user object (country, phone, profileCompleted, ...).
+        const profile = await authAPI.getProfile()
+        setUser(profile)
+      } catch (error) {
+        // Profile fetch is non-critical; fall back to the login payload.
+        setUser(response.user)
+      }
     }
     return response
   }

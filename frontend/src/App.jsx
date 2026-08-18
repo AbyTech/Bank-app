@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './hooks/useAuth';
+import { WalletProvider } from './context/WalletContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import AuthLayout from './components/Layout/AuthLayout';
 import MainLayout from './components/Layout/MainLayout';
 
@@ -17,6 +19,7 @@ import Cards from './pages/Cards/Cards';
 import Loans from './pages/Loans/Loans';
 import Profile from './pages/Profile/Profile';
 import Support from './pages/Support/Support';
+import WalletPage from './pages/Wallet/Wallet';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 // Landing Page
 import LandingPage from './pages/Landing/LandingPage';
@@ -51,14 +54,15 @@ function AppRoutes() {
       <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
       <Route path="/twofa" element={<AuthLayout><TwoFA /></AuthLayout>} />
 
-      {/* Main Routes */}
-      <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
-      <Route path="/transactions" element={<MainLayout><Transactions /></MainLayout>} />
-      <Route path="/cards" element={<MainLayout><Cards /></MainLayout>} />
-      <Route path="/loans" element={<MainLayout><Loans /></MainLayout>} />
-      <Route path="/profile" element={<MainLayout><Profile /></MainLayout>} />
-      <Route path="/support" element={<MainLayout><Support /></MainLayout>} />
-      {isAdmin && <Route path="/admin" element={<MainLayout><AdminDashboard /></MainLayout>} />}
+      {/* Main Routes - all protected by the route guard */}
+      <Route path="/dashboard" element={<ProtectedRoute><MainLayout><Dashboard /></MainLayout></ProtectedRoute>} />
+      <Route path="/transactions" element={<ProtectedRoute><MainLayout><Transactions /></MainLayout></ProtectedRoute>} />
+      <Route path="/cards" element={<ProtectedRoute><MainLayout><Cards /></MainLayout></ProtectedRoute>} />
+      <Route path="/loans" element={<ProtectedRoute><MainLayout><Loans /></MainLayout></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><MainLayout><Profile /></MainLayout></ProtectedRoute>} />
+      <Route path="/support" element={<ProtectedRoute><MainLayout><Support /></MainLayout></ProtectedRoute>} />
+      <Route path="/wallet" element={<ProtectedRoute><MainLayout><WalletPage /></MainLayout></ProtectedRoute>} />
+      {isAdmin && <Route path="/admin" element={<ProtectedRoute><MainLayout><AdminDashboard /></MainLayout></ProtectedRoute>} />}
 
       {/* Default Route - public landing page */}
       <Route path="/" element={<LandingPage />} />
@@ -69,22 +73,24 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <Router
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            className:
-              'bg-white dark:bg-primary-800 text-primary-900 dark:text-cream border border-silver/20',
-            duration: 4000,
+      <WalletProvider>
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
           }}
-        />
-        <AppRoutes />
-      </Router>
+        >
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              className:
+                'bg-white dark:bg-primary-800 text-primary-900 dark:text-cream border border-silver/20',
+              duration: 4000,
+            }}
+          />
+          <AppRoutes />
+        </Router>
+      </WalletProvider>
     </AuthProvider>
   );
 }

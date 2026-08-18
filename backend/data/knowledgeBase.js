@@ -278,24 +278,31 @@ Need help? Contact our support team:
   {
     id: 'withdrawal',
     title: 'Withdrawal / Cash out',
-    keywords: ['withdraw', 'withdrawal', 'withdraw money', 'cash out', 'cashout', 'take out money', 'get my money out', 'make a withdrawal', 'transfer to bank'],
-    response: `Withdrawals at PrimeWave Bank require an active card. 🏦
+    keywords: ['withdraw', 'withdrawal', 'withdraw money', 'cash out', 'cashout', 'take out money', 'get my money out', 'make a withdrawal', 'transfer to bank', 'withdraw to wallet'],
+    response: `PrimeWave Bank offers two withdrawal methods: 🏦
 
-Before you can withdraw:
-1. You need an active (approved) card on your account
-2. If you don't have one, the app will prompt you to order a card first
+1️⃣ Withdraw to Card / Bank
+• Requires an active (approved) card on your account
+• If you don't have one, the app will prompt you to order a card first
+
+2️⃣ Withdraw to Wallet 💳
+• Connect your own crypto wallet (Trust Wallet, MetaMask, Phantom, Ledger and 50+ more)
+• Choose the network, enter the amount and confirm
+• Your wallet stays in your control — you approve the connection inside your wallet
+• Primewave Bank never asks for or stores your recovery phrase or private keys
 
 How to withdraw:
-1. Go to the Transactions page (or use the "Withdraw" Quick Action on the Dashboard)
-2. Choose the account and enter the amount
-3. Confirm the withdrawal
+1. Tap "Withdraw" on the Dashboard or Transactions page
+2. Pick a method (Card/Bank or Wallet)
+3. Enter the amount and confirm
 
 Notes:
 • You can only withdraw up to your available balance
-• Withdrawals are recorded instantly in your transaction history
+• Wallet withdrawals are limited to your connected network and its address format
+• All withdrawals are recorded instantly in your transaction history
 
 If you don't have an active card yet, tap the "Cards" Quick Action on your Dashboard to order one.`,
-    suggestions: ['How do I order a card?', 'How do I transfer money?', 'How do I contact support?'],
+    suggestions: ['How do I order a card?', 'How do I connect a wallet?', 'How do I transfer money?', 'How do I contact support?'],
   },
   {
     id: 'transfer',

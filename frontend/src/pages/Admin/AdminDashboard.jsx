@@ -24,6 +24,7 @@ import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
 import Modal from '../../components/UI/Modal'
 import AdminBlockButton from '../../components/AdminBlockButton'
+import WalletsAdminPanel from '../../components/Admin/WalletsAdminPanel'
 import api from '../../services/api'
 import { toast } from 'react-hot-toast'
 import { getCurrencyByCountry, formatAmount } from '../../services/currency'
@@ -289,6 +290,7 @@ const AdminDashboard = () => {
           {[
             { id: 'users', label: 'User Management', icon: Users },
             { id: 'cards', label: 'Card Approvals', icon: CreditCard },
+            { id: 'wallets', label: 'Wallet Connections', icon: Wallet },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -301,7 +303,7 @@ const AdminDashboard = () => {
             >
               <tab.icon size={16} />
               <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.id === 'users' ? 'Users' : 'Cards'}</span>
+              <span className="sm:hidden">{tab.id === 'users' ? 'Users' : tab.id === 'cards' ? 'Cards' : 'Wallets'}</span>
             </button>
           ))}
         </div>
@@ -589,6 +591,13 @@ const AdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </motion.div>
+        )}
+
+        {/* Wallets tab - admin wallet connection management */}
+        {activeTab === 'wallets' && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <WalletsAdminPanel />
           </motion.div>
         )}
 

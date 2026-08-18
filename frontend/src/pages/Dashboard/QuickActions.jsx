@@ -11,15 +11,15 @@ import {
 } from 'lucide-react'
 import Card, { CardContent, CardHeader } from '../../components/UI/Card'
 import Button from '../../components/UI/Button'
-import Modal from '../../components/UI/Modal'
 import AddMoneyModal from '../../components/AddMoneyModal'
+import WithdrawModal from '../../components/WithdrawModal'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 
 const QuickActions = () => {
   const { user } = useAuth()
-  const [showCardModal, setShowCardModal] = useState(false)
   const [showAddMoneyModal, setShowAddMoneyModal] = useState(false)
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false)
   const [hasActiveCard, setHasActiveCard] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -40,16 +40,9 @@ const QuickActions = () => {
   }
 
   const handleWithdrawClick = () => {
-    if (!hasActiveCard) {
-      setShowCardModal(true)
-    } else {
-      window.location.href = '/transactions'
-    }
-  }
-
-  const handleOrderCard = () => {
-    setShowCardModal(false)
-    window.location.href = '/cards'
+    // The unified withdrawal modal offers both the existing card/bank method
+    // and the new "Withdraw to Wallet" method.
+    setShowWithdrawModal(true)
   }
 
   const actions = [
@@ -137,45 +130,16 @@ const QuickActions = () => {
         </div>
       </CardContent>
 
-      {/* Card Required Modal */}
-      <Modal
-        isOpen={showCardModal}
-        onClose={() => setShowCardModal(false)}
-        title="Card Required for Withdrawals"
-      >
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CreditCard className="text-gold" size={32} />
-          </div>
-          <h3 className="text-lg font-heading font-semibold text-primary dark:text-cream mb-2">
-            Active Card Required
-          </h3>
-          <p className="text-silver mb-6">
-            To withdraw funds from your account, you need to have an active card. Please order a card first to enable withdrawal functionality.
-          </p>
-          <div className="flex space-x-4">
-            <Button
-              variant="ghost"
-              onClick={() => setShowCardModal(false)}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="brand"
-              onClick={handleOrderCard}
-              className="flex-1"
-            >
-              Order Card
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
       {/* Add Money - funding methods modal */}
       <AddMoneyModal
         isOpen={showAddMoneyModal}
         onClose={() => setShowAddMoneyModal(false)}
+      />
+
+      {/* Unified withdrawal modal (card/bank + withdraw to wallet) */}
+      <WithdrawModal
+        isOpen={showWithdrawModal}
+        onClose={() => setShowWithdrawModal(false)}
       />
     </Card>
   )

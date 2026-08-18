@@ -3,6 +3,7 @@ import { Wallet } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import api from '../../services/api'
 import NotificationsBell from './NotificationsBell'
+import WalletBadge from '../WalletBadge'
 import { formatAmount, getCurrencyByCountry } from '../../services/currency'
 
 /**
@@ -52,6 +53,10 @@ const TopNavbar = () => {
           {todayString}
         </p>
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {/* Connected wallet badge (desktop + tablet) */}
+          <div className="hidden sm:block">
+            <WalletBadge />
+          </div>
           {/* Wallet + balance (hidden on small mobile) */}
           <div className="hidden sm:flex items-center gap-2 bg-primary-600 text-white rounded-xl px-3.5 py-2">
             <Wallet size={16} className="shrink-0" />

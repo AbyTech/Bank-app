@@ -48,6 +48,7 @@ app.use('/api/loans', require('./routes/loans'));
 app.use('/api/transactions', require('./routes/transactions'));
 app.use('/api/profile', require('./routes/profile'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/wallets', require('./routes/wallets'));
 app.use('/api/smartsupp', require('./routes/smartsupp'));
 app.use('/api/config', require('./routes/config'));
 

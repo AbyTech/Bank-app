@@ -15,6 +15,7 @@ import {
   Sparkles,
   PanelLeftClose,
   PanelLeftOpen,
+  Wallet,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 import NotificationsBell from './NotificationsBell'
@@ -30,6 +31,7 @@ const Sidebar = ({ collapsed = false, onToggleCollapse }) => {
     { name: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
     { name: 'Cards', href: '/cards', icon: CreditCard },
     { name: 'Loans', href: '/loans', icon: Landmark },
+    { name: 'Wallet', href: '/wallet', icon: Wallet },
     { name: 'Support', href: '/support', icon: Headphones },
     { name: 'Profile', href: '/profile', icon: User },
   ]

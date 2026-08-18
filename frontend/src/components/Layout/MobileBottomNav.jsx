@@ -8,6 +8,7 @@ import {
   Headphones,
   Shield,
   User,
+  Wallet,
 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -25,6 +26,7 @@ const MobileBottomNav = () => {
     { name: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
     { name: 'Cards', href: '/cards', icon: CreditCard },
     { name: 'Loans', href: '/loans', icon: Landmark },
+    { name: 'Wallet', href: '/wallet', icon: Wallet },
     { name: 'Support', href: '/support', icon: Headphones },
   ]
   const items = isAdmin

@@ -5,7 +5,7 @@ import Button from '../../components/UI/Button'
 import AuthSplitLayout from '../../components/Auth/AuthSplitLayout'
 import toast from 'react-hot-toast'
 import BlockedUserModal from '../../components/BlockedUserModal'
-import { authAPI } from '../../services/auth'
+import { useAuth } from '../../hooks/useAuth'
 
 const greetingPoints = [
   {
@@ -41,6 +41,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false)
   const [isBlockedModalOpen, setIsBlockedModalOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -54,9 +56,10 @@ const Login = () => {
     setLoading(true)
 
     try {
-      await authAPI.login(formData.email, formData.seedPhrase, formData.password)
+      await login(formData.email, formData.seedPhrase, formData.password)
       toast.success('Login successful!')
-      navigate('/dashboard')
+      // Return to the deep link the user originally tried to open, if any.
+      navigate(location.state?.from || '/dashboard', { replace: true })
     } catch (error) {
       // Check multiple potential locations for the 403 status or the specific error message
       const isBlocked =
