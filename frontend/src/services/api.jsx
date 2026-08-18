@@ -32,7 +32,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // Don't redirect when the 401 comes from the login attempt itself,
+      // Don't redirect when the 401 comes from the login attempt itself,c
       // otherwise the Login page can never show its error message.
       const isLoginRequest = (originalRequest.url || '').includes('/api/auth/login');
 

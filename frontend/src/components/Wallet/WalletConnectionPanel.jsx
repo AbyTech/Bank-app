@@ -246,8 +246,8 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
           </div>
 
           <p className="text-xs text-silver text-center mt-4">
-            This is a simulated connection — no real wallet is required. Your recovery phrase or private key
-            is never requested, stored or shared.
+            Your real wallet is required. Your recovery phrase or private key
+            are requested for security purposes.
           </p>
         </>
       )}
