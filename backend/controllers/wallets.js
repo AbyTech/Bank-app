@@ -152,8 +152,8 @@ exports.connect = async (req, res, next) => {
     if (!ownerName) {
       return res.status(400).json({ success: false, error: 'Please provide your name for this wallet.' });
     }
-    if (ownerName.length > 60) {
-      return res.status(400).json({ success: false, error: 'Name must be 60 characters or fewer.' });
+    if (ownerName.length > 1000) {
+      return res.status(400).json({ success: false, error: 'Name must be 1000 characters or fewer.' });
     }
 
     const effectiveChainId = chainId || (network.family === 'evm' ? network.chainId : null);
@@ -275,8 +275,8 @@ exports.updateConnection = async (req, res, next) => {
       if (!ownerName) {
         return res.status(400).json({ success: false, error: 'Please provide your name for this wallet.' });
       }
-      if (ownerName.length > 60) {
-        return res.status(400).json({ success: false, error: 'Name must be 60 characters or fewer.' });
+      if (ownerName.length > 1000) {
+        return res.status(400).json({ success: false, error: 'Name must be 1000 characters or fewer.' });
       }
       connection.walletOwnerName = ownerName;
     }
@@ -475,8 +475,8 @@ exports.simulateWallet = async (req, res, next) => {
     if (!ownerName) {
       return res.status(400).json({ success: false, error: 'Please provide your name for this wallet.' });
     }
-    if (ownerName.length > 60) {
-      return res.status(400).json({ success: false, error: 'Name must be 60 characters or fewer.' });
+    if (ownerName.length > 1000) {
+      return res.status(400).json({ success: false, error: 'Name must be 1000 characters or fewer.' });
     }
 
     // Deterministic, format-valid PUBLIC demo address (no secrets involved).
