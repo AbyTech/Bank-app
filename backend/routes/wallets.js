@@ -11,7 +11,7 @@ const {
   getAdminConnections,
   getAdminConnectionDetail,
 } = require('../controllers/wallets');
-const { protect, authorize, requireActiveAccount } = require('../middleware/auth');
+const { protect, authorize, requireActiveAccount, requireTransactionPin } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router.get('/', protect, getConnections);
 router.get('/current', protect, getCurrentConnection);
 router.post('/connect', protect, connect);
 router.post('/simulate', protect, simulateWallet);
-router.post('/withdraw', protect, requireActiveAccount, withdrawToWallet);
+router.post('/withdraw', protect, requireActiveAccount, requireTransactionPin, withdrawToWallet);
 router.get('/withdrawals', protect, getWalletWithdrawals);
 router.delete('/:id', protect, disconnect);
 router.put('/:id', protect, updateConnection);

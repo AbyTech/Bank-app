@@ -98,7 +98,7 @@ export const authAPI = {
 
   applyForLoan: async (loanData) => {
     try {
-      const response = await api.post('/api/loans', loanData);
+      const response = await api.post('/api/loans/apply', loanData);
       return response.data.data;
     } catch (error) {
       console.error('Failed to apply for loan:', error);

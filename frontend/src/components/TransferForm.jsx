@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Send, X, AlertCircle, RefreshCw } from 'lucide-react'
 import Button from './UI/Button'
 import Modal from './UI/Modal'
+import PinInput from './UI/PinInput'
 import { useAuth } from '../hooks/useAuth'
 import api from '../services/api'
 
@@ -12,7 +13,8 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
     fromAccountId: '',
     toAccountNumber: '',
     amount: '',
-    description: ''
+    description: '',
+    transactionPin: ''
   })
   const [accounts, setAccounts] = useState([])
   const [recipientName, setRecipientName] = useState('')
@@ -129,6 +131,11 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
       return
     }
 
+    if (!formData.transactionPin || formData.transactionPin.length !== 4) {
+      setError('Please enter your 4-digit transaction PIN to authorize the transfer.')
+      return
+    }
+
     try {
       setLoading(true)
       setError('')
@@ -137,7 +144,8 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
         fromAccountId: formData.fromAccountId,
         toAccountNumber: formData.toAccountNumber,
         amount: parseFloat(formData.amount),
-        description: formData.description || 'Transfer'
+        description: formData.description || 'Transfer',
+        transactionPin: formData.transactionPin
       })
 
       if (response.data.success) {
@@ -157,7 +165,8 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
       fromAccountId: '',
       toAccountNumber: '',
       amount: '',
-      description: ''
+      description: '',
+      transactionPin: ''
     })
     setRecipientName('')
     setError('')
@@ -309,6 +318,19 @@ const TransferForm = ({ isOpen, onClose, onSuccess }) => {
               className="w-full px-3 py-2 bg-primary-100 dark:bg-primary-700 border border-silver dark:border-primary-600 rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
               placeholder="What's this transfer for?"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-primary dark:text-cream mb-2">
+              Transaction PIN *
+            </label>
+            <PinInput
+              value={formData.transactionPin}
+              onChange={(val) => setFormData((prev) => ({ ...prev, transactionPin: val }))}
+            />
+            <p className="text-xs text-silver mt-2">
+              Enter your 4-digit transaction PIN to authorize this transfer.
+            </p>
           </div>
 
           {error && (

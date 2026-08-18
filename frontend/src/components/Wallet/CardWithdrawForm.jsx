@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import api from '../../services/api'
 import Button from '../UI/Button'
+import PinInput from '../UI/PinInput'
 
 /** Existing card/bank withdrawal method. Uses POST /api/transactions/withdraw. */
 const CardWithdrawForm = ({ onDone, onCancel }) => {
@@ -14,6 +15,7 @@ const CardWithdrawForm = ({ onDone, onCancel }) => {
   const [accountId, setAccountId] = useState('')
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
+  const [transactionPin, setTransactionPin] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -46,12 +48,17 @@ const CardWithdrawForm = ({ onDone, onCancel }) => {
     if (!amountNum || amountNum <= 0) { setError('Please enter a valid withdrawal amount.'); return }
     if (!accountId) { setError('Please select an account.'); return }
     if (!hasActiveCard) { setError('An active card is required for card withdrawals. Please order a card first.'); return }
+    if (!transactionPin || transactionPin.length !== 4) {
+      setError('Please enter your 4-digit transaction PIN to authorize this withdrawal.')
+      return
+    }
     setSubmitting(true)
     try {
       const response = await api.post('/api/transactions/withdraw', {
         accountId,
         amount: amountNum,
         description: description || 'Card withdrawal',
+        transactionPin,
       })
       toast.success('Withdrawal successful')
       onDone?.(response.data.data)
@@ -108,6 +115,12 @@ const CardWithdrawForm = ({ onDone, onCancel }) => {
         <input type="text" value={description} onChange={(e) => setDescription(e.target.value)}
           placeholder="What's this withdrawal for?"
           className="w-full px-4 py-3 bg-primary-100 dark:bg-primary-700 border border-silver/40 dark:border-primary-600 rounded-xl text-sm focus:ring-2 focus:ring-gold focus:border-transparent" />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-primary dark:text-cream mb-2">Transaction PIN</label>
+        <PinInput value={transactionPin} onChange={(val) => { setTransactionPin(val); setError('') }} />
+        <p className="text-xs text-silver mt-2">Enter your 4-digit transaction PIN to authorize this withdrawal.</p>
       </div>
 
       {error && (

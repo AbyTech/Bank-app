@@ -32,6 +32,21 @@ const TransactionSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Account',
   },
+  // Currency-conversion metadata populated for cross-currency transfers.
+  // (These were previously set by the transfer controller but not declared in
+  // the schema, so Mongoose silently dropped them.)
+  convertedAmount: {
+    type: Number,
+  },
+  originalCurrency: {
+    type: String,
+  },
+  convertedCurrency: {
+    type: String,
+  },
+  exchangeRate: {
+    type: Number,
+  },
   card: {
     type: mongoose.Schema.ObjectId,
     ref: 'Card',

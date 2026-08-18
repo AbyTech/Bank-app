@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 // Protect routes
@@ -56,4 +57,37 @@ exports.requireActiveAccount = (req, res, next) => {
     });
   }
   next();
+};
+
+// Verify the user's transaction PIN before any money movement (deposits,
+// withdrawals, transfers). The PIN is sent in the request body as
+// `transactionPin`, stored hashed with bcrypt in the database, and never
+// stored, logged or returned by the API.
+exports.requireTransactionPin = async (req, res, next) => {
+  try {
+    const pin = String(req.body.transactionPin || '');
+    if (!/^\d{4}$/.test(pin)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Transaction PIN is required (4 digits).',
+      });
+    }
+
+    const user = await User.findById(req.user.id).select('+transactionPin');
+    if (!user || !user.transactionPinSet || !user.transactionPin) {
+      return res.status(400).json({
+        success: false,
+        error: 'No transaction PIN set. Please create one first.',
+      });
+    }
+
+    const isMatch = await bcrypt.compare(pin, user.transactionPin);
+    if (!isMatch) {
+      return res.status(400).json({ success: false, error: 'Invalid transaction PIN.' });
+    }
+
+    next();
+  } catch (error) {
+    return res.status(500).json({ success: false, error: 'Server Error' });
+  }
 };

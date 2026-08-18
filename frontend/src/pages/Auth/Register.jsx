@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, Eye, EyeOff, Globe, Lock, Mail, User, Sparkles, CreditCard, Shield } from 'lucide-react'
 import Button from '../../components/UI/Button'
 import AuthSplitLayout from '../../components/Auth/AuthSplitLayout'
 import toast from 'react-hot-toast'
 import authAPI from '../../services/auth.jsx'
+import { getCurrencyByCountry } from '../../services/currency'
 
 const greetingPoints = [
   {
@@ -184,7 +185,7 @@ const Register = () => {
                 <option value="">Select your country</option>
                 {countries.map((country) => (
                   <option key={country.code} value={country.code}>
-                    {country.name} ({country.currency})
+                    {country.name} ({getCurrencyByCountry(country.code)})
                   </option>
                 ))}
               </select>

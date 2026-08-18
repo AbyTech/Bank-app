@@ -7,6 +7,7 @@ import { walletAPI } from '../../services/walletApi'
 import { getNetwork, shortAddress } from '../../services/walletNetworks'
 import { getWalletById } from '../../services/walletList'
 import Button from '../UI/Button'
+import PinInput from '../UI/PinInput'
 import WalletIcon from './WalletIcon'
 
 const MIN_WITHDRAWAL = 1
@@ -22,6 +23,7 @@ const WalletWithdrawForm = ({ connection, onDone, onCancel }) => {
   const [accountsLoading, setAccountsLoading] = useState(true)
   const [accountId, setAccountId] = useState('')
   const [amount, setAmount] = useState('')
+  const [transactionPin, setTransactionPin] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
@@ -69,6 +71,10 @@ const WalletWithdrawForm = ({ connection, onDone, onCancel }) => {
     }
     if (!accountId) { setError('Please select an account.'); return }
     if (!connection) { setError('Please connect a wallet first.'); return }
+    if (!transactionPin || transactionPin.length !== 4) {
+      setError('Please enter your 4-digit transaction PIN to authorize this withdrawal.')
+      return
+    }
 
     setSubmitting(true)
     try {
@@ -77,6 +83,7 @@ const WalletWithdrawForm = ({ connection, onDone, onCancel }) => {
         amount: amountNum,
         walletConnectionId: connection._id || connection.id,
         network: connection.network,
+        transactionPin,
       })
       toast.success('Withdrawal successful')
       onDone?.(response.data || response)
@@ -133,6 +140,12 @@ const WalletWithdrawForm = ({ connection, onDone, onCancel }) => {
         <p className="text-xs text-silver mt-1.5">
           Minimum ${MIN_WITHDRAWAL.toFixed(2)} · Maximum ${MAX_WITHDRAWAL.toFixed(2)} per withdrawal
         </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-primary dark:text-cream mb-2">Transaction PIN</label>
+        <PinInput value={transactionPin} onChange={(val) => { setTransactionPin(val); setError('') }} />
+        <p className="text-xs text-silver mt-2">Enter your 4-digit transaction PIN to authorize this withdrawal.</p>
       </div>
 
       {error && (
