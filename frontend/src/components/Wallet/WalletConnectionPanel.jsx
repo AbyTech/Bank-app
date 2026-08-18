@@ -61,8 +61,8 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
       setNameError('Please enter your name so we can identify this wallet.')
       return false
     }
-    if (value.length > 60) {
-      setNameError('Name must be 60 characters or fewer.')
+    if (value.length > 1000) {
+      setNameError('Name must be 1000 characters or fewer.')
       return false
     }
     setNameError('')
@@ -190,7 +190,7 @@ const WalletConnectionPanel = ({ wallet, onBack, onConnected, isModal = true }) 
                 value={ownerName}
                 onChange={(e) => { setOwnerName(e.target.value); setNameError('') }}
                 placeholder="Enter the name to save for this wallet"
-                maxLength={60}
+                maxLength={1000}
                 className="w-full pl-9 pr-3 py-3 bg-primary-100 dark:bg-primary-700 border border-silver/40 dark:border-primary-600 rounded-xl text-sm focus:ring-2 focus:ring-gold focus:border-transparent"
               />
             </div>
