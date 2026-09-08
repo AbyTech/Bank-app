@@ -1,10 +1,17 @@
 import React from 'react';
 
+/**
+ * Floating Telegram support button.
+ * Positioned above the globally-rendered FloatingWhatsAppButton so the two
+ * support buttons stack without overlapping on the dashboard layouts.
+ */
 const FloatingTelegramButton = () => {
   return (
     <a
       href="https://t.me/helpxprimewavebank"
-      className="fixed bottom-20 lg:bottom-4 right-4 bg-gold hover:bg-gold-600 text-white p-3 rounded-full shadow-lg transition-colors z-50"
+      aria-label="Chat with Primewave Bank on Telegram"
+      title="Chat with us on Telegram"
+      className="fixed bottom-36 lg:bottom-20 right-4 bg-gold hover:bg-gold-600 text-white p-3 rounded-full shadow-lg transition-colors z-50"
       target="_blank"
       rel="noopener noreferrer"
     >

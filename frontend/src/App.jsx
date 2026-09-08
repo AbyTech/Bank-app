@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import FloatingWhatsAppButton from './components/UI/FloatingWhatsAppButton';
 import { AuthProvider } from './hooks/useAuth';
 import { WalletProvider } from './context/WalletContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -88,6 +89,7 @@ function App() {
               duration: 4000,
             }}
           />
+          <FloatingWhatsAppButton />
           <AppRoutes />
         </Router>
       </WalletProvider>
