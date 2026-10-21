@@ -346,10 +346,16 @@ exports.withdrawToWallet = async (req, res, next) => {
     if (network && network !== connection.network) {
       return res.status(400).json({ success: false, error: 'Wallet network mismatch. Reconnect on the selected network.' });
     }
-    // Destination address. It defaults to the connected wallet's address, but in
-    // the withdrawal modal the user can type the exact address they want the
-    // funds sent to. It must still be a valid address for the connected network.
-    const destinationAddress = String(walletAddress || '').trim() || connection.walletAddress;
+    // Destination address. The user must type it in the withdrawal form; there
+    // is no fallback to the connected wallet's address. It must be a valid
+    // address for the connected network.
+    const destinationAddress = String(walletAddress || '').trim();
+    if (!destinationAddress) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please enter the wallet address you want to withdraw to.',
+      });
+    }
     if (!validateWalletAddress(connection.network, destinationAddress)) {
       return res.status(400).json({
         success: false,
