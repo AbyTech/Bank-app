@@ -315,7 +315,7 @@ exports.updateConnection = async (req, res, next) => {
 // @access  Private (requireActiveAccount)
 exports.withdrawToWallet = async (req, res, next) => {
   try {
-    const { accountId, amount, walletConnectionId, network } = req.body;
+    const { accountId, amount, walletConnectionId, network, walletAddress } = req.body;
 
     const amountNum = Number(amount);
     if (!amountNum || !isFinite(amountNum) || amountNum <= 0) {
@@ -346,19 +346,26 @@ exports.withdrawToWallet = async (req, res, next) => {
     if (network && network !== connection.network) {
       return res.status(400).json({ success: false, error: 'Wallet network mismatch. Reconnect on the selected network.' });
     }
-    // Re-validate the stored public address on every withdrawal. Simulated
-    // (demo) wallets are server-generated so they always pass by design.
-    if (!connection.isSimulated && !validateWalletAddress(connection.network, connection.walletAddress)) {
-      return res.status(400).json({ success: false, error: 'Stored wallet address is invalid for its network.' });
+    // Destination address. It defaults to the connected wallet's address, but in
+    // the withdrawal modal the user can type the exact address they want the
+    // funds sent to. It must still be a valid address for the connected network.
+    const destinationAddress = String(walletAddress || '').trim() || connection.walletAddress;
+    if (!validateWalletAddress(connection.network, destinationAddress)) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid wallet address for ${connection.network}. Please enter a valid address.`,
+      });
     }
 
-    // Prevent duplicate submissions (same user + connection + amount within 60s).
+    // Prevent duplicate submissions (same user + connection + address + amount
+    // within 60s).
     const duplicateWindow = new Date(Date.now() - DUPLICATE_WINDOW_MS);
     const existing = await Transaction.findOne({
       user: req.user.id,
       walletConnection: connection._id,
       type: 'withdrawal',
       amount: amountNum,
+      walletAddress: destinationAddress,
       createdAt: { $gte: duplicateWindow },
     }).sort({ createdAt: -1 });
     if (existing) {
@@ -379,7 +386,7 @@ exports.withdrawToWallet = async (req, res, next) => {
     connection.lastUsedAt = new Date();
     await connection.save();
 
-    const description = `Withdrawal to wallet ${shortAddress(connection.walletAddress)} (${connection.network})`;
+    const description = `Withdrawal to wallet ${shortAddress(destinationAddress)} (${connection.network})`;
     const transaction = await Transaction.create({
       user: req.user.id,
       account: account._id,
@@ -389,7 +396,7 @@ exports.withdrawToWallet = async (req, res, next) => {
       balance: updated.balance,
       status: 'completed',
       walletConnection: connection._id,
-      walletAddress: connection.walletAddress,
+      walletAddress: destinationAddress,
       walletNetwork: connection.network,
       walletProvider: connection.walletProviderName,
     });

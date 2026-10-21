@@ -144,8 +144,8 @@ const WithdrawModal = ({ isOpen, onClose, onSuccess }) => {
               {methodCard(
                 <Wallet size={22} />,
                 'Withdraw to Wallet',
-                'Send funds directly to your crypto wallet (Ethereum, Solana, BNB Chain and more). Connect safely through your wallet.',
-                () => setStep('picker'),
+                'Send funds to a wallet address you enter (Ethereum, Solana, BNB Chain and more). Connect safely through your wallet.',
+                () => setStep(connection ? 'wallet' : 'picker'),
                 'border-gold/40 hover:border-gold'
               )}
               {methodCard(

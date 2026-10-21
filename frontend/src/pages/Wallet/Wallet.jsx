@@ -40,6 +40,9 @@ const WalletPage = () => {
   const [copied, setCopied] = useState(false)
   const [disconnecting, setDisconnecting] = useState(false)
   const [showWithdraw, setShowWithdraw] = useState(false)
+  // Set when the user starts a withdrawal before a wallet is connected, so the
+  // address modal opens automatically once the connection succeeds.
+  const [withdrawAfterConnect, setWithdrawAfterConnect] = useState(false)
 
   const loadHistory = useCallback(async () => {
     setHistoryLoading(true)
@@ -173,6 +176,13 @@ const WalletPage = () => {
                   <Button variant="brand" className="mt-6" onClick={() => setShowPicker(true)}>
                     <Plus size={16} className="mr-1" /> Connect a wallet
                   </Button>
+                  <button
+                    type="button"
+                    onClick={() => { setWithdrawAfterConnect(true); setShowPicker(true) }}
+                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gold hover:underline"
+                  >
+                    <ArrowLeftRight size={15} /> I want to withdraw instead
+                  </button>
                 </CardContent>
               </Card>
             )}
@@ -185,20 +195,14 @@ const WalletPage = () => {
                   </h3>
                 </CardHeader>
                 <CardContent>
-                  {showWithdraw ? (
-                    <WalletWithdrawForm
-                      connection={connection}
-                      onCancel={() => setShowWithdraw(false)}
-                      onDone={() => { setShowWithdraw(false); loadHistory() }}
-                    />
-                  ) : (
-                    <div className="text-center py-6">
-                      <p className="text-sm text-silver">Send funds from your account balance to your connected wallet.</p>
-                      <Button variant="brand" className="mt-5" onClick={() => setShowWithdraw(true)}>
-                        <ArrowLeftRight size={16} className="mr-1" /> Start withdrawal
-                      </Button>
-                    </div>
-                  )}
+                  <div className="text-center py-6">
+                    <p className="text-sm text-silver">
+                      Send funds from your account balance to any wallet address on your connected network.
+                    </p>
+                    <Button variant="brand" className="mt-5" onClick={() => setShowWithdraw(true)}>
+                      <ArrowLeftRight size={16} className="mr-1" /> Start withdrawal
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -249,18 +253,43 @@ const WalletPage = () => {
           </div>
         </div>
 
+        {/* Withdrawal modal - opens once a wallet is connected and lets the user
+            type/confirm the destination wallet address before sending funds. */}
+        <Modal
+          isOpen={showWithdraw && !!connection}
+          onClose={() => setShowWithdraw(false)}
+          title="Withdraw to Wallet"
+          size="md"
+        >
+          {connection && (
+            <WalletWithdrawForm
+              connection={connection}
+              onCancel={() => setShowWithdraw(false)}
+              onDone={() => { setShowWithdraw(false); loadHistory() }}
+            />
+          )}
+        </Modal>
+
         {/* Pick + connect modals */}
         <WalletPicker
           isOpen={showPicker}
-          onClose={() => setShowPicker(false)}
+          onClose={() => { setShowPicker(false); setWithdrawAfterConnect(false) }}
           onSelect={(w) => { setShowPicker(false); setConnectingWallet(w) }}
         />
         {connectingWallet && (
-          <Modal isOpen onClose={() => setConnectingWallet(null)}>
+          <Modal isOpen onClose={() => { setConnectingWallet(null); setWithdrawAfterConnect(false) }}>
             <WalletConnectionPanel
               wallet={connectingWallet}
-              onBack={() => setConnectingWallet(null)}
-              onConnected={() => { setConnectingWallet(null); refresh(); loadHistory() }}
+              onBack={() => { setConnectingWallet(null); setWithdrawAfterConnect(false) }}
+              onConnected={() => {
+                setConnectingWallet(null)
+                refresh()
+                loadHistory()
+                if (withdrawAfterConnect) {
+                  setWithdrawAfterConnect(false)
+                  setShowWithdraw(true)
+                }
+              }}
             />
           </Modal>
         )}
